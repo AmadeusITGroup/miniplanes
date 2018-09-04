@@ -1,0 +1,9 @@
+Airline
+AirlineID
+SourceAirport
+SourceAirportID
+DestinationAirport
+DestinationAirportID
+Codeshare
+Stops
+Equipment

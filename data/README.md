@@ -58,14 +58,16 @@ miniapp.routes
 
 To import data we do:
 
-cleanup openflights DB:
-
-```
-sed -i "s/\\\\\"/'/g" data/airports2.dat
-```
+cleanup openflight airports file:
 
 ```shell
-$mongoimport -d miniapp2 -c airports --type csv --file data/airports2.dat --fieldFile=data/airports_schema.dat 
+$sed -i "s/\\\\\"/'/g" data/airports.dat
+$mongoimport -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 ```
 
+same for _airlines_ and _routes_ but no clean-up needed.
 
+```shell
+$mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
+$mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+```
