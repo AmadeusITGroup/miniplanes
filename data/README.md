@@ -56,18 +56,41 @@ miniapp.airports
 miniapp.airlines
 miniapp.routes
 
-To import data we do:
+To import data we do
+
+
+## Local monogdb
 
 cleanup openflight airports file:
 
 ```shell
-$sed -i "s/\\\\\"/'/g" data/airports.dat
-$mongoimport -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
+$ sed -i "s/\\\\\"/'/g" data/airports.dat
+$ mongoimport -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 ```
 
 same for _airlines_ and _routes_ but no clean-up needed.
 
 ```shell
-$mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
-$mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+$ mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
+$ mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+```
+
+
+## Docker mongodb
+
+In case your mongo is running as a docker image for example via
+
+```shell
+$docker run --name mongodb bitnami/mongodb:latest
+```
+
+then to load your data you should something like
+
+```shell
+$ mongoContainer=$(docker ps -aqf "name=mongodb")
+$ mongoIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mongoContainer) 
+$ sed -i "s/\\\\\"/'/g" data/airports.dat
+$ mongoimport -h $mongoIP -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
+$ mongoimport -h $mongoIP -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
+$ mongoimport -h $mongoIP -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
 ```

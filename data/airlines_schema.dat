@@ -1,8 +1,8 @@
-AirlineID
-Name
-Alias
+airlineID
+name
+alias
 IATA
 ICAO
-Callsign
-Country
-Active
+callsign
+country
+active
