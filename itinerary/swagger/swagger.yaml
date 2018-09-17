@@ -9,7 +9,7 @@ produces:
 - application/net.amadeus.miniapp.itineraries.v1+json
 schemes:
 - http
-- https
+#- https
 paths:
   /itineraries:
     get:
