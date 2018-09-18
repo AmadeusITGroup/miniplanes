@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/amadeusitgroup/miniapp/itinerary/restapi"
-	"github.com/amadeusitgroup/miniapp/itinerary/restapi/operations"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations"
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
 )

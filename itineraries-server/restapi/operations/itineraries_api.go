@@ -19,7 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/amadeusitgroup/miniapp/itinerary/restapi/operations/itineraries"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations/itineraries"
 )
 
 // NewItinerariesAPI creates a new Itineraries instance

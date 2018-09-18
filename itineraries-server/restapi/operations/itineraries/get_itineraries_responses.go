@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/amadeusitgroup/miniapp/itinerary/models"
+	models "github.com/amadeusitgroup/miniapp/itineraries-server/models"
 )
 
 // GetItinerariesOKCode is the HTTP code returned for type GetItinerariesOK
@@ -58,6 +58,50 @@ func (o *GetItinerariesOK) WriteResponse(rw http.ResponseWriter, producer runtim
 		panic(err) // let the recovery middleware deal with this
 	}
 
+}
+
+// GetItinerariesBadRequestCode is the HTTP code returned for type GetItinerariesBadRequest
+const GetItinerariesBadRequestCode int = 400
+
+/*GetItinerariesBadRequest generic error response
+
+swagger:response getItinerariesBadRequest
+*/
+type GetItinerariesBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetItinerariesBadRequest creates GetItinerariesBadRequest with default headers values
+func NewGetItinerariesBadRequest() *GetItinerariesBadRequest {
+
+	return &GetItinerariesBadRequest{}
+}
+
+// WithPayload adds the payload to the get itineraries bad request response
+func (o *GetItinerariesBadRequest) WithPayload(payload *models.Error) *GetItinerariesBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get itineraries bad request response
+func (o *GetItinerariesBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetItinerariesBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 /*GetItinerariesDefault generic error response

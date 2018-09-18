@@ -29,6 +29,10 @@ paths:
             type: array
             items:
               $ref: "#/definitions/itinerary"
+        400:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
         default:
           description: generic error response
           schema:

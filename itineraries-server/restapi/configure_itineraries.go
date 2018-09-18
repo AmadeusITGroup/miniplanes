@@ -12,9 +12,9 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/amadeusitgroup/miniapp/itinerary/models"
-	"github.com/amadeusitgroup/miniapp/itinerary/restapi/operations"
-	"github.com/amadeusitgroup/miniapp/itinerary/restapi/operations/itineraries"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/models"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations/itineraries"
 )
 
 //go:generate swagger generate server --target .. --name itineraries --spec ../swagger/swagger.yaml

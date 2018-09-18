@@ -61,6 +61,12 @@ func init() {
               }
             }
           },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -154,6 +160,12 @@ func init() {
               "items": {
                 "$ref": "#/definitions/itinerary"
               }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
             }
           },
           "default": {
