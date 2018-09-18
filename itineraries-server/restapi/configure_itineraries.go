@@ -52,8 +52,11 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			mergedParam.To = params.To
 		}
 
-		if mergedParam.From == nil || mergedParam.To == nil {
-
+		if mergedParam.From == nil || mergedParam.To == nil || len(*mergedParam.From) == 0 || len(*mergedParam.To) == 0 {
+			fmt.Printf("hey...")
+			errorMessage := "needed two parameters"
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400,
+				Message: &errorMessage})
 		}
 
 		its := getItineraries(mergedParam.From, mergedParam.To)
