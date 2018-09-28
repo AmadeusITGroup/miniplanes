@@ -11,6 +11,36 @@ schemes:
 - http
 #- https
 paths:
+  /live:
+    get:
+      tags:
+      - liveness
+      responses:
+        200:
+          description: liveness probe
+        503:
+          description: if not live
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /ready:
+    get:
+      tags:
+      - readiness
+      responses:
+        200:
+          description: if ready 
+        503:
+          description: if not ready
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error" 
   /itineraries:
     get:
       tags:
@@ -37,7 +67,27 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+  /airlines:
+    get:
+      tags:
+        - airlines
+      responses:
+        200:
+          description: list of airlines
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/airline"
 definitions:
+  airline:
+    type: object
+    properties:
+      IATA:
+        type: string
+      Name:
+        type: string
+      Active:
+        type: boolean 
   itinerary:
     type: object
     properties:
@@ -46,14 +96,19 @@ definitions:
         format: int64
         readOnly: true
       description:
+        type: string
+      steps:
         type: array
         items:
           $ref: "#/definitions/itineraryStep"
         readOnly: true
-      completed:
-        type: boolean
   itineraryStep:
-    type: string
+    type: object
+    properties:
+      from: 
+        type: string
+      to:
+        type: string
   error:
     type: object
     required:

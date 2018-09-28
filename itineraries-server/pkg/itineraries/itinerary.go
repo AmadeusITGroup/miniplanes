@@ -1,43 +1,21 @@
 package itinerary
 
 import (
-	"fmt"
-	"log"
 	"math"
-	"net/http"
 
-	"github.com/gorilla/mux"
 	"gonum.org/v1/gonum/graph"
 	"gonum.org/v1/gonum/graph/path"
 	"gonum.org/v1/gonum/graph/simple"
 )
 
-// App contains the App string
-type App struct {
-	port string
-}
+var itineraryGraph *realGraph
 
-// NewApplication creates and initiliazes a backend App
-func NewApplication(port string) *App {
-	p := fmt.Sprintf(":%s", port)
-	return &App{
-		port: p,
-	}
-}
-
-// Run runs the backend application
-func (a *App) Run() {
-	r := mux.NewRouter()
-	if err := http.ListenAndServe(a.port, r); err != nil {
-		log.Fatal(err)
-	}
-}
-
+// AirportID is a string
 type AirportID string
 
-// Compute computes ittinerariies
+// Compute computes itineraries
 func Compute(itineraryGraph Graph, From, To AirportID, numberOfPaths int) [][]AirportID {
-	g := itineraryGraph.Load()
+	g := itineraryGraph.InnerGraph()
 
 	paths := path.YenKShortestPaths(g, numberOfPaths, itineraryGraph.AirportID2Node(From), itineraryGraph.AirportID2Node(To))
 	if paths == nil {
@@ -56,14 +34,24 @@ func Compute(itineraryGraph Graph, From, To AirportID, numberOfPaths int) [][]Ai
 	return solutions
 }
 
+// Graph represents operations we can do on itinerary graph
 type Graph interface {
-	Load() *simple.WeightedDirectedGraph
+	InnerGraph() *simple.WeightedDirectedGraph
 	AirportID2Node(AirportID) graph.Node
 	Node2AirportID(graph.Node) AirportID
 }
 
-func NewGraph() Graph {
-	return &realGraph{}
+// GetGraph creates the itinerary graph
+func GetGraph() Graph {
+	if itineraryGraph == nil {
+		itineraryGraph = &realGraph{
+			innerGraph:     simple.NewWeightedDirectedGraph(0, math.Inf(1)),
+			airportID2Node: make(map[AirportID]graph.Node, 0),
+			node2AirportID: make(map[graph.Node]AirportID, 0),
+		}
+		itineraryGraph.innerGraph = simple.NewWeightedDirectedGraph(0, math.Inf(1))
+	}
+	return itineraryGraph
 }
 
 type realGraph struct {
@@ -86,4 +74,12 @@ func (r *realGraph) AirportID2Node(id AirportID) graph.Node {
 
 func (r *realGraph) Node2AirportID(n graph.Node) AirportID {
 	return ""
+}
+
+func (r *realGraph) InnerGraph() *simple.WeightedDirectedGraph {
+	return r.innerGraph
+}
+
+func (r *realGraph) update() error {
+
 }

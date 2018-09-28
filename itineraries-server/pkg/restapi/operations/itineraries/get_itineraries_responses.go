@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/amadeusitgroup/miniapp/itineraries-server/models"
+	models "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
 )
 
 // GetItinerariesOKCode is the HTTP code returned for type GetItinerariesOK

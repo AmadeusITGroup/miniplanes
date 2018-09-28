@@ -75,6 +75,10 @@ $ mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --field
 $ mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
 ```
 
+## Scheduling
+
+First idea of scheduling comes from [https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx] but it has been largely modified.
+
 
 ## Docker mongodb
 
@@ -88,7 +92,7 @@ then to load your data you should something like
 
 ```shell
 $ mongoContainer=$(docker ps -aqf "name=mongodb")
-$ mongoIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mongoContainer) 
+$ mongoIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mongoContainer)
 $ sed -i "s/\\\\\"/'/g" data/airports.dat
 $ mongoimport -h $mongoIP -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 $ mongoimport -h $mongoIP -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat

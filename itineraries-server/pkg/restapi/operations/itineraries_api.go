@@ -19,7 +19,10 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations/itineraries"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airlines"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/itineraries"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/liveness"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/readiness"
 )
 
 // NewItinerariesAPI creates a new Itineraries instance
@@ -39,8 +42,17 @@ func NewItinerariesAPI(spec *loads.Document) *ItinerariesAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		AirlinesGetAirlinesHandler: airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
+			return middleware.NotImplemented("operation AirlinesGetAirlines has not yet been implemented")
+		}),
 		ItinerariesGetItinerariesHandler: itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation ItinerariesGetItineraries has not yet been implemented")
+		}),
+		LivenessGetLiveHandler: liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
+			return middleware.NotImplemented("operation LivenessGetLive has not yet been implemented")
+		}),
+		ReadinessGetReadyHandler: readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
+			return middleware.NotImplemented("operation ReadinessGetReady has not yet been implemented")
 		}),
 	}
 }
@@ -73,8 +85,14 @@ type ItinerariesAPI struct {
 	// JSONProducer registers a producer for a "application/net.amadeus.miniapp.itineraries.v1+json" mime type
 	JSONProducer runtime.Producer
 
+	// AirlinesGetAirlinesHandler sets the operation handler for the get airlines operation
+	AirlinesGetAirlinesHandler airlines.GetAirlinesHandler
 	// ItinerariesGetItinerariesHandler sets the operation handler for the get itineraries operation
 	ItinerariesGetItinerariesHandler itineraries.GetItinerariesHandler
+	// LivenessGetLiveHandler sets the operation handler for the get live operation
+	LivenessGetLiveHandler liveness.GetLiveHandler
+	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
+	ReadinessGetReadyHandler readiness.GetReadyHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -138,8 +156,20 @@ func (o *ItinerariesAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.AirlinesGetAirlinesHandler == nil {
+		unregistered = append(unregistered, "airlines.GetAirlinesHandler")
+	}
+
 	if o.ItinerariesGetItinerariesHandler == nil {
 		unregistered = append(unregistered, "itineraries.GetItinerariesHandler")
+	}
+
+	if o.LivenessGetLiveHandler == nil {
+		unregistered = append(unregistered, "liveness.GetLiveHandler")
+	}
+
+	if o.ReadinessGetReadyHandler == nil {
+		unregistered = append(unregistered, "readiness.GetReadyHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -243,7 +273,22 @@ func (o *ItinerariesAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/airlines"] = airlines.NewGetAirlines(o.context, o.AirlinesGetAirlinesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/itineraries"] = itineraries.NewGetItineraries(o.context, o.ItinerariesGetItinerariesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/live"] = liveness.NewGetLive(o.context, o.LivenessGetLiveHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/ready"] = readiness.NewGetReady(o.context, o.ReadinessGetReadyHandler)
 
 }
 

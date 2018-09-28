@@ -15,7 +15,7 @@ type App struct {
 	mongo string
 }
 
-// NewApplication creates and initiliazes a backend App
+// NewApplication creates and initializes a backend App
 func NewApplication(port, mongo string) *App {
 	p := fmt.Sprintf(":%s", port)
 	return &App{

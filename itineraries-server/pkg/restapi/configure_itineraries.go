@@ -8,13 +8,18 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/readiness"
+
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airlines"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/liveness"
+
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/models"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/restapi/operations/itineraries"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/itineraries"
 )
 
 //go:generate swagger generate server --target .. --name itineraries --spec ../swagger/swagger.yaml
@@ -23,9 +28,29 @@ func configureFlags(api *operations.ItinerariesAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
 }
 
-func getItineraries(from, to *string) []*models.Itinerary {
-	var itineraries []*models.Itinerary
+func makeDescription(from, to string) string {
+	return fmt.Sprintf("Itinerary: %s - %s", from, to)
+}
 
+func getItineraries(from, to *string) []*models.Itinerary {
+	//itinerary.NewGraph()
+	var itineraries []*models.Itinerary
+	desc := makeDescription(*from, *to)
+
+	var steps []*models.ItineraryStep
+	s := &models.ItineraryStep{
+		From: "NCE",
+		To:   "JFK",
+	}
+	steps = append(steps, s)
+
+	i := &models.Itinerary{
+		Description: desc,
+		Steps:       steps,
+		Distance:    1,
+	}
+
+	itineraries = append(itineraries, i)
 	return itineraries
 }
 
@@ -43,6 +68,14 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
+		return liveness.NewGetLiveOK()
+	})
+
+	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
+		return readiness.NewGetReadyOK()
+	})
+
 	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
 		mergedParam := itineraries.NewGetItinerariesParams()
 		if params.From != nil {
@@ -52,22 +85,26 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			mergedParam.To = params.To
 		}
 
-		if mergedParam.From == nil || mergedParam.To == nil || len(*mergedParam.From) == 0 || len(*mergedParam.To) == 0 {
-			fmt.Printf("hey...")
-			errorMessage := "needed two parameters"
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400,
-				Message: &errorMessage})
+		if mergedParam.From == nil || len(*mergedParam.From) == 0 {
+			errorMessage := "Missing `from` parameter"
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400, Message: &errorMessage})
+		}
+		if mergedParam.To == nil || len(*mergedParam.To) == 0 {
+			errorMessage := "Missing 'to' parameter"
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400, Message: &errorMessage})
 		}
 
 		its := getItineraries(mergedParam.From, mergedParam.To)
 
 		fmt.Printf("Itinerary request: %q -> %q\n", *mergedParam.From, *mergedParam.To)
 		return itineraries.NewGetItinerariesOK().WithPayload(its)
-		//return middleware.NotImplemented("operation itineraries.GetItineraries has not yet been implemented")
+	})
+
+	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
+		return airlines.NewGetAirlinesOK()
 	})
 
 	api.ServerShutdown = func() {}
-
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
 

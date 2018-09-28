@@ -18,23 +18,23 @@ import (
 // swagger:model itinerary
 type Itinerary struct {
 
-	// completed
-	Completed bool `json:"completed,omitempty"`
-
 	// description
-	// Read Only: true
-	Description []ItineraryStep `json:"description"`
+	Description string `json:"description,omitempty"`
 
 	// distance
 	// Read Only: true
 	Distance int64 `json:"distance,omitempty"`
+
+	// steps
+	// Read Only: true
+	Steps []*ItineraryStep `json:"steps"`
 }
 
 // Validate validates this itinerary
 func (m *Itinerary) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateDescription(formats); err != nil {
+	if err := m.validateSteps(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -44,19 +44,24 @@ func (m *Itinerary) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Itinerary) validateDescription(formats strfmt.Registry) error {
+func (m *Itinerary) validateSteps(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Description) { // not required
+	if swag.IsZero(m.Steps) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.Description); i++ {
+	for i := 0; i < len(m.Steps); i++ {
+		if swag.IsZero(m.Steps[i]) { // not required
+			continue
+		}
 
-		if err := m.Description[i].Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("description" + "." + strconv.Itoa(i))
+		if m.Steps[i] != nil {
+			if err := m.Steps[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("steps" + "." + strconv.Itoa(i))
+				}
+				return err
 			}
-			return err
 		}
 
 	}

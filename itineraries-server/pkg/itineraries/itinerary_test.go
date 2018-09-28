@@ -1,7 +1,6 @@
 package itinerary
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 	"testing"
@@ -24,8 +23,7 @@ func (l *graphMock) Node2AirportID(n graph.Node) AirportID {
 	return l.node2AirportID[n]
 }
 
-func (l *graphMock) Load() *simple.WeightedDirectedGraph {
-	fmt.Printf("mock load...")
+func (l *graphMock) InnerGraph() *simple.WeightedDirectedGraph {
 	l.innerGraph = simple.NewWeightedDirectedGraph(0, math.Inf(1))
 	l.airportID2Node = make(map[AirportID]graph.Node, 0)
 	l.airportID2Node["C"] = simple.Node('C')

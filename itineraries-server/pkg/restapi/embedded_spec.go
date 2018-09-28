@@ -34,6 +34,24 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
+    "/airlines": {
+      "get": {
+        "tags": [
+          "airlines"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of airlines",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/airline"
+              }
+            }
+          }
+        }
+      }
+    },
     "/itineraries": {
       "get": {
         "tags": [
@@ -75,9 +93,71 @@ func init() {
           }
         }
       }
+    },
+    "/live": {
+      "get": {
+        "tags": [
+          "liveness"
+        ],
+        "responses": {
+          "200": {
+            "description": "liveness probe"
+          },
+          "503": {
+            "description": "if not live",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "readiness"
+        ],
+        "responses": {
+          "200": {
+            "description": "if ready"
+          },
+          "503": {
+            "description": "if not ready",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "airline": {
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        },
+        "IATA": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -96,25 +176,33 @@ func init() {
     "itinerary": {
       "type": "object",
       "properties": {
-        "completed": {
-          "type": "boolean"
-        },
         "description": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/itineraryStep"
-          },
-          "readOnly": true
+          "type": "string"
         },
         "distance": {
           "type": "integer",
           "format": "int64",
           "readOnly": true
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/itineraryStep"
+          },
+          "readOnly": true
         }
       }
     },
     "itineraryStep": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        }
+      }
     }
   }
 }`))
@@ -135,6 +223,24 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
+    "/airlines": {
+      "get": {
+        "tags": [
+          "airlines"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of airlines",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/airline"
+              }
+            }
+          }
+        }
+      }
+    },
     "/itineraries": {
       "get": {
         "tags": [
@@ -176,9 +282,71 @@ func init() {
           }
         }
       }
+    },
+    "/live": {
+      "get": {
+        "tags": [
+          "liveness"
+        ],
+        "responses": {
+          "200": {
+            "description": "liveness probe"
+          },
+          "503": {
+            "description": "if not live",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "readiness"
+        ],
+        "responses": {
+          "200": {
+            "description": "if ready"
+          },
+          "503": {
+            "description": "if not ready",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "airline": {
+      "type": "object",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        },
+        "IATA": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -197,25 +365,33 @@ func init() {
     "itinerary": {
       "type": "object",
       "properties": {
-        "completed": {
-          "type": "boolean"
-        },
         "description": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/itineraryStep"
-          },
-          "readOnly": true
+          "type": "string"
         },
         "distance": {
           "type": "integer",
           "format": "int64",
           "readOnly": true
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/itineraryStep"
+          },
+          "readOnly": true
         }
       }
     },
     "itineraryStep": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        }
+      }
     }
   }
 }`))
