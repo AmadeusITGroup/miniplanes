@@ -135,20 +135,13 @@ func push(w http.ResponseWriter, resource string) {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("HomeHandler 1")
 	push(w, "/static/style.css")
-	fmt.Println("HomeHandler 2")
 	push(w, "/static/navigation_bar.css")
-	fmt.Println("HomeHandler 3")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Println("HomeHandler 4")
 	fullData := map[string]interface{}{
 		"NavigationBar": template.HTML(navigationBarHTML),
 	}
-	fmt.Println("HomeHandler 5")
 	render(w, r, homepageTpl, "homepage_view", fullData)
-	fmt.Println("HomeHandler 6")
-
 }
 
 // SecondHandler renders the second view template
@@ -156,7 +149,6 @@ func SecondHandler(w http.ResponseWriter, r *http.Request) {
 	push(w, "/static/style.css")
 	push(w, "/static/navigation_bar.css")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 	fullData := map[string]interface{}{
 		"NavigationBar": template.HTML(navigationBarHTML),
 	}
