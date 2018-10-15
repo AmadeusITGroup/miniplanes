@@ -16,7 +16,7 @@ import (
 // GetReadyOKCode is the HTTP code returned for type GetReadyOK
 const GetReadyOKCode int = 200
 
-/*GetReadyOK if ready
+/*GetReadyOK readiness probe
 
 swagger:response getReadyOK
 */

@@ -1,0 +1,11 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font: 16px Arial;
+  }
+
+h1, h2, h3, h4, h5 {
+    text-align: center;
+}

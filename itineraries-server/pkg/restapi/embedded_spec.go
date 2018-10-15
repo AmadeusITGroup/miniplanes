@@ -36,6 +36,9 @@ func init() {
   "paths": {
     "/airlines": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "tags": [
           "airlines"
         ],
@@ -52,8 +55,44 @@ func init() {
         }
       }
     },
+    "/airports": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "airports"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of airports",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/airport"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/itineraries": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "tags": [
           "itineraries"
         ],
@@ -104,7 +143,7 @@ func init() {
             "description": "liveness probe"
           },
           "503": {
-            "description": "if not live",
+            "description": "if not alive",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -125,7 +164,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "if ready"
+            "description": "readiness probe"
           },
           "503": {
             "description": "if not ready",
@@ -152,6 +191,29 @@ func init() {
         },
         "IATA": {
           "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      }
+    },
+    "airport": {
+      "type": "object",
+      "properties": {
+        "City": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "IATA": {
+          "type": "string"
+        },
+        "Latitude": {
+          "type": "number"
+        },
+        "Longitude": {
+          "type": "number"
         },
         "Name": {
           "type": "string"
@@ -225,6 +287,9 @@ func init() {
   "paths": {
     "/airlines": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "tags": [
           "airlines"
         ],
@@ -241,8 +306,44 @@ func init() {
         }
       }
     },
+    "/airports": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "airports"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of airports",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/airport"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/itineraries": {
       "get": {
+        "produces": [
+          "application/json"
+        ],
         "tags": [
           "itineraries"
         ],
@@ -293,7 +394,7 @@ func init() {
             "description": "liveness probe"
           },
           "503": {
-            "description": "if not live",
+            "description": "if not alive",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -314,7 +415,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "if ready"
+            "description": "readiness probe"
           },
           "503": {
             "description": "if not ready",
@@ -341,6 +442,29 @@ func init() {
         },
         "IATA": {
           "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      }
+    },
+    "airport": {
+      "type": "object",
+      "properties": {
+        "City": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "IATA": {
+          "type": "string"
+        },
+        "Latitude": {
+          "type": "number"
+        },
+        "Longitude": {
+          "type": "number"
         },
         "Name": {
           "type": "string"

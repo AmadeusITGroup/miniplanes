@@ -40,7 +40,7 @@ func (o *GetLiveOK) WriteResponse(rw http.ResponseWriter, producer runtime.Produ
 // GetLiveServiceUnavailableCode is the HTTP code returned for type GetLiveServiceUnavailable
 const GetLiveServiceUnavailableCode int = 503
 
-/*GetLiveServiceUnavailable if not live
+/*GetLiveServiceUnavailable if not alive
 
 swagger:response getLiveServiceUnavailable
 */

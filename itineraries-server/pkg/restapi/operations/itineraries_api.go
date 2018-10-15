@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airlines"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airports"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/readiness"
@@ -44,6 +45,9 @@ func NewItinerariesAPI(spec *loads.Document) *ItinerariesAPI {
 		JSONProducer:        runtime.JSONProducer(),
 		AirlinesGetAirlinesHandler: airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
 			return middleware.NotImplemented("operation AirlinesGetAirlines has not yet been implemented")
+		}),
+		AirportsGetAirportsHandler: airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
+			return middleware.NotImplemented("operation AirportsGetAirports has not yet been implemented")
 		}),
 		ItinerariesGetItinerariesHandler: itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
 			return middleware.NotImplemented("operation ItinerariesGetItineraries has not yet been implemented")
@@ -82,11 +86,13 @@ type ItinerariesAPI struct {
 	// JSONConsumer registers a consumer for a "application/net.amadeus.miniapp.itineraries.v1+json" mime type
 	JSONConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for a "application/net.amadeus.miniapp.itineraries.v1+json" mime type
+	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
 	// AirlinesGetAirlinesHandler sets the operation handler for the get airlines operation
 	AirlinesGetAirlinesHandler airlines.GetAirlinesHandler
+	// AirportsGetAirportsHandler sets the operation handler for the get airports operation
+	AirportsGetAirportsHandler airports.GetAirportsHandler
 	// ItinerariesGetItinerariesHandler sets the operation handler for the get itineraries operation
 	ItinerariesGetItinerariesHandler itineraries.GetItinerariesHandler
 	// LivenessGetLiveHandler sets the operation handler for the get live operation
@@ -160,6 +166,10 @@ func (o *ItinerariesAPI) Validate() error {
 		unregistered = append(unregistered, "airlines.GetAirlinesHandler")
 	}
 
+	if o.AirportsGetAirportsHandler == nil {
+		unregistered = append(unregistered, "airports.GetAirportsHandler")
+	}
+
 	if o.ItinerariesGetItinerariesHandler == nil {
 		unregistered = append(unregistered, "itineraries.GetItinerariesHandler")
 	}
@@ -225,6 +235,9 @@ func (o *ItinerariesAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 	for _, mt := range mediaTypes {
 		switch mt {
 
+		case "application/json":
+			result["application/json"] = o.JSONProducer
+
 		case "application/net.amadeus.miniapp.itineraries.v1+json":
 			result["application/net.amadeus.miniapp.itineraries.v1+json"] = o.JSONProducer
 
@@ -274,6 +287,11 @@ func (o *ItinerariesAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/airlines"] = airlines.NewGetAirlines(o.context, o.AirlinesGetAirlinesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/airports"] = airports.NewGetAirports(o.context, o.AirportsGetAirportsHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

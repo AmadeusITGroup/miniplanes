@@ -19,7 +19,7 @@ paths:
         200:
           description: liveness probe
         503:
-          description: if not live
+          description: if not alive
           schema:
             $ref: "#/definitions/error"
         default:
@@ -32,7 +32,7 @@ paths:
       - readiness
       responses:
         200:
-          description: if ready 
+          description: readiness probe
         503:
           description: if not ready
           schema:
@@ -45,6 +45,8 @@ paths:
     get:
       tags:
         - itineraries
+      produces:
+        - application/json
       parameters:
         - name: from
           in: query
@@ -71,6 +73,8 @@ paths:
     get:
       tags:
         - airlines
+      produces:
+        - application/json
       responses:
         200:
           description: list of airlines
@@ -78,6 +82,27 @@ paths:
             type: array
             items:
               $ref: "#/definitions/airline"
+  /airports:
+    get:
+      tags:
+        - airports
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of airports
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/airport"
+        400:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
 definitions:
   airline:
     type: object
@@ -87,7 +112,22 @@ definitions:
       Name:
         type: string
       Active:
-        type: boolean 
+        type: boolean
+  airport:
+    type: object
+    properties:
+      IATA:
+        type: string
+      Name:
+        type: string
+      City:
+        type: string
+      Country:
+        type: string
+      Latitude:
+        type: number
+      Longitude:
+        type: number
   itinerary:
     type: object
     properties:

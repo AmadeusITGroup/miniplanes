@@ -3,13 +3,12 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
-	"math"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"sync"
 	"time"
 
@@ -20,8 +19,7 @@ import (
 // Templates
 var navigationBarHTML string
 var homepageTpl *template.Template
-var secondViewTpl *template.Template
-var thirdViewTpl *template.Template
+var adminViewTpl *template.Template
 
 func init() {
 	navigationBarHTML = assets.MustAssetString("templates/navigation_bar.html")
@@ -29,12 +27,8 @@ func init() {
 	homepageHTML := assets.MustAssetString("templates/index.html")
 	homepageTpl = template.Must(template.New("homepage_view").Parse(homepageHTML))
 
-	secondViewHTML := assets.MustAssetString("templates/second_view.html")
-	secondViewTpl = template.Must(template.New("second_view").Parse(secondViewHTML))
-
-	thirdViewFuncMap := ThirdViewFormattingFuncMap()
-	thirdViewHTML := assets.MustAssetString("templates/third_view.html")
-	thirdViewTpl = template.Must(template.New("third_view").Funcs(thirdViewFuncMap).Parse(thirdViewHTML))
+	adminViewHTML := assets.MustAssetString("templates/admin_view.html")
+	adminViewTpl = template.Must(template.New("admin_view").Parse(adminViewHTML))
 }
 
 // Config provides basic configuration
@@ -59,8 +53,8 @@ func Start(cfg Config) *HTMLServer {
 	// Setup Handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/", HomeHandler)
-	router.HandleFunc("/second", SecondHandler)
-	router.HandleFunc("/third/{number}", ThirdHandler)
+	router.HandleFunc("/admin", AdminHandler)
+	router.HandleFunc("/airports", AirportsHandler)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Create the HTML Server
@@ -100,14 +94,12 @@ func (htmlServer *HTMLServer) Stop() error {
 	// and completing all inflight requests
 	if err := htmlServer.server.Shutdown(ctx); err != nil {
 		fmt.Printf("Error shutting down: %v", err)
-
 		// Looks like we timed out on the graceful shutdown. Force close.
 		//		if err := htmlServer.server.Close(); err != nil {
 		//			fmt.Printf("\nHTMLServer : Service stopping : Error=%v\n", err)
 		//			return err
 		//		}
 	}
-
 	// Wait for the listener to report that it is closed.
 	htmlServer.wg.Wait()
 	fmt.Printf("\nHTMLServer : Stopped\n")
@@ -134,6 +126,7 @@ func push(w http.ResponseWriter, resource string) {
 	}
 }
 
+// HomeHandler handles the home which is the flight research common user
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	push(w, "/static/style.css")
 	push(w, "/static/navigation_bar.css")
@@ -144,52 +137,36 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	render(w, r, homepageTpl, "homepage_view", fullData)
 }
 
-// SecondHandler renders the second view template
-func SecondHandler(w http.ResponseWriter, r *http.Request) {
+// AdminHandler renders the admin view template
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	push(w, "/static/style.css")
 	push(w, "/static/navigation_bar.css")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fullData := map[string]interface{}{
 		"NavigationBar": template.HTML(navigationBarHTML),
 	}
-	render(w, r, secondViewTpl, "second_view", fullData)
+	render(w, r, adminViewTpl, "admin_view", fullData)
 }
 
-// ThirdHandler renders the third view template
-func ThirdHandler(w http.ResponseWriter, r *http.Request) {
-	push(w, "/static/style.css")
-	push(w, "/static/navigation_bar.css")
-	push(w, "/static/third_view.css")
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+type FrontEndAirports struct {
+	IATA     string `json:"iata"`
+	CityName string `json:"city"`
+	Country  string `json:"country"`
+}
 
-	var queryString string
-	pathVariables := mux.Vars(r)
-	queryNumber, err := strconv.Atoi(pathVariables["number"])
+// AirportsHandler handles the airports
+func AirportsHandler(w http.ResponseWriter, r *http.Request) {
+	airports := FrontEndAirports{}
+	data, err := json.Marshal(airports)
 	if err != nil {
-		queryString = pathVariables["number"]
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 - Something bad happened!"))
+		return
 	}
-	fullData := map[string]interface{}{
-		"NavigationBar": template.HTML(navigationBarHTML),
-		"Number":        queryNumber,
-		"StringQuery":   queryString,
-	}
-	render(w, r, thirdViewTpl, "third_view", fullData)
-}
 
-// ThirdViewFormattingFuncMap returns a map of functions
-// that will be used by the Third View template
-func ThirdViewFormattingFuncMap() template.FuncMap {
-	return template.FuncMap{
-		"formatOddOrEven": formatOddOrEven,
-	}
-}
-
-func formatOddOrEven(number int) string {
-	remainder := int(math.Abs(float64(number))) % 2
-	if remainder == 1 {
-		return "Odd"
-	}
-	return "Even"
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 }
 
 func main() {

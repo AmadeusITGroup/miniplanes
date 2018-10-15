@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
@@ -47,7 +48,7 @@ type route struct {
 	Equipment            string        `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
 }
 
-type aiport struct {
+type airport struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
 	AirportID string        `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
 	Name      string        `json:"name" bson:"name"`           //Name of airport. May or may not contain the City name.
@@ -55,8 +56,8 @@ type aiport struct {
 	Country   string        `json:"country" bson:"country"`     // Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
 	IATA      string        `json:"IATA" bson:"IATA"`           //3-letter IATA code. Null if not assigned/unknown.
 	ICAO      string        `json:"ICAO" bson:"ICAO"`           //4-letter ICAO code. Null if not assigned.
-	Latitude  string        `json:"latitude" bson:"latitude"`   //Decimal degrees, usually to six significant digits. Negative is South, positive is North.
-	Longitude string        `json:"longitude" bson:"longitude"` //Decimal degrees, usually to six significant digits. Negative is West, positive is East.
+	Latitude  float64       `json:"latitude" bson:"latitude"`   //Decimal degrees, usually to six significant digits. Negative is South, positive is North.
+	Longitude float64       `json:"longitude" bson:"longitude"` //Decimal degrees, usually to six significant digits. Negative is West, positive is East.
 	Altitude  string        `json:"altitude" bson:"altitude"`   //In feet.
 	Timezone  string        `json:"timezone" bson:"timezone"`   //Hours offset from UTC. Fractional hours are expressed as decimals, eg. India is 5.5.
 	DST       string        `json:"DST" bson:"DST"`             //Daylight savings time. One of E (Europe), A (US/Canada), S (South America), O (Australia), Z (New Zealand), N (None) or U (Unknown). See also: Help: Time
@@ -65,7 +66,7 @@ type aiport struct {
 	Source    string        `json:"source" bson:"source"`       //Source of this data. "OurAirports" for data sourced from OurAirports, "Legacy" for old data not matched to OurAirports (mostly DAFIF), "User" for unverified user contributions. In airports.csv, only source=OurAirports is included.
 }
 
-func HandleReadAirlines(w http.ResponseWriter, r *http.Request) {
+func GetAirlines(w http.ResponseWriter, r *http.Request) {
 	db, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
@@ -85,7 +86,7 @@ func HandleReadAirlines(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleReadRoutes(w http.ResponseWriter, r *http.Request) {
+func GetRoutes(w http.ResponseWriter, r *http.Request) {
 	db, err := mgo.Dial("localhost")
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
@@ -105,26 +106,36 @@ func HandleReadRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleReadAirports(w http.ResponseWriter, r *http.Request) {
+// GetAirports get airports from DB
+func GetAirports() ([]*models.Airport, error) {
 	//db := context.Get(r, "database").(*mgo.Session)
 	db, err := mgo.Dial("localhost")
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
 	}
 	defer db.Close() // clean up when we’re done
-	var airports []*aiport
+	var (
+		dbAirports []*airport
+		airports   []*models.Airport
+	)
 	if err := db.DB(dbName).C(airportsCollection).
-		Find(nil).Sort("-when").Limit(100).All(&airports); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		Find(nil).Sort("-when").Limit(100).All(&dbAirports); err != nil {
+		return airports, err
 	}
+
 	// write it out
-	if err := json.NewEncoder(w).Encode(airports); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	//if err := json.NewEncoder(w).Encode(dbAirports); err != nil {
+	//	http.Error(w, err.Error(), http.StatusInternalServerError)
+	//	return airports, err
+	//}
+
+	for _, a := range dbAirports {
+		airports = append(airports, &models.Airport{IATA: a.IATA, City: a.City, Country: a.Country, Latitude: a.Latitude, Longitude: a.Longitude, Name: a.Name})
 	}
+	return airports, nil
 }
 
+// Get
 func HandleInsert(w http.ResponseWriter, r *http.Request) {
 	db := context.Get(r, "database").(*mgo.Session)
 	// decode the request body

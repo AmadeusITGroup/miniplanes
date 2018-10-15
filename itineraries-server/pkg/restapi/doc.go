@@ -15,7 +15,7 @@ needs to add a description
     - application/net.amadeus.miniapp.itineraries.v1+json
 
     Produces:
-    - application/net.amadeus.miniapp.itineraries.v1+json
+    - application/json
 
 swagger:meta
 */

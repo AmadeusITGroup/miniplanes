@@ -15,9 +15,17 @@ build-itineraries-server: output
 gen-itineraries-server:
 	cd itineraries-server/swagger && swagger generate server --target ../pkg --name itineraries --spec ./swagger.yaml
 
-build-ui: output
+build-ui: $(OUTPUTDIR)
 	cd ui && go-bindata -o=assets/bindata.go --nocompress --nometadata --pkg=assets templates/... static/...
 	go build -o $(OUTPUTDIR)/ui ui/cmd/main.go
 
 clean: $(OUTPUTDIR)
 	rm -rf $(OUTPUTDIR)
+
+
+#TMP target for local tests
+start-ui: ${OUTPUTDIR}
+	cd ui && ./ui
+
+start-itineraries-server: $(OUTPUTDIR)
+	output/itineraries-server --port=41807
