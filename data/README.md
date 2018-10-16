@@ -73,11 +73,12 @@ same for _airlines_ and _routes_ but no clean-up needed.
 ```shell
 $ mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
 $ mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+$ mongoimport -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 ```
 
 ## Scheduling
 
-First idea of scheduling comes from [https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx] but it has been largely modified.
+First idea of scheduling comes from [https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx] but it has been largely modified (unluckily in a non producible way).
 
 
 ## Docker mongodb
@@ -97,4 +98,6 @@ $ sed -i "s/\\\\\"/'/g" data/airports.dat
 $ mongoimport -h $mongoIP -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 $ mongoimport -h $mongoIP -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
 $ mongoimport -h $mongoIP -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+$ mongoimport -h $mongoIP -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
+
 ```
