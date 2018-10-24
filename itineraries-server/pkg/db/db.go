@@ -17,13 +17,14 @@ import (
 var mongoHost string
 
 const (
-	dbName             = "miniapp"
-	routesCollection   = "routes"
-	airportsCollection = "airports"
-	airlinesCollection = "airlines"
+	dbName              = "miniapp"
+	routesCollection    = "routes"
+	airportsCollection  = "airports"
+	airlinesCollection  = "airlines"
+	schedulesCollection = "schedules"
 )
 
-type airline struct {
+type Airline struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
 	AirlineID string        `json:"airlineID" bson:"airlineID"` // Unique OpenFlights identifier for this airline.
 	Name      string        `json:"name" bson:"name"`           // Name of the airline.
@@ -35,7 +36,7 @@ type airline struct {
 	Active    string        `json:"active" bson:"active"`       //"Y" if the airline is or has until recently been operational, "N" if it is defunct. This field is not reliable: in particular, major airlines that stopped flying long ago, but have not had their IATA code reassigned (eg. Ansett/AN), will incorrectly show as "Y".
 }
 
-type route struct {
+type Route struct {
 	ID                   bson.ObjectId `json:"id" bson:"_id"`
 	Airline              string        `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
 	AirlineID            string        `json:"airlineID" bson:"airlineID"`                       // Unique OpenFlights identifier for this airline.
@@ -48,9 +49,9 @@ type route struct {
 	Equipment            string        `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
 }
 
-type airport struct {
+type Airport struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
-	AirportID string        `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
+	AirportID int64         `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
 	Name      string        `json:"name" bson:"name"`           //Name of airport. May or may not contain the City name.
 	City      string        `json:"city" bson:"city"`           // Main city served by airport. May be spelled differently from Name.
 	Country   string        `json:"country" bson:"country"`     // Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
@@ -66,6 +67,37 @@ type airport struct {
 	Source    string        `json:"source" bson:"source"`       //Source of this data. "OurAirports" for data sourced from OurAirports, "Legacy" for old data not matched to OurAirports (mostly DAFIF), "User" for unverified user contributions. In airports.csv, only source=OurAirports is included.
 }
 
+type Schedule struct {
+	ID               bson.ObjectId `json:"id" bson:"_id"`
+	Origin           int64         `json:"origin" bson:"origin"`
+	Destination      int64         `json:"destination" bson:"destination"`
+	FlightNumber     string        `json:"flightNumber" bson:"flightNumber"`
+	OperatingCarrier string        `json:"operatingCarrier" bson:"operatingCarrier"`
+	DaysOperated     string        `json:"daysOperated" bson:"daysOperated"`
+	Departure        string        `json:"departure" bson:"departure"`
+	Arrival          string        `json:"arrival" bson:"arrival"`
+}
+
+func GetSchedules() ([]*Schedule, error) {
+	db, err := mgo.Dial("localhost:27017")
+	if err != nil {
+		log.Fatal("cannot dial mongo", err)
+	}
+	defer db.Close() // clean up when we’re done
+	//db := context.Get(r, "database").(*mgo.Session)
+	var schedules []*Schedule
+	if err := db.DB(dbName).C(schedulesCollection).Find(nil).All(&schedules); err != nil {
+		return []*Schedule{}, err
+	}
+
+	for i := range schedules {
+		fmt.Println(schedules[i])
+	}
+
+	// write it out
+	return schedules, nil
+}
+
 func GetAirlines(w http.ResponseWriter, r *http.Request) {
 	db, err := mgo.Dial("localhost:27017")
 	if err != nil {
@@ -73,9 +105,9 @@ func GetAirlines(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close() // clean up when we’re done
 	//db := context.Get(r, "database").(*mgo.Session)
-	var airlines []*airline
+	var airlines []*Airline
 	if err := db.DB(dbName).C(airlinesCollection).
-		Find(nil).Sort("-when").Limit(100).All(&airlines); err != nil {
+		Find(nil).All(&airlines); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -93,7 +125,7 @@ func GetRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close() // clean up when we’re done
 	//db := context.Get(r, "database").(*mgo.Session)
-	var routes []*route
+	var routes []*Route
 	if err := db.DB(dbName).C(routesCollection).
 		Find(nil).Sort("-when").Limit(100).All(&routes); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -106,40 +138,37 @@ func GetRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetAirports get airports from DB
-func GetAirports() ([]*models.Airport, error) {
-	//db := context.Get(r, "database").(*mgo.Session)
+func getDbAirports() ([]*Airport, error) {
+	var (
+		dbAirports []*Airport
+	)
 	db, err := mgo.Dial("localhost")
 	if err != nil {
-		log.Fatal("cannot dial mongo: ", err)
+		return dbAirports, err
 	}
 	defer db.Close() // clean up when we’re done
-	var (
-		dbAirports []*airport
-		airports   []*models.Airport
-	)
-	if err := db.DB(dbName).C(airportsCollection).
-		Find(nil).Sort("-when").Limit(100).All(&dbAirports); err != nil {
+	err = db.DB(dbName).C(airportsCollection).Find(nil).All(&dbAirports)
+	return dbAirports, err
+}
+
+// GetAirports get airports from DB
+func GetAirports() ([]*models.Airport, error) {
+	airports := []*models.Airport{}
+	dbAirports, err := getDbAirports()
+	if err != nil {
 		return airports, err
 	}
-
-	// write it out
-	//if err := json.NewEncoder(w).Encode(dbAirports); err != nil {
-	//	http.Error(w, err.Error(), http.StatusInternalServerError)
-	//	return airports, err
-	//}
-
 	for _, a := range dbAirports {
-		airports = append(airports, &models.Airport{IATA: a.IATA, City: a.City, Country: a.Country, Latitude: a.Latitude, Longitude: a.Longitude, Name: a.Name})
+		airports = append(airports, &models.Airport{ID: a.AirportID, IATA: a.IATA, City: a.City, Country: a.Country, Latitude: a.Latitude, Longitude: a.Longitude, Name: a.Name})
 	}
 	return airports, nil
 }
 
-// Get
+// HandleInsert
 func HandleInsert(w http.ResponseWriter, r *http.Request) {
 	db := context.Get(r, "database").(*mgo.Session)
 	// decode the request body
-	var c airline
+	var c Airline
 	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

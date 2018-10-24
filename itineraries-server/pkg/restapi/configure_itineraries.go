@@ -18,6 +18,7 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
+	itinerary_utils "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/itineraries"
@@ -33,26 +34,37 @@ func makeDescription(from, to string) string {
 	return fmt.Sprintf("Itinerary: %s - %s", from, to)
 }
 
-func getItineraries(from, to *string) []*models.Itinerary {
-	//itinerary.NewGraph()
+func getItineraries(from, to *string) ([]*models.Itinerary, error) {
+	itineraryGraph, err := itinerary_utils.NewGraph()
+	if err != nil {
+	}
+	maxNumberOfPaths := 10
+	From := "NCE"
+	To := "JFK"
+	solutions, err := itineraryGraph.Compute(From, To, maxNumberOfPaths)
 	var itineraries []*models.Itinerary
-	desc := makeDescription(*from, *to)
-
-	var steps []*models.ItineraryStep
-	s := &models.ItineraryStep{
-		From: "NCE",
-		To:   "JFK",
+	if err != nil {
+		return itineraries, err
 	}
-	steps = append(steps, s)
-
-	i := &models.Itinerary{
-		Description: desc,
-		Steps:       steps,
-		Distance:    1,
+	for _, solution := range solutions {
+		var steps []*models.ItineraryStep
+		for _, segment := range solution {
+			s := &models.ItineraryStep{
+				From: string(segment.FromAirport),
+				To:   string(segment.ToAirport),
+			}
+			steps = append(steps, s)
+		}
+		if len(steps) != 0 {
+			i := &models.Itinerary{
+				Description: makeDescription(*from, *to),
+				Steps:       steps,
+				Distance:    1,
+			}
+			itineraries = append(itineraries, i)
+		}
 	}
-
-	itineraries = append(itineraries, i)
-	return itineraries
+	return itineraries, nil
 }
 
 func configureAPI(api *operations.ItinerariesAPI) http.Handler {
@@ -88,16 +100,22 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 
 		if mergedParam.From == nil || len(*mergedParam.From) == 0 {
 			errorMessage := "Missing `from` parameter"
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400, Message: &errorMessage})
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
 		}
 		if mergedParam.To == nil || len(*mergedParam.To) == 0 {
 			errorMessage := "Missing 'to' parameter"
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: 400, Message: &errorMessage})
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
 		}
 
-		its := getItineraries(mergedParam.From, mergedParam.To)
-
-		fmt.Printf("Itinerary request: %q -> %q\n", *mergedParam.From, *mergedParam.To)
+		its, err := getItineraries(mergedParam.From, mergedParam.To)
+		if err != nil {
+			errorMessage := fmt.Sprintf("Cannot get itineraries: %v", err)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		if len(its) == 0 {
+			errorMessage := fmt.Sprintf("No itineraries found")
+			return itineraries.NewGetItinerariesNotFound().WithPayload(&models.Error{Code: http.StatusNotFound, Message: &errorMessage})
+		}
 		return itineraries.NewGetItinerariesOK().WithPayload(its)
 	})
 
@@ -110,7 +128,7 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airports: %v", err)
-			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: 400, Message: &message})
+			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		return airports.NewGetAirportsOK().WithPayload(aps)
 	})

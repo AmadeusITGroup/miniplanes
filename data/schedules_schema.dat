@@ -1,7 +1,7 @@
-Origin
-Destination
-FlightNumber
-OperatingCarrier
-DaysOperated
-Departure
-Arrival
+origin
+destination
+flightNumber
+operatingCarrier
+daysOperated
+departure
+arrival

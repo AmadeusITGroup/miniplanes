@@ -24,6 +24,9 @@ type Airport struct {
 	// i a t a
 	IATA string `json:"IATA,omitempty"`
 
+	// ID
+	ID int64 `json:"ID,omitempty"`
+
 	// latitude
 	Latitude float64 `json:"Latitude,omitempty"`
 

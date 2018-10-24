@@ -59,7 +59,7 @@ miniapp.routes
 To import data we do
 
 
-## Local monogdb
+## Local mongodb
 
 cleanup openflight airports file:
 

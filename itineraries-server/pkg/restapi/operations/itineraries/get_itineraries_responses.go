@@ -104,6 +104,50 @@ func (o *GetItinerariesBadRequest) WriteResponse(rw http.ResponseWriter, produce
 	}
 }
 
+// GetItinerariesNotFoundCode is the HTTP code returned for type GetItinerariesNotFound
+const GetItinerariesNotFoundCode int = 404
+
+/*GetItinerariesNotFound not found
+
+swagger:response getItinerariesNotFound
+*/
+type GetItinerariesNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetItinerariesNotFound creates GetItinerariesNotFound with default headers values
+func NewGetItinerariesNotFound() *GetItinerariesNotFound {
+
+	return &GetItinerariesNotFound{}
+}
+
+// WithPayload adds the payload to the get itineraries not found response
+func (o *GetItinerariesNotFound) WithPayload(payload *models.Error) *GetItinerariesNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get itineraries not found response
+func (o *GetItinerariesNotFound) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetItinerariesNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 /*GetItinerariesDefault generic error response
 
 swagger:response getItinerariesDefault

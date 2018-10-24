@@ -65,6 +65,10 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+        404:
+          description: not found
+          schema:
+            $ref: "#/definitions/error"
         default:
           description: generic error response
           schema:
@@ -116,6 +120,8 @@ definitions:
   airport:
     type: object
     properties:
+      ID:
+        type: integer
       IATA:
         type: string
       Name:

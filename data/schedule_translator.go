@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/globalsign/mgo"
@@ -14,8 +15,8 @@ import (
 )
 
 type CVSFileSchedule struct {
-	Origin      string
-	Destination string
+	Origin      int64
+	Destination int64
 	//Via              string
 	FlightNumber     string
 	OperatingCarrier string
@@ -28,8 +29,8 @@ type CVSFileSchedule struct {
 
 func (s *CVSFileSchedule) ToStrings() []string {
 	return []string{
-		s.Origin,
-		s.Destination,
+		strconv.Itoa(int(s.Origin)),
+		strconv.Itoa(int(s.Destination)),
 		s.FlightNumber,
 		s.OperatingCarrier,
 		s.DaysOperated,
@@ -40,7 +41,7 @@ func (s *CVSFileSchedule) ToStrings() []string {
 
 type airport struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
-	AirportID string        `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
+	AirportID int64         `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
 	Name      string        `json:"name" bson:"name"`           //Name of airport. May or may not contain the City name.
 	City      string        `json:"city" bson:"city"`           // Main city served by airport. May be spelled differently from Name.
 	Country   string        `json:"country" bson:"country"`     // Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
@@ -61,6 +62,7 @@ type airportMap struct {
 	PseudoName string        `json:"pseudoName" bson:"pseudoName"`
 	Name       string        `json:"name" bson:"name"`
 	IATA       string        `json:"IATA" bson:"IATA"`
+	AirportID  int64         `json:"airportID" bson:"airportID:"`
 }
 
 const (
@@ -71,33 +73,33 @@ const (
 	airportsMapCollection = "airportsmap"
 )
 
-func findAirportID(airportName string, airports []*airport) (string, error) {
+func findAirportID(airportName string, airports []*airport) (int64, error) {
 	for i := range airports {
 		if airportName == airports[i].Name {
 			return airports[i].AirportID, nil
 		}
 	}
-	return "", fmt.Errorf("couldn't find airport %q", airportName)
+	return 0, fmt.Errorf("couldn't find airport %q", airportName)
 }
 
-func getIATACodeFromName(airports []*airport, airportsMap []*airportMap, airportName string) (string, error) {
+func getIDFromName(airports []*airport, airportsMap []*airportMap, airportName string) (int64, error) {
 	if len(airportName) == 0 {
-		return "", fmt.Errorf("Empty airport name given")
+		return 0, fmt.Errorf("Empty airport name given")
 	}
 	for _, a := range airports {
 		if airportName == a.Name {
-			if len(a.IATA) == 0 {
-				log.Fatalf("Empty IATA code for %q", a.Name)
+			if a.AirportID == 0 {
+				log.Fatalf("1 Empty IATA code for %q", a.Name)
 			}
-			return a.IATA, nil
+			return a.AirportID, nil
 		}
 	}
 	for _, a := range airportsMap {
 		if airportName == a.Name {
-			if len(a.IATA) == 0 {
-				log.Fatalf("Empty IATA code for in airportMap %q", a.Name)
+			if a.AirportID == 0 {
+				log.Fatalf("2 Empty IATA code for in airportMap %q", a.Name)
 			}
-			return a.IATA, nil
+			return a.AirportID, nil
 		}
 	}
 
@@ -105,24 +107,24 @@ func getIATACodeFromName(airports []*airport, airportsMap []*airportMap, airport
 	withAirport := airportName + " Airport"
 	for _, a := range airports {
 		if withAirport == a.Name {
-			if len(a.IATA) == 0 {
-				log.Fatalf("Empty IATA code for in airportMap %q", a.Name)
+			if a.AirportID == 0 {
+				log.Fatalf("3 Empty IATA code for in airportMap %q", a.Name)
 			}
-			return a.IATA, nil
+			return a.AirportID, nil
 		}
 	}
 
 	// with City
 	for _, a := range airports {
 		if airportName == a.City {
-			if len(a.IATA) == 0 {
-				log.Fatalf("Empty IATA code for %q", a.Name)
+			if a.AirportID == 0 {
+				log.Fatalf("4 Empty IATA code for %q", a.Name)
 			}
 		}
-		return a.IATA, nil
+		return a.AirportID, nil
 	}
 
-	return "", fmt.Errorf("can't find IATA code for %q", airportName)
+	return 0, fmt.Errorf("can't find code for %q", airportName)
 }
 
 type byCityName []*airport
@@ -170,13 +172,13 @@ func main() {
 			r[7] = "1234567"
 		}
 
-		origin, err := getIATACodeFromName(airports, airportsMap, r[0])
+		origin, err := getIDFromName(airports, airportsMap, r[0])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Origin. Cannot obtain IATA code for %q\n", r[0])
 			continue
 		}
 
-		destination, err := getIATACodeFromName(airports, airportsMap, r[2])
+		destination, err := getIDFromName(airports, airportsMap, r[2])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Destination. Cannot obtain IATA code for %q -> %#v\n", r[2], r)
 			continue

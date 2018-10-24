@@ -1,4 +1,4 @@
-package itinerary
+package itineraries
 
 import (
 	"math"
@@ -84,7 +84,6 @@ func TestCompute(t *testing.T) {
 	}
 
 	loader := &graphMock{}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Compute(loader, tt.args.From, tt.args.To, tt.args.numberOfPaths); !reflect.DeepEqual(got, tt.want) {

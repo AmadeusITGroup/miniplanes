@@ -124,6 +124,12 @@ func init() {
               "$ref": "#/definitions/error"
             }
           },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -208,6 +214,9 @@ func init() {
         },
         "IATA": {
           "type": "string"
+        },
+        "ID": {
+          "type": "integer"
         },
         "Latitude": {
           "type": "number"
@@ -375,6 +384,12 @@ func init() {
               "$ref": "#/definitions/error"
             }
           },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -459,6 +474,9 @@ func init() {
         },
         "IATA": {
           "type": "string"
+        },
+        "ID": {
+          "type": "integer"
         },
         "Latitude": {
           "type": "number"
