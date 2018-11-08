@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-airlines
+spec:
+  template:
+    metadata:
+      name: import-airlines
+    spec:
+      containers:
+      - name: airlines-importer
+        image: localhost:5000/importer
+        command:
+         - "bin/bash"
+         - "-c"
+         - "mongoimport --host=mongo.default.svc.cluster.local -d miniapp -c airlines --type csv --file airlines.dat --fieldFile=airlines_schema.dat"
+      restartPolicy: Never

@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-schedules
+spec:
+  template:
+    metadata:
+      name: import-schedules
+    spec:
+      containers:
+      - name: schedules-importer
+        image: localhost:5000/importer
+        command:
+         - "bin/bash"
+         - "-c"
+         - "mongoimport --host=mongo.default.svc.cluster.local -d miniapp -c schedules --type csv --file schedules.dat --fieldFile=schedules_schema.dat"
+      restartPolicy: Never

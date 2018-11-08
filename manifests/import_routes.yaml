@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-routes
+spec:
+  template:
+    metadata:
+      name: import-routes
+    spec:
+      containers:
+      - name: routes-importer
+        image: localhost:5000/importer
+        command:
+         - "bin/bash"
+         - "-c"
+         - "mongoimport --host=mongo.default.svc.cluster.local -d miniapp -c routes --type csv --file routes.dat --fieldFile=routes_schema.dat"
+      restartPolicy: Never

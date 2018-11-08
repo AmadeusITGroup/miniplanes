@@ -1,9 +1,20 @@
-## How to inject data in DB (locally)
+# `miniapp`: a synthetic workload to test Federation-v2
 
+
+# How to install it
+
+
+
+## How to inject data in DB (locally)
 
 `backend` exposes the REST API for the server DB
 
-##To deploy in minikube
+
+## To deploy it locally
+
+TODO fill this
+
+## To deploy in minikube
 
 ### Create a local registry
 
@@ -27,7 +38,7 @@ $ minikube ssh && curl localhost:5000
 $
 ```
 
-### Deploy and populate mongo
+### Deploy mongo
 
 First of all you need `Mongo` in minikube
 
@@ -38,7 +49,9 @@ $ kubectl create secret generic shared-bootstrap-data --from-file=internal-auth-
 $ kubectl apply -f manifests/mongo.yaml
 ```
 
-and the deployed mongo can be locally forwarded via
+
+once you have deployed mongo it can be locally forwarded via something like
+
 
 ```shell
 $ MYPORT=9999 #your unused port should be here
@@ -49,7 +62,6 @@ Forwarding from [::1]:9999 -> 27017
 
 Now you can populate mongo using the `9999` port (for example). Evertime you run this command the port number may change.
 
-
 ```shell
 $ mongoimport --port=${MYPORT} -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 $ mongoimport --port=${MYPORT} -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
@@ -58,3 +70,23 @@ $ mongoimport --port=${MYPORT} -d miniapp -c schedules --type csv --file data/sc
 ```
 
 Now your mongo db should be populated.
+
+Otherwise you can populate using `jobs` defined in `.../manifests/import_*.yaml`.
+First you need to build the docker image in `.../data/`
+
+```shell
+$ docker build . importer
+$ kubectl port-forward --namespace kube-system $(kubectl get pods -n kube-system -l=k8s-app=kube-registry,version=v0 -o=jsonpath='{.items[0].metadata.name}') 5000:5000
+$ docker push importer
+```
+
+and after 
+
+```shell
+$ kubectl create -f import_airports.yaml
+$ kubectl create -f import_airlines.yaml
+$ kubectl create -f import_routes.yaml
+$ kubectl create -f import_schedules.yaml
+```
+
+the mongo db should be populated.
