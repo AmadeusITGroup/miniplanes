@@ -67,6 +67,14 @@ func getItineraries(from, to *string) ([]*models.Itinerary, error) {
 	return itineraries, nil
 }
 
+func isAlive() bool {
+	return true // TODO: fill it
+}
+
+func isReady() bool {
+	return true // TODO: fill it
+}
+
 func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
@@ -82,11 +90,21 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		return liveness.NewGetLiveOK()
+		var r middleware.Responder
+		r = liveness.NewGetLiveServiceUnavailable()
+		if isAlive() {
+			r = liveness.NewGetLiveOK()
+		}
+		return r
 	})
 
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		return readiness.NewGetReadyOK()
+		var r middleware.Responder
+		r = readiness.NewGetReadyServiceUnavailable()
+		if isReady() {
+			r = readiness.NewGetReadyOK()
+		}
+		return r
 	})
 
 	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {

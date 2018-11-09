@@ -39,6 +39,13 @@ func (o *GetItinerariesReader) ReadResponse(response runtime.ClientResponse, con
 		}
 		return nil, result
 
+	case 404:
+		result := NewGetItinerariesNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	default:
 		result := NewGetItinerariesDefault(response.Code())
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -96,6 +103,35 @@ func (o *GetItinerariesBadRequest) Error() string {
 }
 
 func (o *GetItinerariesBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetItinerariesNotFound creates a GetItinerariesNotFound with default headers values
+func NewGetItinerariesNotFound() *GetItinerariesNotFound {
+	return &GetItinerariesNotFound{}
+}
+
+/*GetItinerariesNotFound handles this case with default header values.
+
+not found
+*/
+type GetItinerariesNotFound struct {
+	Payload *models.Error
+}
+
+func (o *GetItinerariesNotFound) Error() string {
+	return fmt.Sprintf("[GET /itineraries][%d] getItinerariesNotFound  %+v", 404, o.Payload)
+}
+
+func (o *GetItinerariesNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

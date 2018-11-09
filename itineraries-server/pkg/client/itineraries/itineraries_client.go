@@ -38,7 +38,7 @@ func (a *Client) GetItineraries(params *GetItinerariesParams) (*GetItinerariesOK
 		Method:             "GET",
 		PathPattern:        "/itineraries",
 		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/net.amadeus.miniapp.itineraries.v1+json"},
+		ConsumesMediaTypes: []string{""},
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetItinerariesReader{formats: a.formats},

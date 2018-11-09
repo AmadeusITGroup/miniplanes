@@ -83,7 +83,7 @@ type ItinerariesAPI struct {
 	// It has a default implemention in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
-	// JSONConsumer registers a consumer for a "application/net.amadeus.miniapp.itineraries.v1+json" mime type
+	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
 
 	// JSONProducer registers a producer for a "application/json" mime type
@@ -215,8 +215,8 @@ func (o *ItinerariesAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Co
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "application/net.amadeus.miniapp.itineraries.v1+json":
-			result["application/net.amadeus.miniapp.itineraries.v1+json"] = o.JSONConsumer
+		case "application/json":
+			result["application/json"] = o.JSONConsumer
 
 		}
 
@@ -237,9 +237,6 @@ func (o *ItinerariesAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 
 		case "application/json":
 			result["application/json"] = o.JSONProducer
-
-		case "application/net.amadeus.miniapp.itineraries.v1+json":
-			result["application/net.amadeus.miniapp.itineraries.v1+json"] = o.JSONProducer
 
 		}
 

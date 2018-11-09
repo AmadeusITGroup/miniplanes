@@ -18,12 +18,6 @@ var (
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
-  "consumes": [
-    "application/net.amadeus.miniapp.itineraries.v1+json"
-  ],
-  "produces": [
-    "application/net.amadeus.miniapp.itineraries.v1+json"
-  ],
   "schemes": [
     "http"
   ],
@@ -278,12 +272,6 @@ func init() {
   }
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
-  "consumes": [
-    "application/net.amadeus.miniapp.itineraries.v1+json"
-  ],
-  "produces": [
-    "application/net.amadeus.miniapp.itineraries.v1+json"
-  ],
   "schemes": [
     "http"
   ],

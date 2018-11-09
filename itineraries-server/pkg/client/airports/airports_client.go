@@ -38,7 +38,7 @@ func (a *Client) GetAirports(params *GetAirportsParams) (*GetAirportsOK, error) 
 		Method:             "GET",
 		PathPattern:        "/airports",
 		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/net.amadeus.miniapp.itineraries.v1+json"},
+		ConsumesMediaTypes: []string{""},
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetAirportsReader{formats: a.formats},

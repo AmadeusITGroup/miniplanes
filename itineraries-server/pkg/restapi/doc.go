@@ -12,7 +12,7 @@ needs to add a description
     Version: 1.0.0
 
     Consumes:
-    - application/net.amadeus.miniapp.itineraries.v1+json
+    - application/json
 
     Produces:
     - application/json
