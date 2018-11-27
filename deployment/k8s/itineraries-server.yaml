@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: itineraries-server-deployment
+  labels:
+    app: itineraries-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: itineraries-server
+  template:
+    metadata:
+      labels:
+        app: itineraries-server
+    spec:
+      containers:
+      - name: itineraries-server
+        image: localhost:5000/itineraries-server:latest
+        command: ["/itineraries-server"]
+        args: ["--port=4838"]
+        ports:
+        - containerPort: 80

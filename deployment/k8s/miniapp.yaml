@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: itineraries-server-deployment
+  labels:
+    app: itineraries-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: itineraries-server
+  template:
+    metadata:
+      labels:
+        app: itineraries-server
+    spec:
+      containers:
+      - name: itineraries-server
+        image: localhost:5000/itineraries-server:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-deployment
+  labels:
+    app: ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - name: ui
+        image: localhost:5000/ui:latest
+        ports:
+        - containerPort: 80
+#
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: storage-deployment
+#  labels:
+#    app: storage
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: storage
+#  template:
+#    metadata:
+#      labels:
+#        app: storage
+#    spec:
+#      containers:
+#      - name: storage
+#        image: localhost:5000/storage:latest
+#        ports:
+#        - containerPort: 80

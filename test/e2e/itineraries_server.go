@@ -19,7 +19,7 @@ var _ = Describe("Itineraries Server", func() {
 				return err
 			}
 			return nil
-		}, "10s", "1s").ShouldNot(HaveOccurred()) // TODO: ShouldNot...
+		}, "10s", "1s").ShouldNot(HaveOccurred())
 	})
 
 	It("Should have readiness probe", func() {
@@ -33,4 +33,14 @@ var _ = Describe("Itineraries Server", func() {
 		}, "10s", "1s").ShouldNot(HaveOccurred())
 	})
 
+	It("Should have no itineraries", func() {
+		Eventually(func() error {
+			return nil
+		})
+	})
+	It("Should have one itinerary", func() {
+		Eventually(func() error {
+			return nil
+		})
+	})
 })
