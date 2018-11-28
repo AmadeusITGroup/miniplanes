@@ -1,0 +1,110 @@
+swagger: "2.0"
+info:
+  description: needs to add a description
+  title: miniapp storage
+  version: 1.0.0
+schemes:
+- http
+#- https
+paths:
+  /live:
+    get:
+      tags:
+      - liveness
+      responses:
+        200:
+          description: liveness probe
+        503:
+          description: if not alive
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /ready:
+    get:
+      tags:
+      - readiness
+      responses:
+        200:
+          description: readiness probe
+        503:
+          description: if not ready
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error" 
+  /airlines:
+    get:
+      tags:
+        - airlines
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of airlines
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/airline"
+  /airports:
+    get:
+      tags:
+        - airports
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of airports
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/airport"
+        400:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+definitions:
+  airline:
+    type: object
+    properties:
+      IATA:
+        type: string
+      Name:
+        type: string
+      Active:
+        type: boolean
+  airport:
+    type: object
+    properties:
+      ID:
+        type: integer
+      IATA:
+        type: string
+      Name:
+        type: string
+      City:
+        type: string
+      Country:
+        type: string
+      Latitude:
+        type: number
+      Longitude:
+        type: number
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string

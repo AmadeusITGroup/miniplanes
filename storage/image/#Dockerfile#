@@ -1,0 +1,8 @@
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /
+ADD itineraries-server .
+
+#ENTRYPOINT ["/storage"]
+#CMD ["/storage", "--host=mongo"--port=4838"]

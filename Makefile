@@ -1,30 +1,29 @@
 
-PREFIX=localhost:5000
+PREFIX=localhost:5000/
 TAG=latest
 
 all:
 
-OUTPUTDIR=output
+OUTPUTDIR=_output
 
 output:
 	mkdir -p $(OUTPUTDIR)
 
-#storage-validate-swagger:
-#	cd storage/swagger && swagger validate ./swagger.yaml
+storage-validate-swagger:
+	cd storage/swagger && swagger validate ./swagger.yaml
 
-#storage-build: output
-#	go build  -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
+storage-build: output
+	go build  -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
 
-#storage-image-build: storage-build
-#	cp -f $(OUTPUTDIR)/storage storage/image
-#	cd  storage/image && docker build .
+storage-image-build: storage-build
+	cp -f $(OUTPUTDIR)/storage storage/image
+	cd  storage/image && docker build .  -t $(PREFIX)storage:$(TAG) 
 
-#storage-generate-server:
-#	cd storage/swagger && swagger generate server --target ../pkg --name itineraries --spec ./swagger.yaml
+storage-generate-server:
+	cd storage/swagger && swagger generate server --target ../pkg --name storage --spec ./swagger.yaml
 
-#storage-generate-client:
-#	cd storage/swagger && swagger generate client --target ../pkg --name itineraries --spec ./swagger.yaml
-
+storage-generate-client:
+	cd storage/swagger && swagger generate client --target ../pkg --name storage --spec ./swagger.yaml
 
 itineraries-server-validate-swagger:
 	cd itineraries-server/swagger && swagger validate ./swagger.yaml
@@ -34,7 +33,7 @@ itineraries-server-build: output
 
 itineraries-server-image-build: itineraries-server-build
 	cp -f $(OUTPUTDIR)/itineraries-server itineraries-server/image
-	cd  itineraries-server/image && docker build . -t $(PREFIX)/itineraries-server:$(TAG) 
+	cd  itineraries-server/image && docker build . -t $(PREFIX)itineraries-server:$(TAG) 
 	rm -f itineraries-server/image/itineraries-server
 
 itineraries-server-generate-server:
@@ -49,7 +48,7 @@ ui-build: $(OUTPUTDIR)
 
 ui-image-build: ui-build
 	cp -f $(OUTPUTDIR)/ui ui/image
-	cd  ui/image && docker build . -t $(PREFIX)/ui:$(TAG) 
+	cd  ui/image && docker build . -t $(PREFIX)ui:$(TAG) 
 	rm -rf ui/image/ui
 
 
