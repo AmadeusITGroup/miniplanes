@@ -12,6 +12,10 @@ import (
 	flags "github.com/jessevdk/go-flags"
 )
 
+type StorageOptions struct {
+	StorageHost []bool `long:"storage-host" description:"Storage-end-point"`
+}
+
 func main() {
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

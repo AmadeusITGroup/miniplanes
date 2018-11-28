@@ -9,6 +9,7 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
 
 	"github.com/amadeusitgroup/miniapp/storage/pkg/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/restapi/operations/airlines"
@@ -19,8 +20,32 @@ import (
 
 //go:generate swagger generate server --target ../../pkg --name storage --spec ../swagger.yaml --exclude-main
 
+type myInfo struct {
+}
+
+var Info = myInfo{}
+
 func configureFlags(api *operations.StorageAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
+	/*api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{
+		swag.CommandLineOptionsGroup{
+			LongDescription:  "dario-long-description",
+			ShortDescription: "dario-short-description",
+			Options:          3,
+		},
+	}*/
+	/*
+		api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{
+			swag.CommandLineOptionsGroup{
+				LongDescription:  "DARIO__________________________________",
+				ShortDescription: "DARIO_______________________________",
+				Options:          &Info,
+			},
+		}*/
+	api.CommandLineOptionsGroups = append(api.CommandLineOptionsGroups, swag.CommandLineOptionsGroup{
+		LongDescription:  "DARIO__________________________________",
+		ShortDescription: "DARIO_______________________________",
+		Options:          &Info,
+	})
 }
 
 func configureAPI(api *operations.StorageAPI) http.Handler {
