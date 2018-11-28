@@ -17,7 +17,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/restapi/operations/readiness"
 )
 
-//go:generate swagger generate server --target ../../pkg --name storage --spec ../swagger.yaml
+//go:generate swagger generate server --target ../../pkg --name storage --spec ../swagger.yaml --exclude-main
 
 func configureFlags(api *operations.StorageAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
