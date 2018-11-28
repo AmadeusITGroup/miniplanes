@@ -20,7 +20,7 @@ storage-image-build: storage-build
 	cd  storage/image && docker build .  -t $(PREFIX)storage:$(TAG) 
 
 storage-generate-server:
-	cd storage/swagger && swagger generate server --target ../pkg  --flag-strategy pflags --name storage --exclude-main --spec ./swagger.yaml
+	cd storage/swagger && swagger generate server --target ../pkg  --flag-strategy pflag --exclude-main --name storage --spec ./swagger.yaml
 
 storage-generate-client:
 	cd storage/swagger && swagger generate client --target ../pkg --name storage --spec ./swagger.yaml
