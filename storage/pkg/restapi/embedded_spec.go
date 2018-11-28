@@ -24,7 +24,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "needs to add a description",
-    "title": "An Itineraries server application",
+    "title": "miniapp storage",
     "version": "1.0.0"
   },
   "paths": {
@@ -196,7 +196,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "needs to add a description",
-    "title": "An Itineraries server application",
+    "title": "miniapp storage",
     "version": "1.0.0"
   },
   "paths": {

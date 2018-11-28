@@ -27,7 +27,7 @@ func main() {
 	defer server.Shutdown()
 
 	parser := flags.NewParser(server, flags.Default)
-	parser.ShortDescription = "An Itineraries server application"
+	parser.ShortDescription = "miniapp storage"
 	parser.LongDescription = "needs to add a description"
 
 	server.ConfigureFlags()
