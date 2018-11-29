@@ -83,29 +83,64 @@ definitions:
   airline:
     type: object
     properties:
-      IATA:
+      AirlineID:
         type: string
       Name:
         type: string
+      Alias:
+        type: string
+      IATA:
+        type: string
+      ICAO:
+        type: string
+      Callsign:
+        type: string
+      Country:
+        type: string
       Active:
-        type: boolean
+        type: string
   airport:
     type: object
     properties:
-      ID:
+      AirportID:
         type: integer
-      IATA:
-        type: string
       Name:
         type: string
       City:
         type: string
       Country:
         type: string
+      IATA:
+        type: string
+      ICAO:
+        type: string
       Latitude:
         type: number
       Longitude:
         type: number
+      timezone:
+        type: string
+      DST:
+        type: string
+      TZ:
+        type: string
+  schedule:
+    type: object
+    properties:
+      Origin:
+        type: string
+      Destination:
+        type: string
+      FlightNumber:
+        type: string
+      OperatingCarrier:
+        type: string
+      DaysOperated:
+        type: string
+      Departure:
+        type: string
+      Arrival:
+        type: string
   error:
     type: object
     required:
