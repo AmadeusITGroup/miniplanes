@@ -28,60 +28,6 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
-    "/airlines": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "airlines"
-        ],
-        "responses": {
-          "200": {
-            "description": "list of airlines",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/airline"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/airports": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "airports"
-        ],
-        "responses": {
-          "200": {
-            "description": "list of airports",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/airport"
-              }
-            }
-          },
-          "400": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "default": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
     "/itineraries": {
       "get": {
         "produces": [
@@ -115,19 +61,19 @@ func init() {
           "400": {
             "description": "generic error response",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           },
           "404": {
             "description": "not found",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           },
           "default": {
             "description": "generic error response",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           }
         }
@@ -145,13 +91,13 @@ func init() {
           "503": {
             "description": "if not alive",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           },
           "default": {
             "description": "generic error response",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           }
         }
@@ -169,13 +115,13 @@ func init() {
           "503": {
             "description": "if not ready",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           },
           "default": {
             "description": "generic error response",
             "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/error"
             }
           }
         }
@@ -183,61 +129,6 @@ func init() {
     }
   },
   "definitions": {
-    "airline": {
-      "type": "object",
-      "properties": {
-        "Active": {
-          "type": "boolean"
-        },
-        "IATA": {
-          "type": "string"
-        },
-        "Name": {
-          "type": "string"
-        }
-      }
-    },
-    "airport": {
-      "type": "object",
-      "properties": {
-        "City": {
-          "type": "string"
-        },
-        "Country": {
-          "type": "string"
-        },
-        "IATA": {
-          "type": "string"
-        },
-        "ID": {
-          "type": "integer"
-        },
-        "Latitude": {
-          "type": "number"
-        },
-        "Longitude": {
-          "type": "number"
-        },
-        "Name": {
-          "type": "string"
-        }
-      }
-    },
-    "error": {
-      "type": "object",
-      "required": [
-        "message"
-      ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    },
     "itinerary": {
       "type": "object",
       "properties": {
@@ -282,60 +173,6 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
-    "/airlines": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "airlines"
-        ],
-        "responses": {
-          "200": {
-            "description": "list of airlines",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/airline"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/airports": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "airports"
-        ],
-        "responses": {
-          "200": {
-            "description": "list of airports",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/airport"
-              }
-            }
-          },
-          "400": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "default": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
     "/itineraries": {
       "get": {
         "produces": [
@@ -437,46 +274,6 @@ func init() {
     }
   },
   "definitions": {
-    "airline": {
-      "type": "object",
-      "properties": {
-        "Active": {
-          "type": "boolean"
-        },
-        "IATA": {
-          "type": "string"
-        },
-        "Name": {
-          "type": "string"
-        }
-      }
-    },
-    "airport": {
-      "type": "object",
-      "properties": {
-        "City": {
-          "type": "string"
-        },
-        "Country": {
-          "type": "string"
-        },
-        "IATA": {
-          "type": "string"
-        },
-        "ID": {
-          "type": "integer"
-        },
-        "Latitude": {
-          "type": "number"
-        },
-        "Longitude": {
-          "type": "number"
-        },
-        "Name": {
-          "type": "string"
-        }
-      }
-    },
     "error": {
       "type": "object",
       "required": [

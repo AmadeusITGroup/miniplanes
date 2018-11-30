@@ -8,9 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/db"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airlines"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/airports"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations/readiness"
 
@@ -135,20 +132,6 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			return itineraries.NewGetItinerariesNotFound().WithPayload(&models.Error{Code: http.StatusNotFound, Message: &errorMessage})
 		}
 		return itineraries.NewGetItinerariesOK().WithPayload(its)
-	})
-
-	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
-		return airlines.NewGetAirlinesOK()
-	})
-
-	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
-		aps, err := db.GetAirports()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			message := fmt.Sprintf("unable to retrieve airports: %v", err)
-			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		return airports.NewGetAirportsOK().WithPayload(aps)
 	})
 
 	api.ServerShutdown = func() {}

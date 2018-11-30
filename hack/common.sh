@@ -82,9 +82,9 @@ mongo_up_and_running() {
 
 local-registry_up_and_running() {
   nonrunningregistry=$(kubectl get pods -lk8s-app=kube-registry --field-selector=status.phase=Running -n kube-system 2> /dev/null)
-  if [ -z "$nonrunningregistry" ]
+  if [ -z "$runningregistry" ]
   then
-    echo 1 #no nonregistry found
+    echo 1 #no registry found
     return
   fi
   echo 0

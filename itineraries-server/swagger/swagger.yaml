@@ -17,11 +17,11 @@ paths:
         503:
           description: if not alive
           schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
         default:
           description: generic error response
           schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
   /ready:
     get:
       tags:
@@ -32,11 +32,11 @@ paths:
         503:
           description: if not ready
           schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
         default:
           description: generic error response
           schema:
-            $ref: "#/definitions/error" 
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error" 
   /itineraries:
     get:
       tags:
@@ -60,76 +60,16 @@ paths:
         400:
           description: generic error response
           schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
         404:
           description: not found
           schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
         default:
           description: generic error response
           schema:
-            $ref: "#/definitions/error"
-  /airlines:
-    get:
-      tags:
-        - airlines
-      produces:
-        - application/json
-      responses:
-        200:
-          description: list of airlines
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/airline"
-  /airports:
-    get:
-      tags:
-        - airports
-      produces:
-        - application/json
-      responses:
-        200:
-          description: list of airports
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/airport"
-        400:
-          description: generic error response
-          schema:
-            $ref: "#/definitions/error"
-        default:
-          description: generic error response
-          schema:
-            $ref: "#/definitions/error"
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
 definitions:
-  airline:
-    type: object
-    properties:
-      IATA:
-        type: string
-      Name:
-        type: string
-      Active:
-        type: boolean
-  airport:
-    type: object
-    properties:
-      ID:
-        type: integer
-      IATA:
-        type: string
-      Name:
-        type: string
-      City:
-        type: string
-      Country:
-        type: string
-      Latitude:
-        type: number
-      Longitude:
-        type: number
   itinerary:
     type: object
     properties:
@@ -150,14 +90,4 @@ definitions:
       from: 
         type: string
       to:
-        type: string
-  error:
-    type: object
-    required:
-      - message
-    properties:
-      code:
-        type: integer
-        format: int64
-      message:
         type: string

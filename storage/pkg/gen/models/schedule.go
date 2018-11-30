@@ -25,7 +25,7 @@ type Schedule struct {
 	Departure string `json:"Departure,omitempty"`
 
 	// destination
-	Destination string `json:"Destination,omitempty"`
+	Destination int64 `json:"Destination,omitempty"`
 
 	// flight number
 	FlightNumber string `json:"FlightNumber,omitempty"`
@@ -34,7 +34,7 @@ type Schedule struct {
 	OperatingCarrier string `json:"OperatingCarrier,omitempty"`
 
 	// origin
-	Origin string `json:"Origin,omitempty"`
+	Origin int64 `json:"Origin,omitempty"`
 }
 
 // Validate validates this schedule

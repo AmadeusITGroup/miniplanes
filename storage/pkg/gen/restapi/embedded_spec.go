@@ -27,6 +27,7 @@ func init() {
     "title": "miniapp storage",
     "version": "1.0.0"
   },
+  "host": "storage:33775",
   "paths": {
     "/airlines": {
       "get": {
@@ -272,7 +273,7 @@ func init() {
           "type": "string"
         },
         "Destination": {
-          "type": "string"
+          "type": "integer"
         },
         "FlightNumber": {
           "type": "string"
@@ -281,7 +282,7 @@ func init() {
           "type": "string"
         },
         "Origin": {
-          "type": "string"
+          "type": "integer"
         }
       }
     }
@@ -297,6 +298,7 @@ func init() {
     "title": "miniapp storage",
     "version": "1.0.0"
   },
+  "host": "storage:33775",
   "paths": {
     "/airlines": {
       "get": {
@@ -542,7 +544,7 @@ func init() {
           "type": "string"
         },
         "Destination": {
-          "type": "string"
+          "type": "integer"
         },
         "FlightNumber": {
           "type": "string"
@@ -551,7 +553,7 @@ func init() {
           "type": "string"
         },
         "Origin": {
-          "type": "string"
+          "type": "integer"
         }
       }
     }

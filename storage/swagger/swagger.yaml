@@ -3,6 +3,7 @@ info:
   description: needs to add a description
   title: miniapp storage
   version: 1.0.0
+host: storage:33775
 schemes:
 - http
 #- https
@@ -149,9 +150,9 @@ definitions:
     type: object
     properties:
       Origin:
-        type: string
+        type: integer
       Destination:
-        type: string
+        type: integer
       FlightNumber:
         type: string
       OperatingCarrier:

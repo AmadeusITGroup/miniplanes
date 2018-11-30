@@ -15,6 +15,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/readiness"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
 )
 
 // Default storage HTTP client.
@@ -23,7 +24,7 @@ var Default = NewHTTPClient(nil)
 const (
 	// DefaultHost is the default Host
 	// found in Meta (info) section of spec file
-	DefaultHost string = "localhost"
+	DefaultHost string = "storage:33775"
 	// DefaultBasePath is the default BasePath
 	// found in Meta (info) section of spec file
 	DefaultBasePath string = "/"
@@ -67,6 +68,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Storage {
 	cli.Liveness = liveness.New(transport, formats)
 
 	cli.Readiness = readiness.New(transport, formats)
+
+	cli.Schedules = schedules.New(transport, formats)
 
 	return cli
 }
@@ -120,6 +123,8 @@ type Storage struct {
 
 	Readiness *readiness.Client
 
+	Schedules *schedules.Client
+
 	Transport runtime.ClientTransport
 }
 
@@ -134,5 +139,7 @@ func (c *Storage) SetTransport(transport runtime.ClientTransport) {
 	c.Liveness.SetTransport(transport)
 
 	c.Readiness.SetTransport(transport)
+
+	c.Schedules.SetTransport(transport)
 
 }

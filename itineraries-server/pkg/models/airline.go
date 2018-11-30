@@ -16,10 +16,25 @@ import (
 type Airline struct {
 
 	// active
-	Active bool `json:"Active,omitempty"`
+	Active string `json:"Active,omitempty"`
+
+	// airline ID
+	AirlineID string `json:"AirlineID,omitempty"`
+
+	// alias
+	Alias string `json:"Alias,omitempty"`
+
+	// callsign
+	Callsign string `json:"Callsign,omitempty"`
+
+	// country
+	Country string `json:"Country,omitempty"`
 
 	// i a t a
 	IATA string `json:"IATA,omitempty"`
+
+	// i c a o
+	ICAO string `json:"ICAO,omitempty"`
 
 	// name
 	Name string `json:"Name,omitempty"`

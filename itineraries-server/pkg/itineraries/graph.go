@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/db"
+	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
+
 	"gonum.org/v1/gonum/graph"
 	"gonum.org/v1/gonum/graph/path"
 	"gonum.org/v1/gonum/graph/simple"
@@ -60,17 +61,24 @@ func NewGraph() (Graph, error) {
 		airportID2Node: make(map[int64]graph.Node, 0),
 		node2AirportID: make(map[graph.Node]int64, 0),
 	}
-
-	airports, err := db.GetAirports() // TODO: move to a REST call
+	airportsOK, err := storageclient.Default.Airports.GetAirports(nil)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't retrieve airports: %v", err)
+	}
+	airports := airportsOK.Payload
 	if err != nil {
 		return nil, fmt.Errorf("Unable to get airports: %v", err)
 	}
 	for _, a := range airports {
 		newNode := itineraryGraph.nodeAdder().NewNode()
-		itineraryGraph.airportID2Node[a.ID] = newNode
-		itineraryGraph.node2AirportID[newNode] = a.ID
+		itineraryGraph.airportID2Node[a.AirportID] = newNode
+		itineraryGraph.node2AirportID[newNode] = a.AirportID
 	}
-	schedules, err := db.GetSchedules() // TODO: move to a REST call
+	schedulesOK, err := storageclient.Default.Schedules.GetSchedules(nil)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't retrieve schedules: %v", err)
+	}
+	schedules := schedulesOK.Payload
 	if err != nil {
 		fmt.Printf("No schedules found...\n")
 		return nil, fmt.Errorf("unable to fetch schedules: %v", err)

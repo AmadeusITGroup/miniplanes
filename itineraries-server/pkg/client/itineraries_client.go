@@ -11,8 +11,6 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/client/airlines"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/client/airports"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/client/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/client/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/client/readiness"
@@ -60,10 +58,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Itinerarie
 
 	cli := new(Itineraries)
 	cli.Transport = transport
-
-	cli.Airlines = airlines.New(transport, formats)
-
-	cli.Airports = airports.New(transport, formats)
 
 	cli.Itineraries = itineraries.New(transport, formats)
 
@@ -115,10 +109,6 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // Itineraries is a client for itineraries
 type Itineraries struct {
-	Airlines *airlines.Client
-
-	Airports *airports.Client
-
 	Itineraries *itineraries.Client
 
 	Liveness *liveness.Client
@@ -131,10 +121,6 @@ type Itineraries struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *Itineraries) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-
-	c.Airlines.SetTransport(transport)
-
-	c.Airports.SetTransport(transport)
 
 	c.Itineraries.SetTransport(transport)
 

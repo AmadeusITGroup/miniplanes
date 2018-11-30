@@ -7,7 +7,7 @@ needs to add a description
 
     Schemes:
       http
-    Host: localhost
+    Host: storage:33775
     BasePath: /
     Version: 1.0.0
 

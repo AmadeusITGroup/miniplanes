@@ -1,5 +1,10 @@
 # Deploying in minikube
 
+The deployment in `minikube` is fully automatized.
+
+## TL/DR;
+
+## Step by step (troubles?)
 
 ## Create a local registry
 

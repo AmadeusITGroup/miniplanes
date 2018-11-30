@@ -15,17 +15,23 @@ import (
 // swagger:model airport
 type Airport struct {
 
+	// airport ID
+	AirportID int64 `json:"AirportID,omitempty"`
+
 	// city
 	City string `json:"City,omitempty"`
 
 	// country
 	Country string `json:"Country,omitempty"`
 
+	// d s t
+	DST string `json:"DST,omitempty"`
+
 	// i a t a
 	IATA string `json:"IATA,omitempty"`
 
-	// ID
-	ID int64 `json:"ID,omitempty"`
+	// i c a o
+	ICAO string `json:"ICAO,omitempty"`
 
 	// latitude
 	Latitude float64 `json:"Latitude,omitempty"`
@@ -35,6 +41,12 @@ type Airport struct {
 
 	// name
 	Name string `json:"Name,omitempty"`
+
+	// t z
+	TZ string `json:"TZ,omitempty"`
+
+	// timezone
+	Timezone string `json:"timezone,omitempty"`
 }
 
 // Validate validates this airport
