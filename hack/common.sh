@@ -3,6 +3,7 @@
 command -v kubectl >/dev/null 2>&1 || { echo >&2 "can't find kubectl.  Aborting."; exit 1; }
 command -v minikube >/dev/null 2>&1 || { echo >&2 "can't find minikube. Aborting."; exit 1; }
 command -v openssl >/dev/null 2>&1 || { echo >&2 "can't find openssl. Aborting."; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo >&2 "can't find curl. Aborting."; exit 1; }
 
 ROOTDIR=$(git rev-parse --show-toplevel)
 
@@ -80,13 +81,16 @@ mongo_up_and_running() {
 
 
 local-registry_up_and_running() {
-  nonrunningregistry=$(kubectl get pods -lk8s-app=kube-registry --field-selector=status.phase!=Running -n kube-system 2> /dev/null)
+  nonrunningregistry=$(kubectl get pods -lk8s-app=kube-registry --field-selector=status.phase=Running -n kube-system 2> /dev/null)
   if [ -z "$nonrunningregistry" ]
   then
-    echo 0 #no nonregistry found
+    echo 1 #no nonregistry found
     return
   fi
-  echo 1
+  echo 0
 }
 
-#mongo_is_populated() {}
+port_5000_forwaded() {
+  curl http://localhost:5000
+  echo $?
+}

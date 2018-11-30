@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
@@ -24,15 +26,23 @@ const (
 
 // MongoDB implemtns miniapp storage interface for MongoDB
 type MongoDB struct {
-	mongoEndPoint string
+	mongoHost string
+	mongoPort string
 }
 
-func NewMongoDB(endPoint string) *MongoDB {
-	return &MongoDB{mongoEndPoint: endPoint}
+func NewMongoDB(mongoHost string, mongoPort int) *MongoDB {
+	return &MongoDB{
+		mongoHost: mongoHost,
+		mongoPort: strconv.Itoa(mongoPort),
+	}
+}
+
+func (m *MongoDB) dialString() string {
+	return strings.Join([]string{m.mongoHost, m.mongoPort}, ":")
 }
 
 func (m *MongoDB) GetSchedules() ([]*Schedule, error) {
-	db, err := mgo.Dial("localhost:27017")
+	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
 	}
@@ -51,7 +61,7 @@ func (m *MongoDB) GetAirlines() ([]*Airline, error) {
 	var (
 		dbAirlines []*Airline
 	)
-	db, err := mgo.Dial("localhost")
+	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		return dbAirlines, err
 	}
@@ -61,7 +71,7 @@ func (m *MongoDB) GetAirlines() ([]*Airline, error) {
 }
 
 func (m *MongoDB) GetRoutes(w http.ResponseWriter, r *http.Request) {
-	db, err := mgo.Dial("localhost")
+	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
 	}
@@ -84,7 +94,7 @@ func (m *MongoDB) GetAirports() ([]*Airport, error) {
 	var (
 		dbAirports []*Airport
 	)
-	db, err := mgo.Dial("localhost")
+	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		return dbAirports, err
 	}

@@ -23,6 +23,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
 )
 
 // NewStorageAPI creates a new Storage instance
@@ -53,6 +54,9 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		}),
 		ReadinessGetReadyHandler: readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
 			return middleware.NotImplemented("operation ReadinessGetReady has not yet been implemented")
+		}),
+		SchedulesGetSchedulesHandler: schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesGetSchedules has not yet been implemented")
 		}),
 	}
 }
@@ -93,6 +97,8 @@ type StorageAPI struct {
 	LivenessGetLiveHandler liveness.GetLiveHandler
 	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
 	ReadinessGetReadyHandler readiness.GetReadyHandler
+	// SchedulesGetSchedulesHandler sets the operation handler for the get schedules operation
+	SchedulesGetSchedulesHandler schedules.GetSchedulesHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -170,6 +176,10 @@ func (o *StorageAPI) Validate() error {
 
 	if o.ReadinessGetReadyHandler == nil {
 		unregistered = append(unregistered, "readiness.GetReadyHandler")
+	}
+
+	if o.SchedulesGetSchedulesHandler == nil {
+		unregistered = append(unregistered, "schedules.GetSchedulesHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -289,6 +299,11 @@ func (o *StorageAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/ready"] = readiness.NewGetReady(o.context, o.ReadinessGetReadyHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/schedules"] = schedules.NewGetSchedules(o.context, o.SchedulesGetSchedulesHandler)
 
 }
 

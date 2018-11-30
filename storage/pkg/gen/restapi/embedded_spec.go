@@ -141,6 +141,39 @@ func init() {
           }
         }
       }
+    },
+    "/schedules": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of schedules",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/schedule"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -176,17 +209,23 @@ func init() {
     "airport": {
       "type": "object",
       "properties": {
+        "AirportID": {
+          "type": "integer"
+        },
         "City": {
           "type": "string"
         },
         "Country": {
           "type": "string"
         },
+        "DST": {
+          "type": "string"
+        },
         "IATA": {
           "type": "string"
         },
-        "ID": {
-          "type": "integer"
+        "ICAO": {
+          "type": "string"
         },
         "Latitude": {
           "type": "number"
@@ -195,6 +234,12 @@ func init() {
           "type": "number"
         },
         "Name": {
+          "type": "string"
+        },
+        "TZ": {
+          "type": "string"
+        },
+        "timezone": {
           "type": "string"
         }
       }
@@ -210,6 +255,32 @@ func init() {
           "format": "int64"
         },
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "Arrival": {
+          "type": "string"
+        },
+        "DaysOperated": {
+          "type": "string"
+        },
+        "Departure": {
+          "type": "string"
+        },
+        "Destination": {
+          "type": "string"
+        },
+        "FlightNumber": {
+          "type": "string"
+        },
+        "OperatingCarrier": {
+          "type": "string"
+        },
+        "Origin": {
           "type": "string"
         }
       }
@@ -340,6 +411,39 @@ func init() {
           }
         }
       }
+    },
+    "/schedules": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of schedules",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/schedule"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -375,17 +479,23 @@ func init() {
     "airport": {
       "type": "object",
       "properties": {
+        "AirportID": {
+          "type": "integer"
+        },
         "City": {
           "type": "string"
         },
         "Country": {
           "type": "string"
         },
+        "DST": {
+          "type": "string"
+        },
         "IATA": {
           "type": "string"
         },
-        "ID": {
-          "type": "integer"
+        "ICAO": {
+          "type": "string"
         },
         "Latitude": {
           "type": "number"
@@ -394,6 +504,12 @@ func init() {
           "type": "number"
         },
         "Name": {
+          "type": "string"
+        },
+        "TZ": {
+          "type": "string"
+        },
+        "timezone": {
           "type": "string"
         }
       }
@@ -409,6 +525,32 @@ func init() {
           "format": "int64"
         },
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "Arrival": {
+          "type": "string"
+        },
+        "DaysOperated": {
+          "type": "string"
+        },
+        "Departure": {
+          "type": "string"
+        },
+        "Destination": {
+          "type": "string"
+        },
+        "FlightNumber": {
+          "type": "string"
+        },
+        "OperatingCarrier": {
+          "type": "string"
+        },
+        "Origin": {
           "type": "string"
         }
       }

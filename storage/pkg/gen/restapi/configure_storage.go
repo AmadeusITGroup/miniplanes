@@ -20,6 +20,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name storage --spec ../swagger.yaml --exclude-main
@@ -57,7 +58,7 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	// Airlines
 	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
-		db := mongo.NewMongoDB("")
+		db := mongo.NewMongoDB(MongoHost, MongoPort)
 		dbAirlines, err := db.GetAirlines()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
@@ -75,42 +76,45 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	// Airports
 	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
-		db := mongo.NewMongoDB("")
+		db := mongo.NewMongoDB(MongoHost, MongoPort)
 		dbAirports, err := db.GetAirports()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airports: %v", err)
 			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
-
 		modAirports := []*models.Airport{}
 		for _, a := range dbAirports {
 			tmp := &models.Airport{}
 			copier.Copy(tmp, a)
 			modAirports = append(modAirports, tmp)
 		}
-
-		//return airports, nil
 		return airports.NewGetAirportsOK().WithPayload(modAirports)
 	})
 
-	// Routes
+	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
+		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")
+	})
+	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
+		return middleware.NotImplemented("operation readiness.GetReady has not yet been implemented")
+	})
 
 	// Schedules
-
-	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) (r middleware.Responder) {
-		r = liveness.NewGetLiveServiceUnavailable()
-		if isAlive() {
-			r = liveness.NewGetLiveOK()
+	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
+		db := mongo.NewMongoDB(MongoHost, MongoPort)
+		dbSchedules, err := db.GetSchedules()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			message := fmt.Sprintf("unable to retrieve airports: %v", err)
+			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
-		return r
-	})
-	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) (r middleware.Responder) {
-		r = readiness.NewGetReadyServiceUnavailable()
-		if isReady() {
-			r = readiness.NewGetReadyOK()
+		modSchedules := []*models.Schedule{}
+		for _, a := range dbSchedules {
+			tmp := &models.Schedule{}
+			copier.Copy(tmp, a)
+			modSchedules = append(modSchedules, tmp)
 		}
-		return r
+		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)
 	})
 
 	api.ServerShutdown = func() {}

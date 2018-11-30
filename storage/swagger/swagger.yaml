@@ -79,6 +79,27 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+  /schedules:
+    get:
+      tags:
+        - schedules
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of schedules
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/schedule"
+        400:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"          
 definitions:
   airline:
     type: object
