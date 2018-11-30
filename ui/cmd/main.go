@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
+	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/ui/assets"
 	"github.com/gorilla/mux"
 )
@@ -157,7 +157,7 @@ type FrontEndAirports struct {
 
 // AirportsHandler handles the airports
 func AirportsHandler(w http.ResponseWriter, r *http.Request) {
-	airports := []models.Airport{}
+	airports := []storagemodels.Airport{}
 	data, err := json.Marshal(airports)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

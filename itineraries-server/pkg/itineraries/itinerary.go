@@ -3,7 +3,7 @@ package itineraries
 import (
 	"fmt"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/models"
+	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 
 	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
 	//httptransport "github.com/go-openapi/runtime/client"
@@ -12,8 +12,8 @@ import (
 type IATACode string
 
 var (
-	airportID2Airports map[int64]*models.Airport
-	iata2Airports      map[string]*models.Airport
+	airportID2Airports map[int64]*storagemodels.Airport
+	iata2Airports      map[string]*storagemodels.Airport
 )
 
 func airportIDFromIATA(IATA string) (int64, error) {
