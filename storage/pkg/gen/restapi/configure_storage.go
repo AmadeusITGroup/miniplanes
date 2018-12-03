@@ -30,16 +30,7 @@ var (
 	MongoPort int
 )
 
-func configureFlags(api *operations.StorageAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
-}
-
-func isAlive() bool {
-	return true
-}
-
-func isReady() bool {
-	return true
+func configureFlags(*operations.StorageAPI) {
 }
 
 func configureAPI(api *operations.StorageAPI) http.Handler {
@@ -93,13 +84,24 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	})
 
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")
-	})
-	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		return middleware.NotImplemented("operation readiness.GetReady has not yet been implemented")
+		return liveness.NewGetLiveOK()
 	})
 
-	// Schedules
+	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
+		return readiness.NewGetReadyOK()
+	})
+
+	/*api.SchedulesGetRoutesHandler = schedules.GetRoutesHandlerFunc(func(params schedules.GetRoutesParams) middleware.Responder {
+		db := mongo.NewMongoDB(MongoHost, MongoPort)
+		dbRoutes, err := db.GetRoutes()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			message := fmt.Sprintf("unable to retrieve routes: %v", err)
+			return routes.NewGetRoutesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+		}
+		return middleware.NotImplemented("operation schedules.GetRoutes has not yet been implemented")
+	})*/
+
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
 		db := mongo.NewMongoDB(MongoHost, MongoPort)
 		dbSchedules, err := db.GetSchedules()
@@ -115,6 +117,9 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 			modSchedules = append(modSchedules, tmp)
 		}
 		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)
+	})
+	api.AddScheduleHandler = operations.AddScheduleHandlerFunc(func(params operations.AddScheduleParams) middleware.Responder {
+		return middleware.NotImplemented("operation .AddSchedule has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

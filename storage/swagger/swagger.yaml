@@ -80,6 +80,27 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+  /courses:
+    get:
+      tags:
+        - schedules
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of courses (routes)
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/course"
+        400:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
   /schedules:
     get:
       tags:
@@ -100,13 +121,56 @@ paths:
         default:
           description: generic error response
           schema:
-            $ref: "#/definitions/error"          
+            $ref: "#/definitions/error"
+    post:
+      description: "Createss a new schdule. Duplicates are not allowed"
+      operationId: "addSchedule"
+      produces: 
+        - "application/json"
+      parameters: 
+        - 
+          name: "schedule"
+          in: "body"
+          description: "Schedule"
+          required: true
+          schema: 
+            $ref: "#/definitions/schedule"
+      responses: 
+        "200":
+          description: "pet response"
+          schema: 
+            $ref: "#/definitions/schedule"
+        default: 
+          description: "unexpected error"
+          schema: 
+            $ref: "#/definitions/error"         
 definitions:
+  course:
+    type: object
+    properties:
+      Airline:
+        type: string
+      AirlineID:
+        type: integer
+      SourceAirport:
+        type: string
+      SourceAirportID:
+        type: integer
+      DestinationAirport:
+        type: string
+      DestinationAirportID:
+        type: integer
+      CodeShare:
+        type: string
+      Stops:
+        type: integer
+      Equipment:
+        type: string
   airline:
     type: object
     properties:
       AirlineID:
-        type: string
+        type: integer
       Name:
         type: string
       Alias:
@@ -148,6 +212,14 @@ definitions:
         type: string
   schedule:
     type: object
+    required:
+      - "Origin"
+      - "Destination"
+      - "FlightNumber"
+      - "OperatingCarrier"
+      - "DaysOperated"
+      - "Departure"
+      - "Arrival"
     properties:
       Origin:
         type: integer

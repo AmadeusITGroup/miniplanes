@@ -19,7 +19,7 @@ type Airline struct {
 	Active string `json:"Active,omitempty"`
 
 	// airline ID
-	AirlineID string `json:"AirlineID,omitempty"`
+	AirlineID int64 `json:"AirlineID,omitempty"`
 
 	// alias
 	Alias string `json:"Alias,omitempty"`

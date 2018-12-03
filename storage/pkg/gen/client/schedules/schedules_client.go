@@ -25,6 +25,34 @@ type Client struct {
 }
 
 /*
+GetCourses get courses API
+*/
+func (a *Client) GetCourses(params *GetCoursesParams) (*GetCoursesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetCoursesParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "GetCourses",
+		Method:             "GET",
+		PathPattern:        "/courses",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{""},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetCoursesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetCoursesOK), nil
+
+}
+
+/*
 GetSchedules get schedules API
 */
 func (a *Client) GetSchedules(params *GetSchedulesParams) (*GetSchedulesOK, error) {

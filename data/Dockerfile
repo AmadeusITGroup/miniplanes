@@ -6,11 +6,8 @@ ADD airlines.dat .
 ADD airports_schema.dat .
 ADD airports.dat .
 
-ADD routes_schema.dat .
-ADD routes.dat .
+ADD courses_schema.dat .
+ADD courses.dat .
 
 ADD schedules_schema.dat .
 ADD schedules.dat .
-
-
-

@@ -49,6 +49,9 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		AirportsGetAirportsHandler: airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
 			return middleware.NotImplemented("operation AirportsGetAirports has not yet been implemented")
 		}),
+		SchedulesGetCoursesHandler: schedules.GetCoursesHandlerFunc(func(params schedules.GetCoursesParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesGetCourses has not yet been implemented")
+		}),
 		LivenessGetLiveHandler: liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
 			return middleware.NotImplemented("operation LivenessGetLive has not yet been implemented")
 		}),
@@ -57,6 +60,9 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		}),
 		SchedulesGetSchedulesHandler: schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
 			return middleware.NotImplemented("operation SchedulesGetSchedules has not yet been implemented")
+		}),
+		AddScheduleHandler: AddScheduleHandlerFunc(func(params AddScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation AddSchedule has not yet been implemented")
 		}),
 	}
 }
@@ -93,12 +99,16 @@ type StorageAPI struct {
 	AirlinesGetAirlinesHandler airlines.GetAirlinesHandler
 	// AirportsGetAirportsHandler sets the operation handler for the get airports operation
 	AirportsGetAirportsHandler airports.GetAirportsHandler
+	// SchedulesGetCoursesHandler sets the operation handler for the get courses operation
+	SchedulesGetCoursesHandler schedules.GetCoursesHandler
 	// LivenessGetLiveHandler sets the operation handler for the get live operation
 	LivenessGetLiveHandler liveness.GetLiveHandler
 	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
 	ReadinessGetReadyHandler readiness.GetReadyHandler
 	// SchedulesGetSchedulesHandler sets the operation handler for the get schedules operation
 	SchedulesGetSchedulesHandler schedules.GetSchedulesHandler
+	// AddScheduleHandler sets the operation handler for the add schedule operation
+	AddScheduleHandler AddScheduleHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -170,6 +180,10 @@ func (o *StorageAPI) Validate() error {
 		unregistered = append(unregistered, "airports.GetAirportsHandler")
 	}
 
+	if o.SchedulesGetCoursesHandler == nil {
+		unregistered = append(unregistered, "schedules.GetCoursesHandler")
+	}
+
 	if o.LivenessGetLiveHandler == nil {
 		unregistered = append(unregistered, "liveness.GetLiveHandler")
 	}
@@ -180,6 +194,10 @@ func (o *StorageAPI) Validate() error {
 
 	if o.SchedulesGetSchedulesHandler == nil {
 		unregistered = append(unregistered, "schedules.GetSchedulesHandler")
+	}
+
+	if o.AddScheduleHandler == nil {
+		unregistered = append(unregistered, "AddScheduleHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -293,6 +311,11 @@ func (o *StorageAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/courses"] = schedules.NewGetCourses(o.context, o.SchedulesGetCoursesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/live"] = liveness.NewGetLive(o.context, o.LivenessGetLiveHandler)
 
 	if o.handlers["GET"] == nil {
@@ -304,6 +327,11 @@ func (o *StorageAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/schedules"] = schedules.NewGetSchedules(o.context, o.SchedulesGetSchedulesHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/schedules"] = NewAddSchedule(o.context, o.AddScheduleHandler)
 
 }
 

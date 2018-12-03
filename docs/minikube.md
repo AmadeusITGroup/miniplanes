@@ -81,4 +81,4 @@ $ kubectl create -f import_routes.yaml
 $ kubectl create -f import_schedules.yaml
 ```
 
-the mongo db should be populated.
+mongo db should be populated.

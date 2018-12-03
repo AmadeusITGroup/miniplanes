@@ -95,6 +95,39 @@ func init() {
         }
       }
     },
+    "/courses": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of courses (routes)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/course"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/live": {
       "get": {
         "tags": [
@@ -174,6 +207,38 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Createss a new schdule. Duplicates are not allowed",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "addSchedule",
+        "parameters": [
+          {
+            "description": "Schedule",
+            "name": "schedule",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     }
   },
@@ -185,7 +250,7 @@ func init() {
           "type": "string"
         },
         "AirlineID": {
-          "type": "string"
+          "type": "integer"
         },
         "Alias": {
           "type": "string"
@@ -245,6 +310,38 @@ func init() {
         }
       }
     },
+    "course": {
+      "type": "object",
+      "properties": {
+        "Airline": {
+          "type": "string"
+        },
+        "AirlineID": {
+          "type": "integer"
+        },
+        "CodeShare": {
+          "type": "string"
+        },
+        "DestinationAirport": {
+          "type": "string"
+        },
+        "DestinationAirportID": {
+          "type": "integer"
+        },
+        "Equipment": {
+          "type": "string"
+        },
+        "SourceAirport": {
+          "type": "string"
+        },
+        "SourceAirportID": {
+          "type": "integer"
+        },
+        "Stops": {
+          "type": "integer"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -262,6 +359,15 @@ func init() {
     },
     "schedule": {
       "type": "object",
+      "required": [
+        "Origin",
+        "Destination",
+        "FlightNumber",
+        "OperatingCarrier",
+        "DaysOperated",
+        "Departure",
+        "Arrival"
+      ],
       "properties": {
         "Arrival": {
           "type": "string"
@@ -366,6 +472,39 @@ func init() {
         }
       }
     },
+    "/courses": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of courses (routes)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/course"
+              }
+            }
+          },
+          "400": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/live": {
       "get": {
         "tags": [
@@ -445,6 +584,38 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Createss a new schdule. Duplicates are not allowed",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "addSchedule",
+        "parameters": [
+          {
+            "description": "Schedule",
+            "name": "schedule",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     }
   },
@@ -456,7 +627,7 @@ func init() {
           "type": "string"
         },
         "AirlineID": {
-          "type": "string"
+          "type": "integer"
         },
         "Alias": {
           "type": "string"
@@ -516,6 +687,38 @@ func init() {
         }
       }
     },
+    "course": {
+      "type": "object",
+      "properties": {
+        "Airline": {
+          "type": "string"
+        },
+        "AirlineID": {
+          "type": "integer"
+        },
+        "CodeShare": {
+          "type": "string"
+        },
+        "DestinationAirport": {
+          "type": "string"
+        },
+        "DestinationAirportID": {
+          "type": "integer"
+        },
+        "Equipment": {
+          "type": "string"
+        },
+        "SourceAirport": {
+          "type": "string"
+        },
+        "SourceAirportID": {
+          "type": "integer"
+        },
+        "Stops": {
+          "type": "integer"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -533,6 +736,15 @@ func init() {
     },
     "schedule": {
       "type": "object",
+      "required": [
+        "Origin",
+        "Destination",
+        "FlightNumber",
+        "OperatingCarrier",
+        "DaysOperated",
+        "Departure",
+        "Arrival"
+      ],
       "properties": {
         "Arrival": {
           "type": "string"

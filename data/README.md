@@ -54,7 +54,7 @@ In mongo we use miniapp DB. That it should be initialized.
 Mongo structure should be something like
 miniapp.airports
 miniapp.airlines
-miniapp.routes
+miniapp.courses
 
 To import data we do
 
@@ -68,11 +68,11 @@ $ sed -i "s/\\\\\"/'/g" data/airports.dat
 $ mongoimport -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 ```
 
-same for _airlines_ and _routes_ but no clean-up needed.
+same for _airlines_ and _courses_ but no clean-up needed.
 
 ```shell
 $ mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
-$ mongoimport -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+$ mongoimport -d miniapp -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
 $ mongoimport -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 ```
 
@@ -97,7 +97,7 @@ $ mongoIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}
 $ sed -i "s/\\\\\"/'/g" data/airports.dat
 $ mongoimport -h $mongoIP -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 $ mongoimport -h $mongoIP -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
-$ mongoimport -h $mongoIP -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
+$ mongoimport -h $mongoIP -d miniapp -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
 $ mongoimport -h $mongoIP -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 
 ```

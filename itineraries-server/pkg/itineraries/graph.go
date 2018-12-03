@@ -85,7 +85,7 @@ func NewGraph() (Graph, error) {
 	}
 	for _, s := range schedules {
 		fmt.Printf("Adding edge %d->%d\n", s.Origin, s.Destination)
-		e := simple.WeightedEdge{simple.Node(s.Origin), simple.Node(s.Destination), 1}
+		e := simple.WeightedEdge{simple.Node(*s.Origin), simple.Node(*s.Destination), 1}
 		itineraryGraph.edgeAdder().SetWeightedEdge(e)
 	}
 	return itineraryGraph, nil

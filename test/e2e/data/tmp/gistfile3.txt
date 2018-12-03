@@ -1,0 +1,2 @@
+137,"Air France",\N,"AF","AFR","AIRFRANS","France","Y"
+1355,"British Airways",\N,"BA","BAW","SPEEDBIRD","United Kingdom","Y"
