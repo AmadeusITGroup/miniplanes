@@ -81,10 +81,10 @@ mongo_up_and_running() {
 
 
 local-registry_up_and_running() {
-  nonrunningregistry=$(kubectl get pods -lk8s-app=kube-registry --field-selector=status.phase=Running -n kube-system 2> /dev/null)
-  if [ -z "$runningregistry" ]
+  howmanyregistry=$(kubectl get pods -lk8s-app=kube-registry --field-selector=status.phase=Running -n kube-system --no-headers=true | wc -l 2> /dev/null)
+  if [[ ( "$howmanyregistry" != 2 ) ]] ;
   then
-    echo 1 #no registry found
+    echo 1 #no enough registry found
     return
   fi
   echo 0

@@ -10,5 +10,5 @@ TMPFILE=$(mktemp)
 kubectl create secret generic shared-bootstrap-data --from-file=internal-auth-mongodb-keyfile=$TMPFILE
 kubectl apply -f manifests/mongo.yaml
 
-wait_until mongo_up_and_running 1 30
+wait_until mongo_up_and_running 1 60
 rm -rf $TMPFILE

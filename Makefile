@@ -22,6 +22,7 @@ storage-build: output
 storage-image-build: storage-build
 	cp -f $(OUTPUTDIR)/storage storage/image
 	cd  storage/image && docker build .  -t $(PREFIX)storage:$(TAG)
+	rm -rf storage/storage
 
 storage-generate-server:
 	cd storage/swagger && swagger generate server --target ../pkg/gen  --flag-strategy pflag --exclude-main --name storage --spec ./swagger.yaml
