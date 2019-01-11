@@ -83,7 +83,7 @@ paths:
   /courses:
     get:
       tags:
-        - schedules
+        - courses
       produces:
         - application/json
       responses:
@@ -123,8 +123,12 @@ paths:
           schema:
             $ref: "#/definitions/error"
     post:
-      description: "Createss a new schdule. Duplicates are not allowed"
+      tags:
+        - schedules
+      description: "Creates a new schdule. Duplicates are not allowed"
       operationId: "addSchedule"
+      consumes:
+        - "application/json"
       produces: 
         - "application/json"
       parameters: 
@@ -136,14 +140,81 @@ paths:
           schema: 
             $ref: "#/definitions/schedule"
       responses: 
-        "200":
-          description: "pet response"
+        "201":
+          description: "Created"
           schema: 
             $ref: "#/definitions/schedule"
+
         default: 
           description: "unexpected error"
           schema: 
-            $ref: "#/definitions/error"         
+            $ref: "#/definitions/error"
+  /schedules/{id}:
+    parameters:
+      - $ref: "#/parameters/idPathParameter"
+    get:
+      operationId: getSchedule
+      tags: 
+        - schedules
+      produces:
+        - application/json
+      responses:
+        200:
+          description: list of schedules
+          schema:
+            $ref: "#/definitions/schedule"
+    put:
+      operationId: updateSchedule
+      tags:
+        - schedules
+      description: "Updates an existant Schedule"
+      consumes:
+        - "application/json"
+      produces: 
+        - "application/json"
+      parameters:
+        - name: schedule
+          in: body
+          description: the schedule to update
+          required: true
+          schema:
+            $ref: "#/definitions/schedule"
+      responses:
+        201:
+          description: Updated Succesfully
+          schema:
+            $ref: "#/definitions/schedule"
+        400:
+          description: invalid id
+        404:
+          description: schedule not found
+      consumes:
+        - "application/json"
+      produces: 
+        - "application/json"
+    delete:
+      tags:
+        - schedules
+      operationId: deleteSchedule
+      description: "Delete an existant schedules"
+
+      responses:
+        204:
+          description: Deleted successfully
+        400:
+          description: Invalid ID
+        404:
+          description: Schedule not found
+
+parameters:
+  idPathParameter:
+    name: id
+    description: The id of the item
+    type: integer
+    format: int64
+    in: path
+    required: true
+         
 definitions:
   course:
     type: object
@@ -213,6 +284,7 @@ definitions:
   schedule:
     type: object
     required:
+      - "ScheduleID"
       - "Origin"
       - "Destination"
       - "FlightNumber"
@@ -221,6 +293,9 @@ definitions:
       - "Departure"
       - "Arrival"
     properties:
+      ScheduleID:
+        type: integer
+        format: int64
       Origin:
         type: integer
       Destination:

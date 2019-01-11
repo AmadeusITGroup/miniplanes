@@ -1,3 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: itineraries-server
+  labels:
+    name:  itineraries-server
+spec:
+  selector:
+    app: itineraries-server
+  ports:
+  - protocol: TCP
+    port: 33775
+    targetPort: 33775
+  type: NodePort
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

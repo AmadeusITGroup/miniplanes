@@ -4,20 +4,16 @@ package restapi
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
-
-	"github.com/jinzhu/copier"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/amadeusitgroup/miniapp/storage/pkg/backend/mongo"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/courses"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
@@ -25,12 +21,8 @@ import (
 
 //go:generate swagger generate server --target ../../pkg/gen --name storage --spec ../swagger.yaml --exclude-main
 
-var (
-	MongoHost string
-	MongoPort int
-)
-
-func configureFlags(*operations.StorageAPI) {
+func configureFlags(api *operations.StorageAPI) {
+	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
 }
 
 func configureAPI(api *operations.StorageAPI) http.Handler {
@@ -47,79 +39,35 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	// Airlines
 	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
-		db := mongo.NewMongoDB(MongoHost, MongoPort)
-		dbAirlines, err := db.GetAirlines()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			message := fmt.Sprintf("unable to retrieve airlines: %v", err)
-			return airlines.NewGetAirlinesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		modAirlines := []*models.Airline{}
-		for _, a := range dbAirlines {
-			tmp := &models.Airline{}
-			copier.Copy(tmp, a)
-			modAirlines = append(modAirlines, tmp)
-		}
-		return airlines.NewGetAirlinesOK().WithPayload(modAirlines)
+		return middleware.NotImplemented("operation airlines.GetAirlines has not yet been implemented")
 	})
-
-	// Airports
 	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
-		db := mongo.NewMongoDB(MongoHost, MongoPort)
-		dbAirports, err := db.GetAirports()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			message := fmt.Sprintf("unable to retrieve airports: %v", err)
-			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		modAirports := []*models.Airport{}
-		for _, a := range dbAirports {
-			tmp := &models.Airport{}
-			copier.Copy(tmp, a)
-			modAirports = append(modAirports, tmp)
-		}
-		return airports.NewGetAirportsOK().WithPayload(modAirports)
+		return middleware.NotImplemented("operation airports.GetAirports has not yet been implemented")
 	})
-
+	api.CoursesGetCoursesHandler = courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
+		return middleware.NotImplemented("operation courses.GetCourses has not yet been implemented")
+	})
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		return liveness.NewGetLiveOK()
+		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")
 	})
-
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		return readiness.NewGetReadyOK()
+		return middleware.NotImplemented("operation readiness.GetReady has not yet been implemented")
 	})
-
-	/*api.SchedulesGetRoutesHandler = schedules.GetRoutesHandlerFunc(func(params schedules.GetRoutesParams) middleware.Responder {
-		db := mongo.NewMongoDB(MongoHost, MongoPort)
-		dbRoutes, err := db.GetRoutes()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			message := fmt.Sprintf("unable to retrieve routes: %v", err)
-			return routes.NewGetRoutesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		return middleware.NotImplemented("operation schedules.GetRoutes has not yet been implemented")
-	})*/
-
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
-		db := mongo.NewMongoDB(MongoHost, MongoPort)
-		dbSchedules, err := db.GetSchedules()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			message := fmt.Sprintf("unable to retrieve airports: %v", err)
-			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		modSchedules := []*models.Schedule{}
-		for _, a := range dbSchedules {
-			tmp := &models.Schedule{}
-			copier.Copy(tmp, a)
-			modSchedules = append(modSchedules, tmp)
-		}
-		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)
+		return middleware.NotImplemented("operation schedules.GetSchedules has not yet been implemented")
 	})
-	api.AddScheduleHandler = operations.AddScheduleHandlerFunc(func(params operations.AddScheduleParams) middleware.Responder {
-		return middleware.NotImplemented("operation .AddSchedule has not yet been implemented")
+	api.SchedulesAddScheduleHandler = schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
+		return middleware.NotImplemented("operation schedules.AddSchedule has not yet been implemented")
+	})
+	api.SchedulesDeleteScheduleHandler = schedules.DeleteScheduleHandlerFunc(func(params schedules.DeleteScheduleParams) middleware.Responder {
+		return middleware.NotImplemented("operation schedules.DeleteSchedule has not yet been implemented")
+	})
+	api.SchedulesGetScheduleHandler = schedules.GetScheduleHandlerFunc(func(params schedules.GetScheduleParams) middleware.Responder {
+		return middleware.NotImplemented("operation schedules.GetSchedule has not yet been implemented")
+	})
+	api.SchedulesUpdateScheduleHandler = schedules.UpdateScheduleHandlerFunc(func(params schedules.UpdateScheduleParams) middleware.Responder {
+		return middleware.NotImplemented("operation schedules.UpdateSchedule has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

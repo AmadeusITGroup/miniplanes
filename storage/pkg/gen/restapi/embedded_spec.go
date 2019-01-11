@@ -101,7 +101,7 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "schedules"
+          "courses"
         ],
         "responses": {
           "200": {
@@ -209,9 +209,15 @@ func init() {
         }
       },
       "post": {
-        "description": "Createss a new schdule. Duplicates are not allowed",
+        "description": "Creates a new schdule. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
+        ],
+        "tags": [
+          "schedules"
         ],
         "operationId": "addSchedule",
         "parameters": [
@@ -226,8 +232,8 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
-            "description": "pet response",
+          "201": {
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/schedule"
             }
@@ -240,6 +246,86 @@ func init() {
           }
         }
       }
+    },
+    "/schedules/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "getSchedule",
+        "responses": {
+          "200": {
+            "description": "list of schedules",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Updates an existant Schedule",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "updateSchedule",
+        "parameters": [
+          {
+            "description": "the schedule to update",
+            "name": "schedule",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Updated Succesfully",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          },
+          "400": {
+            "description": "invalid id"
+          },
+          "404": {
+            "description": "schedule not found"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an existant schedules",
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "deleteSchedule",
+        "responses": {
+          "204": {
+            "description": "Deleted successfully"
+          },
+          "400": {
+            "description": "Invalid ID"
+          },
+          "404": {
+            "description": "Schedule not found"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/idPathParameter"
+        }
+      ]
     }
   },
   "definitions": {
@@ -360,6 +446,7 @@ func init() {
     "schedule": {
       "type": "object",
       "required": [
+        "ScheduleID",
         "Origin",
         "Destination",
         "FlightNumber",
@@ -389,8 +476,22 @@ func init() {
         },
         "Origin": {
           "type": "integer"
+        },
+        "ScheduleID": {
+          "type": "integer",
+          "format": "int64"
         }
       }
+    }
+  },
+  "parameters": {
+    "idPathParameter": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The id of the item",
+      "name": "id",
+      "in": "path",
+      "required": true
     }
   }
 }`))
@@ -478,7 +579,7 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "schedules"
+          "courses"
         ],
         "responses": {
           "200": {
@@ -586,9 +687,15 @@ func init() {
         }
       },
       "post": {
-        "description": "Createss a new schdule. Duplicates are not allowed",
+        "description": "Creates a new schdule. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
+        ],
+        "tags": [
+          "schedules"
         ],
         "operationId": "addSchedule",
         "parameters": [
@@ -603,8 +710,8 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
-            "description": "pet response",
+          "201": {
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/schedule"
             }
@@ -617,6 +724,91 @@ func init() {
           }
         }
       }
+    },
+    "/schedules/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "getSchedule",
+        "responses": {
+          "200": {
+            "description": "list of schedules",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Updates an existant Schedule",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "updateSchedule",
+        "parameters": [
+          {
+            "description": "the schedule to update",
+            "name": "schedule",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Updated Succesfully",
+            "schema": {
+              "$ref": "#/definitions/schedule"
+            }
+          },
+          "400": {
+            "description": "invalid id"
+          },
+          "404": {
+            "description": "schedule not found"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an existant schedules",
+        "tags": [
+          "schedules"
+        ],
+        "operationId": "deleteSchedule",
+        "responses": {
+          "204": {
+            "description": "Deleted successfully"
+          },
+          "400": {
+            "description": "Invalid ID"
+          },
+          "404": {
+            "description": "Schedule not found"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "format": "int64",
+          "description": "The id of the item",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
     }
   },
   "definitions": {
@@ -737,6 +929,7 @@ func init() {
     "schedule": {
       "type": "object",
       "required": [
+        "ScheduleID",
         "Origin",
         "Destination",
         "FlightNumber",
@@ -766,8 +959,22 @@ func init() {
         },
         "Origin": {
           "type": "integer"
+        },
+        "ScheduleID": {
+          "type": "integer",
+          "format": "int64"
         }
       }
+    }
+  },
+  "parameters": {
+    "idPathParameter": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The id of the item",
+      "name": "id",
+      "in": "path",
+      "required": true
     }
   }
 }`))

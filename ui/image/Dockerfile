@@ -1,8 +1,5 @@
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /root/
-COPY /ui .
-
-#ENTRYPOINT ["./ui"]
-#CMD ["--port=8765"]
+WORKDIR /
+ADD ui .

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
 	loads "github.com/go-openapi/loads"
@@ -23,8 +24,8 @@ func main() {
 	var server *restapi.Server // make sure init is called
 
 	// Custom Vars
-	flag.StringVar(&restapi.MongoHost, "mongo-host", "mongo", "the mongo service name")
-	flag.IntVar(&restapi.MongoPort, "mongo-port", 27017, "the port of the mongo service")
+	flag.StringVar(&config.MongoHost, "mongo-host", "mongo", "the mongo service name")
+	flag.IntVar(&config.MongoPort, "mongo-port", 27017, "the port of the mongo service")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, "Usage:\n")

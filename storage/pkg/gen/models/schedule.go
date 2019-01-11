@@ -44,6 +44,10 @@ type Schedule struct {
 	// origin
 	// Required: true
 	Origin *int64 `json:"Origin"`
+
+	// schedule ID
+	// Required: true
+	ScheduleID *int64 `json:"ScheduleID"`
 }
 
 // Validate validates this schedule
@@ -75,6 +79,10 @@ func (m *Schedule) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateOrigin(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduleID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -141,6 +149,15 @@ func (m *Schedule) validateOperatingCarrier(formats strfmt.Registry) error {
 func (m *Schedule) validateOrigin(formats strfmt.Registry) error {
 
 	if err := validate.Required("Origin", "body", m.Origin); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateScheduleID(formats strfmt.Registry) error {
+
+	if err := validate.Required("ScheduleID", "body", m.ScheduleID); err != nil {
 		return err
 	}
 

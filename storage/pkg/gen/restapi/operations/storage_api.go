@@ -21,6 +21,7 @@ import (
 
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/courses"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
@@ -49,8 +50,8 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		AirportsGetAirportsHandler: airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
 			return middleware.NotImplemented("operation AirportsGetAirports has not yet been implemented")
 		}),
-		SchedulesGetCoursesHandler: schedules.GetCoursesHandlerFunc(func(params schedules.GetCoursesParams) middleware.Responder {
-			return middleware.NotImplemented("operation SchedulesGetCourses has not yet been implemented")
+		CoursesGetCoursesHandler: courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
+			return middleware.NotImplemented("operation CoursesGetCourses has not yet been implemented")
 		}),
 		LivenessGetLiveHandler: liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
 			return middleware.NotImplemented("operation LivenessGetLive has not yet been implemented")
@@ -61,8 +62,17 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		SchedulesGetSchedulesHandler: schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
 			return middleware.NotImplemented("operation SchedulesGetSchedules has not yet been implemented")
 		}),
-		AddScheduleHandler: AddScheduleHandlerFunc(func(params AddScheduleParams) middleware.Responder {
-			return middleware.NotImplemented("operation AddSchedule has not yet been implemented")
+		SchedulesAddScheduleHandler: schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesAddSchedule has not yet been implemented")
+		}),
+		SchedulesDeleteScheduleHandler: schedules.DeleteScheduleHandlerFunc(func(params schedules.DeleteScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesDeleteSchedule has not yet been implemented")
+		}),
+		SchedulesGetScheduleHandler: schedules.GetScheduleHandlerFunc(func(params schedules.GetScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesGetSchedule has not yet been implemented")
+		}),
+		SchedulesUpdateScheduleHandler: schedules.UpdateScheduleHandlerFunc(func(params schedules.UpdateScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation SchedulesUpdateSchedule has not yet been implemented")
 		}),
 	}
 }
@@ -99,16 +109,22 @@ type StorageAPI struct {
 	AirlinesGetAirlinesHandler airlines.GetAirlinesHandler
 	// AirportsGetAirportsHandler sets the operation handler for the get airports operation
 	AirportsGetAirportsHandler airports.GetAirportsHandler
-	// SchedulesGetCoursesHandler sets the operation handler for the get courses operation
-	SchedulesGetCoursesHandler schedules.GetCoursesHandler
+	// CoursesGetCoursesHandler sets the operation handler for the get courses operation
+	CoursesGetCoursesHandler courses.GetCoursesHandler
 	// LivenessGetLiveHandler sets the operation handler for the get live operation
 	LivenessGetLiveHandler liveness.GetLiveHandler
 	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
 	ReadinessGetReadyHandler readiness.GetReadyHandler
 	// SchedulesGetSchedulesHandler sets the operation handler for the get schedules operation
 	SchedulesGetSchedulesHandler schedules.GetSchedulesHandler
-	// AddScheduleHandler sets the operation handler for the add schedule operation
-	AddScheduleHandler AddScheduleHandler
+	// SchedulesAddScheduleHandler sets the operation handler for the add schedule operation
+	SchedulesAddScheduleHandler schedules.AddScheduleHandler
+	// SchedulesDeleteScheduleHandler sets the operation handler for the delete schedule operation
+	SchedulesDeleteScheduleHandler schedules.DeleteScheduleHandler
+	// SchedulesGetScheduleHandler sets the operation handler for the get schedule operation
+	SchedulesGetScheduleHandler schedules.GetScheduleHandler
+	// SchedulesUpdateScheduleHandler sets the operation handler for the update schedule operation
+	SchedulesUpdateScheduleHandler schedules.UpdateScheduleHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -180,8 +196,8 @@ func (o *StorageAPI) Validate() error {
 		unregistered = append(unregistered, "airports.GetAirportsHandler")
 	}
 
-	if o.SchedulesGetCoursesHandler == nil {
-		unregistered = append(unregistered, "schedules.GetCoursesHandler")
+	if o.CoursesGetCoursesHandler == nil {
+		unregistered = append(unregistered, "courses.GetCoursesHandler")
 	}
 
 	if o.LivenessGetLiveHandler == nil {
@@ -196,8 +212,20 @@ func (o *StorageAPI) Validate() error {
 		unregistered = append(unregistered, "schedules.GetSchedulesHandler")
 	}
 
-	if o.AddScheduleHandler == nil {
-		unregistered = append(unregistered, "AddScheduleHandler")
+	if o.SchedulesAddScheduleHandler == nil {
+		unregistered = append(unregistered, "schedules.AddScheduleHandler")
+	}
+
+	if o.SchedulesDeleteScheduleHandler == nil {
+		unregistered = append(unregistered, "schedules.DeleteScheduleHandler")
+	}
+
+	if o.SchedulesGetScheduleHandler == nil {
+		unregistered = append(unregistered, "schedules.GetScheduleHandler")
+	}
+
+	if o.SchedulesUpdateScheduleHandler == nil {
+		unregistered = append(unregistered, "schedules.UpdateScheduleHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -311,7 +339,7 @@ func (o *StorageAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/courses"] = schedules.NewGetCourses(o.context, o.SchedulesGetCoursesHandler)
+	o.handlers["GET"]["/courses"] = courses.NewGetCourses(o.context, o.CoursesGetCoursesHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -331,7 +359,22 @@ func (o *StorageAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/schedules"] = NewAddSchedule(o.context, o.AddScheduleHandler)
+	o.handlers["POST"]["/schedules"] = schedules.NewAddSchedule(o.context, o.SchedulesAddScheduleHandler)
+
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/schedules/{id}"] = schedules.NewDeleteSchedule(o.context, o.SchedulesDeleteScheduleHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/schedules/{id}"] = schedules.NewGetSchedule(o.context, o.SchedulesGetScheduleHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/schedules/{id}"] = schedules.NewUpdateSchedule(o.context, o.SchedulesUpdateScheduleHandler)
 
 }
 
