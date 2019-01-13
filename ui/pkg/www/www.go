@@ -3,10 +3,12 @@ package www
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +30,28 @@ func init() {
 
 	adminViewHTML := assets.MustAssetString("templates/admin_view.html")
 	adminViewTpl = template.Must(template.New("admin_view").Parse(adminViewHTML))
+}
+
+var username = []byte("admin")
+var password = []byte("admin")
+
+func BasicAuth(w http.ResponseWriter, r *http.Request, user, pass []byte) bool {
+	s := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+	if len(s) != 2 {
+		return false
+	}
+
+	b, err := base64.StdEncoding.DecodeString(s[1])
+	if err != nil {
+		return false
+	}
+
+	pair := strings.SplitN(string(b), ":", 2)
+	if len(pair) != 2 {
+		return false
+	}
+
+	return pair[0] == string(user) && pair[1] == string(pass)
 }
 
 // Config provides basic configuration
@@ -141,15 +165,38 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	push(w, "/static/style.css")
 	push(w, "/static/navigation_bar.css")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 	fullData := map[string]interface{}{
 		"NavigationBar": template.HTML(navigationBarHTML),
 	}
+	// pass from global variables
+	if !BasicAuth(w, r, username, password) {
+		w.Header().Set("WWW-Authenticate", `Basic realm="Admin protected."`)
+		w.WriteHeader(401)
+		w.Write([]byte("401 Unauthorized\n"))
+		return
+	}
+
 	render(w, r, adminViewTpl, "admin_view", fullData)
 }
 
 // AirportsHandler handles the airports
 func AirportsHandler(w http.ResponseWriter, r *http.Request) {
-	airports := []storagemodels.Airport{}
+	airports := []storagemodels.Airport{
+		storagemodels.Airport{
+			AirportID: 507,
+			City:      "London",
+			Country:   "United Kingdom",
+			DST:       "E",
+			IATA:      "",
+			ICAO:      "",
+			Timezone:  "Europe/London",
+			TZ:        "",
+			Latitude:  51.4706,
+			Longitude: -0.461941,
+			Name:      "London Heathrow Airport",
+		},
+	}
 	data, err := json.Marshal(airports)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
