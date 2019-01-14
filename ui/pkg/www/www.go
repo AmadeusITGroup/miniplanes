@@ -21,6 +21,7 @@ import (
 var navigationBarHTML string
 var homepageTpl *template.Template
 var adminViewTpl *template.Template
+var schedulesViewTpl *template.Template
 
 func init() {
 	navigationBarHTML = assets.MustAssetString("templates/navigation_bar.html")
@@ -30,6 +31,10 @@ func init() {
 
 	adminViewHTML := assets.MustAssetString("templates/admin_view.html")
 	adminViewTpl = template.Must(template.New("admin_view").Parse(adminViewHTML))
+
+	schedulesViewHTML := assets.MustAssetString("templates/schedules_view.html")
+	schedulesViewTpl = template.Must(template.New("schedules_view").Parse(schedulesViewHTML))
+
 }
 
 var username = []byte("admin")
@@ -78,6 +83,7 @@ func Start(cfg Config) *HTMLServer {
 	router.HandleFunc("/", HomeHandler)
 	router.HandleFunc("/admin", AdminHandler)
 	router.HandleFunc("/airports", AirportsHandler)
+	router.HandleFunc("/search_schedules", SearchSchedules)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Create the HTML Server
@@ -158,26 +164,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		"NavigationBar": template.HTML(navigationBarHTML),
 	}
 	render(w, r, homepageTpl, "homepage_view", fullData)
-}
-
-// AdminHandler renders the admin view template
-func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	push(w, "/static/style.css")
-	push(w, "/static/navigation_bar.css")
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	fullData := map[string]interface{}{
-		"NavigationBar": template.HTML(navigationBarHTML),
-	}
-	// pass from global variables
-	if !BasicAuth(w, r, username, password) {
-		w.Header().Set("WWW-Authenticate", `Basic realm="Admin protected."`)
-		w.WriteHeader(401)
-		w.Write([]byte("401 Unauthorized\n"))
-		return
-	}
-
-	render(w, r, adminViewTpl, "admin_view", fullData)
 }
 
 // AirportsHandler handles the airports

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Your schedules</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/navigation_bar.css">
+
+    <style>
+        table, th, td {
+          border: 1px solid black;
+        }
+        </style>
+
+</head>
+
+<body>
+
+    <table>
+        <tr>
+            <th>Origin</th>
+            <th>Arrival</th>
+            <th>DaysOperated</th>
+            <th>Departure</th>
+            <th>Destination</th>
+            <th>FlightNumber</th>
+            <th>Operating Carrier</th>
+        </tr>
+        {{range $y, $x := . }}
+        <tr>
+            <td>{{$x.Origin}}</td>
+            <td>{{$x.Arrival}}</td>
+            <td>{{$x.DaysOperated}}</td>
+            <td>{{$x.Departure}}</td>
+            <td>{{$x.Destination}}</td>
+            <td>{{$x.FlightNumber}}</td>
+            <td>{{$x.OperatingCarrier}}</td>
+        </tr>
+        {{end}}
+    </table>
+</body>
+
+</html>
