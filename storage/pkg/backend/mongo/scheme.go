@@ -17,7 +17,7 @@ type Airline struct {
 
 }
 
-type Route struct {
+type Course struct {
 	ID                   bson.ObjectId `json:"id" bson:"_id"`
 	Airline              string        `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
 	AirlineID            string        `json:"airlineID" bson:"airlineID"`                       // Unique OpenFlights identifier for this airline.

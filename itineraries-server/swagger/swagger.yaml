@@ -73,21 +73,37 @@ definitions:
   itinerary:
     type: object
     properties:
-      distance:
-        type: integer
-        format: int64
-        readOnly: true
-      description:
+      ItineraryID:
         type: string
-      steps:
+      Description:
+        type: string
+      Segments:
         type: array
         items:
-          $ref: "#/definitions/itineraryStep"
+          $ref: "#/definitions/segment"
         readOnly: true
-  itineraryStep:
+  segment: 
     type: object
     properties:
-      from: 
+      SegmentID:
+        type: integer
+        format: int64
+      Distance:
+        type: integer
+        format: int64
+      Origin: 
         type: string
-      to:
+      Destination:
+        type: string
+      FlightNumber:
+        type: string
+      OperatingCarrier:
+        type: string
+      DepartureDate:
+        type: string
+      DepartureTime:
+        type: string
+      ArrivalDate:
+        type: string
+      ArrivalTime:
         type: string

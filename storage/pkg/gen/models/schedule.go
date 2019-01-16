@@ -19,7 +19,8 @@ type Schedule struct {
 
 	// arrival
 	// Required: true
-	Arrival *string `json:"Arrival"`
+	// Format: date-time
+	Arrival *strfmt.DateTime `json:"Arrival"`
 
 	// days operated
 	// Required: true
@@ -27,7 +28,8 @@ type Schedule struct {
 
 	// departure
 	// Required: true
-	Departure *string `json:"Departure"`
+	// Format: date-time
+	Departure *strfmt.DateTime `json:"Departure"`
 
 	// destination
 	// Required: true
@@ -98,6 +100,10 @@ func (m *Schedule) validateArrival(formats strfmt.Registry) error {
 		return err
 	}
 
+	if err := validate.FormatOf("Arrival", "body", "date-time", m.Arrival.String(), formats); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -113,6 +119,10 @@ func (m *Schedule) validateDaysOperated(formats strfmt.Registry) error {
 func (m *Schedule) validateDeparture(formats strfmt.Registry) error {
 
 	if err := validate.Required("Departure", "body", m.Departure); err != nil {
+		return err
+	}
+
+	if err := validate.FormatOf("Departure", "body", "date-time", m.Departure.String(), formats); err != nil {
 		return err
 	}
 

@@ -30,8 +30,8 @@ type Airport struct {
 	Source    string  `json:"source" bson:"source"`       //Source of this data. "OurAirports" for data sourced from OurAirports, "Legacy" for old data not matched to OurAirports (mostly DAFIF), "User" for unverified user contributions. In airports.csv, only source=OurAirports is included.
 }
 
-// Route is the generic Route schema
-type Route struct {
+// Course is the generic Course schema
+type Course struct {
 	Airline              string `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
 	AirlineID            int32  `json:"airlineID" bson:"airlineID"`                       // Unique OpenFlights identifier for this airline.
 	SourceAirport        string `json:"sourceAirport" bson:"sourceAirport"`               //3-letter (IATA) or 4-letter (ICAO) code of the source airport.

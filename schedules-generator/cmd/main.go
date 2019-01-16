@@ -9,7 +9,7 @@ import (
 
 const (
 	dbName             = "miniapp"
-	routesCollection   = "routes"
+	coursesCollection   = "courses"
 	airportsCollection = "airports"
 	airlinesCollection = "airlines"
 )
@@ -29,14 +29,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("couldn't retrieve airlines: %v", err)
 	}
-	airlines := airlinesResp.Payload
-	if err != nil {
-		log.Fatalf("unable to get fetch airports from DB: %v", err)
-	}
 
 	// routes
-	routesResp, err := storageclient.Default.Routes.GetRoutes(nil)
-	if err :=
+	routesResp, err := storageclient.Default.Courses.GetCourses(nil)
+	if err := nil {
+		log.Fatalf("couldn't retrieve courses: %v", err)
+	}
 
 	// now create the schedules
 

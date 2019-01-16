@@ -18,7 +18,7 @@ var mongoHost string
 
 const (
 	dbName              = "miniapp"
-	routesCollection    = "routes"
+	coursesCollection   = "courses"
 	airportsCollection  = "airports"
 	airlinesCollection  = "airlines"
 	schedulesCollection = "schedules"
@@ -41,7 +41,7 @@ func (m *MongoDB) dialString() string {
 	return strings.Join([]string{m.mongoHost, m.mongoPort}, ":")
 }
 
-func (m *MongoDB) GetSchedules() ([]*Schedule, error) {
+func (m *MongoDB) GetCourses() ([]*Schedule, error) {
 	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
@@ -70,21 +70,21 @@ func (m *MongoDB) GetAirlines() ([]*Airline, error) {
 	return dbAirlines, err
 }
 
-func (m *MongoDB) GetRoutes(w http.ResponseWriter, r *http.Request) {
+func (m *MongoDB) Getcourses(w http.ResponseWriter, r *http.Request) {
 	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
 	}
 	defer db.Close() // clean up when we’re done
 	//db := context.Get(r, "database").(*mgo.Session)
-	var routes []*Route
-	if err := db.DB(dbName).C(routesCollection).
-		Find(nil).Sort("-when").Limit(100).All(&routes); err != nil {
+	var courses []*Course
+	if err := db.DB(dbName).C(coursesCollection).
+		Find(nil).Sort("-when").Limit(100).All(&courses); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// write it out
-	if err := json.NewEncoder(w).Encode(routes); err != nil {
+	if err := json.NewEncoder(w).Encode(courses); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

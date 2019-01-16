@@ -457,13 +457,15 @@ func init() {
       ],
       "properties": {
         "Arrival": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "DaysOperated": {
           "type": "string"
         },
         "Departure": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "Destination": {
           "type": "integer"
@@ -940,13 +942,15 @@ func init() {
       ],
       "properties": {
         "Arrival": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "DaysOperated": {
           "type": "string"
         },
         "Departure": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "Destination": {
           "type": "integer"

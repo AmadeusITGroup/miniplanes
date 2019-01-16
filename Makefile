@@ -42,10 +42,10 @@ itineraries-server-image-build: itineraries-server-build
 	rm -f itineraries-server/image/itineraries-server
 
 itineraries-server-generate-server:
-	cd itineraries-server/swagger && swagger generate server --target ../pkg --name itineraries --spec ./swagger.yaml
+	cd itineraries-server/swagger && swagger generate server --target ../pkg/gen --flag-strategy pflag  --exclude-main --name itineraries --spec ./swagger.yaml
 
 itineraries-server-generate-client:
-	cd itineraries-server/swagger && swagger generate client --target ../pkg --name itineraries --spec ./swagger.yaml
+	cd itineraries-server/swagger && swagger generate client --target ../pkg/gen --name itineraries --spec ./swagger.yaml
 
 ui-build: $(OUTPUTDIR)
 	cd ui && go-bindata -o=assets/bindata.go --nocompress --nometadata --pkg=assets templates/... static/...
