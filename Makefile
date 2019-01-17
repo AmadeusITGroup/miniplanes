@@ -1,5 +1,5 @@
 
-PREFIX=localhost:5000/
+#PREFIX=localhost:5000/
 TAG=latest
 
 all:

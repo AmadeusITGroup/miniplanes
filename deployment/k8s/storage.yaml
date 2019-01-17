@@ -32,7 +32,8 @@ spec:
     spec:
       containers:
       - name: storage
-        image: localhost:5000/storage:latest
+        image: storage:latest
+        imagePullPolicy: Never
         command: ["/storage"]
         args: ["--port=33775", "--mongo-host=mongo"]
         ports:

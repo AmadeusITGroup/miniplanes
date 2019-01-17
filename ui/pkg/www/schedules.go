@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	strfmt "github.com/go-openapi/strfmt"
 	//"k8s.io/client-go/third_party/forked/golang/template"
 )
 
@@ -13,8 +14,8 @@ var (
 	destination      = int64(1382)
 	flightNumber     = "9W4777"
 	operatingCarrier = "Air France"
-	departure        = "0600"
-	arrival          = "0905"
+	departure        = strfmt.DateTime{}
+	arrival          = strfmt.DateTime{}
 	daysOperated     = "1234567"
 )
 

@@ -32,7 +32,8 @@ spec:
     spec:
       containers:
       - name: itineraries-server
-        image: localhost:5000/itineraries-server:latest
+        image: itineraries-server:latest
+        imagePolicy: Never
         command: ["/itineraries-server"]
         args: ["--port=4838"]
         ports:

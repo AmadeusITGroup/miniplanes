@@ -21,6 +21,7 @@ const (
 	coursesCollection   = "courses"
 	airportsCollection  = "airports"
 	airlinesCollection  = "airlines"
+	airlinesCourses     = "courses"
 	schedulesCollection = "schedules"
 )
 
@@ -41,7 +42,7 @@ func (m *MongoDB) dialString() string {
 	return strings.Join([]string{m.mongoHost, m.mongoPort}, ":")
 }
 
-func (m *MongoDB) GetCourses() ([]*Schedule, error) {
+func (m *MongoDB) GetSchedules() ([]*Schedule, error) {
 	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
@@ -70,7 +71,7 @@ func (m *MongoDB) GetAirlines() ([]*Airline, error) {
 	return dbAirlines, err
 }
 
-func (m *MongoDB) Getcourses(w http.ResponseWriter, r *http.Request) {
+func (m *MongoDB) GetCourses(w http.ResponseWriter, r *http.Request) {
 	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)

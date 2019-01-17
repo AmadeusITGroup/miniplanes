@@ -22,9 +22,9 @@ type Course struct {
 	Airline              string        `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
 	AirlineID            string        `json:"airlineID" bson:"airlineID"`                       // Unique OpenFlights identifier for this airline.
 	SourceAirport        string        `json:"sourceAirport" bson:"sourceAirport"`               //3-letter (IATA) or 4-letter (ICAO) code of the source airport.
-	SourceAirportID      string        `json:"sourceAirportID" bson:"sourceAirportID"`           //Unique OpenFlights identifier for source airport (see Airport)
+	SourceAirportID      int32         `json:"sourceAirportID" bson:"sourceAirportID"`           //Unique OpenFlights identifier for source airport (see Airport)
 	DestinationAirport   string        `json:"destinationAirport" bson:"destinationAirport"`     //3-letter (IATA) or 4-letter (ICAO) code of the destination airport.
-	DestinationAirportID string        `json:"destinationAirportID" bson:"destinationAirportID"` //Unique OpenFlights identifier for destination airport (see Airport)
+	DestinationAirportID int32         `json:"destinationAirportID" bson:"destinationAirportID"` //Unique OpenFlights identifier for destination airport (see Airport)
 	Codeshare            string        `json:"codeshare" bson:"codeshare"`                       //"Y" if this flight is a codeshare (that is, not operated by Airline, but another carrier), empty otherwise.
 	Stops                string        `json:"stops" bson:"stops"`                               //Number of stops on this flight ("0" for direct)
 	Equipment            string        `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
@@ -33,7 +33,7 @@ type Course struct {
 
 type Airport struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
-	AirportID int64         `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
+	AirportID int32         `json:"airportID" bson:"airportID"` // Unique OpenFlights identifier for this airport.
 	Name      string        `json:"name" bson:"name"`           //Name of airport. May or may not contain the City name.
 	City      string        `json:"city" bson:"city"`           // Main city served by airport. May be spelled differently from Name.
 	Country   string        `json:"country" bson:"country"`     // Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
@@ -52,8 +52,8 @@ type Airport struct {
 
 type Schedule struct {
 	ID               bson.ObjectId `json:"id" bson:"_id"`
-	Origin           int64         `json:"origin" bson:"origin"`
-	Destination      int64         `json:"destination" bson:"destination"`
+	Origin           int32         `json:"origin" bson:"origin"`
+	Destination      int32         `json:"destination" bson:"destination"`
 	FlightNumber     string        `json:"flightNumber" bson:"flightNumber"`
 	OperatingCarrier string        `json:"operatingCarrier" bson:"operatingCarrier"`
 	DaysOperated     string        `json:"daysOperated" bson:"daysOperated"`
