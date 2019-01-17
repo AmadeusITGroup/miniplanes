@@ -22,6 +22,10 @@ type Schedule struct {
 	// Format: date-time
 	Arrival *strfmt.DateTime `json:"Arrival"`
 
+	// arrive next day
+	// Required: true
+	ArriveNextDay *bool `json:"ArriveNextDay"`
+
 	// days operated
 	// Required: true
 	DaysOperated *string `json:"DaysOperated"`
@@ -57,6 +61,10 @@ func (m *Schedule) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateArrival(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateArriveNextDay(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -101,6 +109,15 @@ func (m *Schedule) validateArrival(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("Arrival", "body", "date-time", m.Arrival.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateArriveNextDay(formats strfmt.Registry) error {
+
+	if err := validate.Required("ArriveNextDay", "body", m.ArriveNextDay); err != nil {
 		return err
 	}
 

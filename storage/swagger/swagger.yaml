@@ -292,6 +292,7 @@ definitions:
       - "DaysOperated"
       - "Departure"
       - "Arrival"
+      - "ArriveNextDay"
     properties:
       ScheduleID:
         type: integer
@@ -312,6 +313,8 @@ definitions:
       Arrival:
         type: string
         format: date-time
+      ArriveNextDay:
+        type: boolean
   error:
     type: object
     required:

@@ -1,17 +1,15 @@
 package mongo
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
-
-	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var mongoHost string
@@ -71,7 +69,7 @@ func (m *MongoDB) GetAirlines() ([]*Airline, error) {
 	return dbAirlines, err
 }
 
-func (m *MongoDB) GetCourses(w http.ResponseWriter, r *http.Request) {
+func (m *MongoDB) GetCourses() ([]*Course, error) {
 	db, err := mgo.Dial(m.dialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
@@ -79,16 +77,10 @@ func (m *MongoDB) GetCourses(w http.ResponseWriter, r *http.Request) {
 	defer db.Close() // clean up when we’re done
 	//db := context.Get(r, "database").(*mgo.Session)
 	var courses []*Course
-	if err := db.DB(dbName).C(coursesCollection).
-		Find(nil).Sort("-when").Limit(100).All(&courses); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if err := db.DB(dbName).C(coursesCollection).Find(nil).Sort("-when").Limit(100).All(&courses); err != nil {
+		return []*Course{}, err
 	}
-	// write it out
-	if err := json.NewEncoder(w).Encode(courses); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	return courses, nil
 }
 
 func (m *MongoDB) GetAirports() ([]*Airport, error) {
@@ -104,25 +96,14 @@ func (m *MongoDB) GetAirports() ([]*Airport, error) {
 	return dbAirports, err
 }
 
-// HandleInsert
-func HandleInsert(w http.ResponseWriter, r *http.Request) {
-	db := context.Get(r, "database").(*mgo.Session)
-	// decode the request body
-	var c Airline
-	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+func (m *MongoDB) InsertSchedule(s *Schedule) error {
+	db, err := mgo.Dial(m.dialString())
+	if err != nil {
+		log.Fatal("cannot dial mongo: ", err)
 	}
-	// give the comment a unique ID and set the time
-	//c.ID = bson.NewObjectId()
-	//c.When = time.Now()
-	// insert it into the database
-	if err := db.DB(dbName).C(airlinesCollection).Insert(&c); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// redirect to it
-	http.Redirect(w, r, "/airlines/"+c.ID.Hex(), http.StatusTemporaryRedirect)
+	defer db.Close() // clean up when we’re done
+	s.ID = bson.NewObjectId()
+	return db.DB(dbName).C(schedulesCollection).Insert(s)
 }
 
 func findFlights(w http.ResponseWriter, r *http.Request) {

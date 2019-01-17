@@ -43,7 +43,7 @@ type Course struct {
 	Equipment            string `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
 }
 
-// Schedule is the genric Schedule schema
+// Schedule is the generic Schedule schema
 type Schedule struct {
 	Origin           int32  `json:"origin" bson:"origin"`
 	Destination      int32  `json:"destination" bson:"destination"`
@@ -52,4 +52,5 @@ type Schedule struct {
 	DaysOperated     string `json:"daysOperated" bson:"daysOperated"`
 	Departure        string `json:"departure" bson:"departure"`
 	Arrival          string `json:"arrival" bson:"arrival"`
+	ArriveNextDay    bool   `json:"arriveNextDay" bson:"arriveNextDay"`
 }

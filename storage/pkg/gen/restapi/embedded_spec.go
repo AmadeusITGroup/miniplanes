@@ -453,12 +453,16 @@ func init() {
         "OperatingCarrier",
         "DaysOperated",
         "Departure",
-        "Arrival"
+        "Arrival",
+        "ArriveNextDay"
       ],
       "properties": {
         "Arrival": {
           "type": "string",
           "format": "date-time"
+        },
+        "ArriveNextDay": {
+          "type": "boolean"
         },
         "DaysOperated": {
           "type": "string"
@@ -938,12 +942,16 @@ func init() {
         "OperatingCarrier",
         "DaysOperated",
         "Departure",
-        "Arrival"
+        "Arrival",
+        "ArriveNextDay"
       ],
       "properties": {
         "Arrival": {
           "type": "string",
           "format": "date-time"
+        },
+        "ArriveNextDay": {
+          "type": "boolean"
         },
         "DaysOperated": {
           "type": "string"

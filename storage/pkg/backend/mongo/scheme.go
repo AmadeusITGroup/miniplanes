@@ -59,4 +59,5 @@ type Schedule struct {
 	DaysOperated     string        `json:"daysOperated" bson:"daysOperated"`
 	Departure        string        `json:"departure" bson:"departure"`
 	Arrival          string        `json:"arrival" bson:"arrival"`
+	ArriveNextDay    bool          `json:"arriveNextDay" bson:"arriveNextDay"`
 }

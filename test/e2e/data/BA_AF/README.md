@@ -21,5 +21,25 @@ mongoimport --port=$MYPORT -d miniapp -c courses --type csv --file courses.dat -
 
 Now you can create the schedules....
 
+with something like
+```shell
+cd .../miniapp/schedules-generator/cmd
+go run main.go --port=$MYPORT
+```
+
+which generates a file `schedules.csv` that you can import in the usual way
+
+```shell
+mongoimport --port=$MYPORT -d miniapp -c schedules --type csv --file schedules.dat --fieldFile=../../../../data/schedules_schema.dat
+```
+
+with a
+
+```shell
+mongo --port=$MYPORT
+```
+
+you should be able to see `schedules` collection populated
 
 ## minikube
+TODO
