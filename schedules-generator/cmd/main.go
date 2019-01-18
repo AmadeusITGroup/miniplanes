@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -57,11 +58,35 @@ func computeArrivalTime(origin, destination *mongo.Airport, departureTime string
 	return fmt.Sprintf("%02d%02d", localArrivalTime.Hour(), localArrivalTime.Minute()), arriveNextDay, nil
 }
 
+const (
+	defaultMongoIP   = "localhost"
+	defaultMongoPort = 27017
+)
+
+var (
+	csvFileName string
+	mongoIP     string
+	mongoPort   int
+)
+
+func init() {
+
+	flag.StringVar(&csvFileName, "csv-file-name", "", "csv file to be generated. If no csv-file-name is supplied schedules will be inserted in mongo")
+	flag.StringVar(&mongoIP, "mongo-host", defaultMongoIP, "mongo endpoint")
+	flag.IntVar(&mongoPort, "mongoPort", defaultMongoPort, "mongo port")
+}
+
 func main() {
 
+	flag.Parse()
 	generateCSV := false
+	if len(csvFileName) > 0 {
+		generateCSV = true
+	}
 
-	m := mongo.NewMongoDB("localhost", 9999) // 9999 take by default
+	fmt.Printf("%s %s %d\n", csvFileName, mongoIP, mongoPort)
+
+	m := mongo.NewMongoDB(mongoIP, mongoPort) // 9999 take by default
 	ID2Airports := map[int32]*mongo.Airport{}
 	airports, err := m.GetAirports()
 	if err != nil {
@@ -78,7 +103,7 @@ func main() {
 
 	var file io.Writer
 	if generateCSV {
-		file, err = os.Create("schedules.csv")
+		file, err = os.Create(csvFileName)
 		if err != nil {
 			log.Fatalf("Couldn't open file\n")
 		}
@@ -108,7 +133,7 @@ func main() {
 	}
 
 	if generateCSV {
-		file, err = os.Create("schedules.csv")
+		file, err = os.Create(csvFileName)
 		if err != nil {
 			log.Fatalf("Couldn't open file\n")
 		}

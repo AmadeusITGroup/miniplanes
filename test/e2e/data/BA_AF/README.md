@@ -19,12 +19,11 @@ mongoimport --port=$MYPORT -d miniapp -c airlines --type csv --file airlines.dat
 mongoimport --port=$MYPORT -d miniapp -c courses --type csv --file courses.dat --fieldFile=../../../../data/courses_schema.dat
 ```
 
-Now you can create the schedules....
+Now you can create the schedules running these commands
 
-with something like
 ```shell
 cd .../miniapp/schedules-generator/cmd
-go run main.go --port=$MYPORT
+go run main.go --csv-file-name=schedules.csv
 ```
 
 which generates a file `schedules.csv` that you can import in the usual way
@@ -33,7 +32,7 @@ which generates a file `schedules.csv` that you can import in the usual way
 mongoimport --port=$MYPORT -d miniapp -c schedules --type csv --file schedules.dat --fieldFile=../../../../data/schedules_schema.dat
 ```
 
-with a
+if you don't supply `--csv-file-name` file `schedules-generator` will insert directly values in the `schedules` mongo port.
 
 ```shell
 mongo --port=$MYPORT
