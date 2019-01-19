@@ -39,13 +39,11 @@ func main() {
 		}
 		fmt.Fprintln(os.Stderr, flag.CommandLine.FlagUsages())
 	}
-	// parse the CLI flags
+
 	flag.Parse()
 
 	api := operations.NewStorageAPI(swaggerSpec)
-	// get server with flag values filled out
 	server = restapi.NewServer(api)
-
 	defer server.Shutdown()
 
 	server.ConfigureAPI()

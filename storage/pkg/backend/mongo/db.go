@@ -36,6 +36,11 @@ func NewMongoDB(mongoHost string, mongoPort int) *MongoDB {
 	}
 }
 
+func (m *MongoDB) Ping() error {
+	_, err := mgo.Dial(m.dialString())
+	return err
+}
+
 func (m *MongoDB) dialString() string {
 	return strings.Join([]string{m.mongoHost, m.mongoPort}, ":")
 }

@@ -4,12 +4,18 @@ package restapi
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
+
+	"github.com/jinzhu/copier"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
+	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/backend/mongo"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
@@ -21,8 +27,7 @@ import (
 
 //go:generate swagger generate server --target ../../pkg/gen --name storage --spec ../swagger.yaml --exclude-main
 
-func configureFlags(api *operations.StorageAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
+func configureFlags(*operations.StorageAPI) {
 }
 
 func configureAPI(api *operations.StorageAPI) http.Handler {
@@ -39,23 +44,77 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	// Airlines
 	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
-		return middleware.NotImplemented("operation airlines.GetAirlines has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		dbAirlines, err := db.GetAirlines()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			message := fmt.Sprintf("unable to retrieve airlines: %v", err)
+			return airlines.NewGetAirlinesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+		}
+		modAirlines := []*models.Airline{}
+		for _, a := range dbAirlines {
+			tmp := &models.Airline{}
+			copier.Copy(tmp, a)
+			modAirlines = append(modAirlines, tmp)
+		}
+		return airlines.NewGetAirlinesOK().WithPayload(modAirlines)
 	})
+
+	// Airports
 	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
-		return middleware.NotImplemented("operation airports.GetAirports has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		dbAirports, err := db.GetAirports()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			message := fmt.Sprintf("unable to retrieve airports: %v", err)
+			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+		}
+		modAirports := []*models.Airport{}
+		for _, a := range dbAirports {
+			tmp := &models.Airport{}
+			copier.Copy(tmp, a)
+			modAirports = append(modAirports, tmp)
+		}
+		return airports.NewGetAirportsOK().WithPayload(modAirports)
 	})
+
 	api.CoursesGetCoursesHandler = courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
 		return middleware.NotImplemented("operation courses.GetCourses has not yet been implemented")
 	})
+
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")
+		/*db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		if err := db.Ping(); err != nil {
+			return liveness.NewGetLiveServiceUnavailable()
+		}*/
+		return liveness.NewGetLiveOK()
 	})
+
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		return middleware.NotImplemented("operation readiness.GetReady has not yet been implemented")
+		/*db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		if err := db.Ping(); err != nil {
+			return readiness.NewGetReadyServiceUnavailable()
+		}*/
+		return readiness.NewGetReadyOK()
 	})
+
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
-		return middleware.NotImplemented("operation schedules.GetSchedules has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		dbSchedules, err := db.GetSchedules()
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			message := fmt.Sprintf("unable to retrieve airports: %v", err)
+			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+		}
+		modSchedules := []*models.Schedule{}
+		for _, a := range dbSchedules {
+			tmp := &models.Schedule{}
+			copier.Copy(tmp, a)
+			modSchedules = append(modSchedules, tmp)
+		}
+		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)
 	})
 	api.SchedulesAddScheduleHandler = schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
 		return middleware.NotImplemented("operation schedules.AddSchedule has not yet been implemented")

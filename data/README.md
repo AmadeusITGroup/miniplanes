@@ -10,7 +10,7 @@ AirportID	Unique OpenFlights identifier for this airport.
 Name	Name of airport. May or may not contain the City name.
 City	Main city served by airport. May be spelled differently from Name.
 Country	Country or territory where airport is located. See countries.dat to cross-reference to ISO 3166-1 codes.
-IATA	3-letter IATA code. Null if not assigned/unknown.
+IATAq	3-letter IATA code. Null if not assigned/unknown.
 ICAO	4-letter ICAO code. Null if not assigned.
 Latitude	Decimal degrees, usually to six significant digits. Negative is South, positive is North.
 Longitude	Decimal degrees, usually to six significant digits. Negative is West, positive is East.

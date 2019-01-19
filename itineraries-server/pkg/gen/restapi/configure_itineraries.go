@@ -3,17 +3,27 @@
 package restapi
 
 import (
+	"context"
 	"crypto/tls"
+	"fmt"
 	"net/http"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
+	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
+	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
+)
+
+var (
+	airportsId2Name = make(map[int64]string)
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name itineraries --spec ../swagger.yaml --exclude-main
@@ -37,7 +47,56 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
-		return middleware.NotImplemented("operation itineraries.GetItineraries has not yet been implemented")
+		storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
+		transport := storageclient.DefaultTransportConfig().WithHost(storageURL)
+		client := storageclient.NewHTTPClientWithConfig(nil, transport)
+		//client := storageclient.New(transport, strfmt.Default)
+		modItineraries := []*models.Itinerary{}
+
+		if len(airportsId2Name) == 0 {
+			getParams := &airports.GetAirportsParams{Context: context.Background()}
+			resp, err := client.Airports.GetAirports(getParams)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				//return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
+				return itineraries.NewGetItinerariesNotFound()
+			}
+			for i := range resp.Payload {
+				a := resp.Payload[i]
+				airportsId2Name[a.AirportID] = a.IATA
+			}
+		}
+
+		//getParams := &schedules.GetSchedulesParams{Context: context.Background()}
+		//resp, err := client.Schedules.GetSchedules(getParams)
+		//if err != nil {
+		//	return itineraries.NewGetItinerariesBadRequest()
+		//}
+
+		/*		for i := range resp.Payload {
+				s := resp.Payload[i]
+		*/
+		segment := &models.Segment{
+			ArrivalDate:   "",    //s.Arrival.String(),
+			ArrivalTime:   "",    //s.Arrival.String(),
+			DepartureDate: "",    //s.Departure.String(),
+			DepartureTime: "",    //s.Departure.String(),
+			Destination:   "NCE", // airportsId2Name[*s.Destination],
+			//Distance:
+			FlightNumber:     "BA121", //*s.FlightNumber,
+			OperatingCarrier: "BA",    //*s.OperatingCarrier,
+			Origin:           "JFK",   //airportsId2Name[*s.Origin],
+			SegmentID:        0,
+		}
+		itinerary := &models.Itinerary{
+			Description: "my awesome itinerary",
+			ItineraryID: "",
+			Segments:    []*models.Segment{segment},
+		}
+		modItineraries = append(modItineraries, itinerary)
+		//	break
+		//}
+		return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
 	})
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
 		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")

@@ -9,9 +9,8 @@ spec:
     app: storage
   ports:
   - protocol: TCP
-    port: 33775
-    targetPort: 33775
-  type: NodePort
+    port:  8080
+    targetPort: 8080
 
 ---
 apiVersion: apps/v1
@@ -35,6 +34,23 @@ spec:
         image: storage:latest
         imagePullPolicy: Never
         command: ["/storage"]
-        args: ["--port=33775", "--mongo-host=mongo"]
+        args: ["--port=8080", "--mongo-host=mongo", "--mongo-port=27017"]
         ports:
-        - containerPort: 33775
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+#        readinessProbe:
+#          httpGet:
+#            path: /ready
+#            port: 8080
+#          initialDelaySeconds: 5 
+#          periodSeconds: 5
+#        livenessProbe:
+#          httpGet:
+#            path: /live
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 5
+         
+ 
+

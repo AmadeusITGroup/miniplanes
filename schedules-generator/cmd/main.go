@@ -15,47 +15,51 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/backend/mongo"
 )
 
-func computeDepartureTime() string {
-	return "1520" // TODO: having something more random here...
-}
-
-func computeArrivalTime(origin, destination *mongo.Airport, departureTime string) (string, bool, error) {
-	averageSpeedKmH := float64(800)
+func computeDepartureArrivalTimes(origin, destination *mongo.Airport) (string, string, bool, error) {
+	averageSpeedKmH := float64(875)
+	halfHourOverhead := float64(.5)
 	arriveNextDay := false
 	if origin == nil || destination == nil {
-		return "2259", arriveNextDay, nil
+		return "", "", arriveNextDay, fmt.Errorf("missing origin or destination airport")
+	}
+	if _, err := time.LoadLocation(destination.TZ); err != nil {
+		return "", "", arriveNextDay, fmt.Errorf("bad TZ for destination airport %q: %v", destination.Name, err)
+	}
+	if _, err := time.LoadLocation(origin.TZ); err != nil {
+		return "", "", arriveNextDay, fmt.Errorf("bad TZ for origin airport %q: %v", origin.Name, err)
 	}
 
 	distance := db.Distance(origin.Latitude, origin.Longitude, destination.Latitude, destination.Longitude)
 	distanceKm := float64(distance / 1000)
-	formattedHourDuration := fmt.Sprintf("%fh", (distanceKm / averageSpeedKmH))
+	formattedHourDuration := fmt.Sprintf("%fh", (halfHourOverhead + (distanceKm / averageSpeedKmH)))
 	flightDuration, err := time.ParseDuration(formattedHourDuration)
 	if err != nil {
-		return "", arriveNextDay, fmt.Errorf("unable to parse duration: %s", formattedHourDuration)
+		return "", "", arriveNextDay, fmt.Errorf("unable to parse duration: %s", formattedHourDuration)
 	}
 
+	fmt.Printf("Flight duration %q->%q:%v\n", origin.City, destination.City, flightDuration)
+
 	now := time.Now() // to get year, month, day
+
+	departureTime := "1020"
 	var h, m int
 	fmt.Sscanf(departureTime, "%02d%02d", &h, &m)
 	originLocation, err := time.LoadLocation(origin.TZ)
 	if err != nil {
-		return "", arriveNextDay, fmt.Errorf("unknown TZ: %s: %v", origin.TZ, err)
+		return "", "", arriveNextDay, fmt.Errorf("unknown TZ: %s: %v", origin.TZ, err)
 	}
 	localDepartureTime := time.Date(now.Year(), now.Month(), now.Day(), h, m, int(0), int(0), originLocation)
 	utcLocation, _ := time.LoadLocation("UTC") // no error check here since we hardcode "UTC"
 	utcDepartureTime := localDepartureTime.In(utcLocation)
 
 	utcArrivalTime := utcDepartureTime.Add(flightDuration)
-	arrivalTimeLocation, err := time.LoadLocation(destination.TZ)
-	if err != nil {
-		return "", arriveNextDay, fmt.Errorf("unknown TZ: %s: %v", destination.TZ, err)
-	}
+	arrivalTimeLocation, _ := time.LoadLocation(destination.TZ) // already checked error
 
 	localArrivalTime := utcArrivalTime.In(arrivalTimeLocation)
 	if localArrivalTime.Day() != localDepartureTime.Day() {
 		arriveNextDay = true
 	}
-	return fmt.Sprintf("%02d%02d", localArrivalTime.Hour(), localArrivalTime.Minute()), arriveNextDay, nil
+	return departureTime, fmt.Sprintf("%02d%02d", localArrivalTime.Hour(), localArrivalTime.Minute()), arriveNextDay, nil
 }
 
 const (
@@ -113,8 +117,8 @@ func main() {
 	flightNumberPerAirline := map[string]int16{}
 	for _, course := range courses {
 		flightNumberPerAirline[course.Airline] = flightNumberPerAirline[course.Airline] + 1
-		depTime := computeDepartureTime()
-		arrTime, arriveNextDay, err := computeArrivalTime(ID2Airports[course.SourceAirportID], ID2Airports[course.DestinationAirportID], depTime)
+		//depTime := computeDepartureTime()
+		depTime, arrTime, arriveNextDay, err := computeDepartureArrivalTimes(ID2Airports[course.SourceAirportID], ID2Airports[course.DestinationAirportID])
 		if err != nil {
 			fmt.Printf("Cannot compute arrival time... %v", err)
 			continue

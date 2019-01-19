@@ -9,8 +9,8 @@ spec:
     app: itineraries-server
   ports:
   - protocol: TCP
-    port: 33775
-    targetPort: 33775
+    port: 8081
+    targetPort: 8081
   type: NodePort
 
 ---
@@ -33,8 +33,8 @@ spec:
       containers:
       - name: itineraries-server
         image: itineraries-server:latest
-        imagePolicy: Never
+        imagePullPolicy: Never
         command: ["/itineraries-server"]
-        args: ["--port=4838"]
+        args: ["--port=8081"]
         ports:
-        - containerPort: 80
+        - containerPort: 8081
