@@ -88,9 +88,6 @@ definitions:
       SegmentID:
         type: integer
         format: int64
-      Distance:
-        type: integer
-        format: int64
       Origin: 
         type: string
       Destination:
@@ -99,11 +96,13 @@ definitions:
         type: string
       OperatingCarrier:
         type: string
-      DepartureDate:
-        type: string
       DepartureTime:
         type: string
-      ArrivalDate:
+      DepartureDate:
         type: string
       ArrivalTime:
         type: string
+      ArrivalDate:
+        type: string
+      ArriveNextDay:
+        type: boolean

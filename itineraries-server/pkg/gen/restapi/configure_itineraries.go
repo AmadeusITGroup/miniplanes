@@ -20,6 +20,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
 	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
 )
 
 var (
@@ -67,35 +68,33 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			}
 		}
 
-		//getParams := &schedules.GetSchedulesParams{Context: context.Background()}
-		//resp, err := client.Schedules.GetSchedules(getParams)
-		//if err != nil {
-		//	return itineraries.NewGetItinerariesBadRequest()
-		//}
+		getParams := &schedules.GetSchedulesParams{Context: context.Background()}
+		resp, err := client.Schedules.GetSchedules(getParams)
+		if err != nil {
+			return itineraries.NewGetItinerariesBadRequest()
+		}
 
-		/*		for i := range resp.Payload {
-				s := resp.Payload[i]
-		*/
-		segment := &models.Segment{
-			ArrivalDate:   "",    //s.Arrival.String(),
-			ArrivalTime:   "",    //s.Arrival.String(),
-			DepartureDate: "",    //s.Departure.String(),
-			DepartureTime: "",    //s.Departure.String(),
-			Destination:   "NCE", // airportsId2Name[*s.Destination],
-			//Distance:
-			FlightNumber:     "BA121", //*s.FlightNumber,
-			OperatingCarrier: "BA",    //*s.OperatingCarrier,
-			Origin:           "JFK",   //airportsId2Name[*s.Origin],
-			SegmentID:        0,
+		for i := range resp.Payload {
+			schedule := resp.Payload[i]
+			segment := &models.Segment{
+				//ArrivalDate: *schedule.Arrival, // obtained from OperatedDay
+				ArrivalTime:      *schedule.ArrivalTime,
+				DepartureTime:    *schedule.DepartureTime,
+				ArriveNextDay:    *schedule.ArriveNextDay,
+				Destination:      airportsId2Name[*schedule.Destination],
+				FlightNumber:     *schedule.FlightNumber,
+				OperatingCarrier: *schedule.OperatingCarrier,
+				Origin:           airportsId2Name[*schedule.Origin],
+				SegmentID:        0,
+			}
+			itinerary := &models.Itinerary{
+				Description: "my awesome itinerary",
+				ItineraryID: "",
+				Segments:    []*models.Segment{segment},
+			}
+			modItineraries = append(modItineraries, itinerary)
+			break
 		}
-		itinerary := &models.Itinerary{
-			Description: "my awesome itinerary",
-			ItineraryID: "",
-			Segments:    []*models.Segment{segment},
-		}
-		modItineraries = append(modItineraries, itinerary)
-		//	break
-		//}
 		return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
 	})
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {

@@ -156,6 +156,9 @@ func init() {
         "ArrivalTime": {
           "type": "string"
         },
+        "ArriveNextDay": {
+          "type": "boolean"
+        },
         "DepartureDate": {
           "type": "string"
         },
@@ -164,10 +167,6 @@ func init() {
         },
         "Destination": {
           "type": "string"
-        },
-        "Distance": {
-          "type": "integer",
-          "format": "int64"
         },
         "FlightNumber": {
           "type": "string"
@@ -340,6 +339,9 @@ func init() {
         "ArrivalTime": {
           "type": "string"
         },
+        "ArriveNextDay": {
+          "type": "boolean"
+        },
         "DepartureDate": {
           "type": "string"
         },
@@ -348,10 +350,6 @@ func init() {
         },
         "Destination": {
           "type": "string"
-        },
-        "Distance": {
-          "type": "integer",
-          "format": "int64"
         },
         "FlightNumber": {
           "type": "string"

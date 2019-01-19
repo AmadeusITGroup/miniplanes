@@ -452,14 +452,13 @@ func init() {
         "FlightNumber",
         "OperatingCarrier",
         "DaysOperated",
-        "Departure",
-        "Arrival",
+        "DepartureTime",
+        "ArrivalTime",
         "ArriveNextDay"
       ],
       "properties": {
-        "Arrival": {
-          "type": "string",
-          "format": "date-time"
+        "ArrivalTime": {
+          "type": "string"
         },
         "ArriveNextDay": {
           "type": "boolean"
@@ -467,12 +466,12 @@ func init() {
         "DaysOperated": {
           "type": "string"
         },
-        "Departure": {
-          "type": "string",
-          "format": "date-time"
+        "DepartureTime": {
+          "type": "string"
         },
         "Destination": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "FlightNumber": {
           "type": "string"
@@ -481,7 +480,8 @@ func init() {
           "type": "string"
         },
         "Origin": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "ScheduleID": {
           "type": "integer",
@@ -941,14 +941,13 @@ func init() {
         "FlightNumber",
         "OperatingCarrier",
         "DaysOperated",
-        "Departure",
-        "Arrival",
+        "DepartureTime",
+        "ArrivalTime",
         "ArriveNextDay"
       ],
       "properties": {
-        "Arrival": {
-          "type": "string",
-          "format": "date-time"
+        "ArrivalTime": {
+          "type": "string"
         },
         "ArriveNextDay": {
           "type": "boolean"
@@ -956,12 +955,12 @@ func init() {
         "DaysOperated": {
           "type": "string"
         },
-        "Departure": {
-          "type": "string",
-          "format": "date-time"
+        "DepartureTime": {
+          "type": "string"
         },
         "Destination": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "FlightNumber": {
           "type": "string"
@@ -970,7 +969,8 @@ func init() {
           "type": "string"
         },
         "Origin": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "ScheduleID": {
           "type": "integer",

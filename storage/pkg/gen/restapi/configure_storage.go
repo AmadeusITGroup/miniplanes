@@ -85,18 +85,18 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	})
 
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		/*db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
 		if err := db.Ping(); err != nil {
 			return liveness.NewGetLiveServiceUnavailable()
-		}*/
+		}
 		return liveness.NewGetLiveOK()
 	})
 
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		/*db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
 		if err := db.Ping(); err != nil {
 			return readiness.NewGetReadyServiceUnavailable()
-		}*/
+		}
 		return readiness.NewGetReadyOK()
 	})
 
@@ -110,8 +110,18 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 		}
 		modSchedules := []*models.Schedule{}
 		for _, a := range dbSchedules {
-			tmp := &models.Schedule{}
-			copier.Copy(tmp, a)
+
+			tmp := &models.Schedule{
+				ArrivalTime:      &a.Arrival,
+				ArriveNextDay:    &a.ArriveNextDay,
+				DaysOperated:     &a.DaysOperated,
+				DepartureTime:    &a.Departure,
+				Destination:      &a.Destination,
+				FlightNumber:     &a.FlightNumber,
+				OperatingCarrier: &a.OperatingCarrier,
+				Origin:           &a.Origin,
+				//ScheduleID:       a.ScheduleID,
+			}
 			modSchedules = append(modSchedules, tmp)
 		}
 		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)

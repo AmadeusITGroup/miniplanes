@@ -21,6 +21,9 @@ type Segment struct {
 	// arrival time
 	ArrivalTime string `json:"ArrivalTime,omitempty"`
 
+	// arrive next day
+	ArriveNextDay bool `json:"ArriveNextDay,omitempty"`
+
 	// departure date
 	DepartureDate string `json:"DepartureDate,omitempty"`
 
@@ -29,9 +32,6 @@ type Segment struct {
 
 	// destination
 	Destination string `json:"Destination,omitempty"`
-
-	// distance
-	Distance int64 `json:"Distance,omitempty"`
 
 	// flight number
 	FlightNumber string `json:"FlightNumber,omitempty"`

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
-	strfmt "github.com/go-openapi/strfmt"
 	//"k8s.io/client-go/third_party/forked/golang/template"
 )
 
@@ -14,8 +13,8 @@ var (
 	destination      = int64(1382)
 	flightNumber     = "9W4777"
 	operatingCarrier = "Air France"
-	departure        = strfmt.DateTime{}
-	arrival          = strfmt.DateTime{}
+	departure        = "1011"
+	arrival          = "1823"
 	daysOperated     = "1234567"
 )
 
@@ -40,8 +39,8 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 			FlightNumber:     &flightNumber,
 			OperatingCarrier: &operatingCarrier,
 			DaysOperated:     &daysOperated,
-			Departure:        &departure,
-			Arrival:          &arrival,
+			DepartureTime:    &departure,
+			ArrivalTime:      &arrival,
 		},
 	}
 	w.WriteHeader(200)

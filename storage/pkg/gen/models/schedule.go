@@ -17,10 +17,9 @@ import (
 // swagger:model schedule
 type Schedule struct {
 
-	// arrival
+	// arrival time
 	// Required: true
-	// Format: date-time
-	Arrival *strfmt.DateTime `json:"Arrival"`
+	ArrivalTime *string `json:"ArrivalTime"`
 
 	// arrive next day
 	// Required: true
@@ -30,14 +29,13 @@ type Schedule struct {
 	// Required: true
 	DaysOperated *string `json:"DaysOperated"`
 
-	// departure
+	// departure time
 	// Required: true
-	// Format: date-time
-	Departure *strfmt.DateTime `json:"Departure"`
+	DepartureTime *string `json:"DepartureTime"`
 
 	// destination
 	// Required: true
-	Destination *int64 `json:"Destination"`
+	Destination *int32 `json:"Destination"`
 
 	// flight number
 	// Required: true
@@ -49,7 +47,7 @@ type Schedule struct {
 
 	// origin
 	// Required: true
-	Origin *int64 `json:"Origin"`
+	Origin *int32 `json:"Origin"`
 
 	// schedule ID
 	// Required: true
@@ -60,7 +58,7 @@ type Schedule struct {
 func (m *Schedule) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateArrival(formats); err != nil {
+	if err := m.validateArrivalTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -72,7 +70,7 @@ func (m *Schedule) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateDeparture(formats); err != nil {
+	if err := m.validateDepartureTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -102,13 +100,9 @@ func (m *Schedule) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Schedule) validateArrival(formats strfmt.Registry) error {
+func (m *Schedule) validateArrivalTime(formats strfmt.Registry) error {
 
-	if err := validate.Required("Arrival", "body", m.Arrival); err != nil {
-		return err
-	}
-
-	if err := validate.FormatOf("Arrival", "body", "date-time", m.Arrival.String(), formats); err != nil {
+	if err := validate.Required("ArrivalTime", "body", m.ArrivalTime); err != nil {
 		return err
 	}
 
@@ -133,13 +127,9 @@ func (m *Schedule) validateDaysOperated(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Schedule) validateDeparture(formats strfmt.Registry) error {
+func (m *Schedule) validateDepartureTime(formats strfmt.Registry) error {
 
-	if err := validate.Required("Departure", "body", m.Departure); err != nil {
-		return err
-	}
-
-	if err := validate.FormatOf("Departure", "body", "date-time", m.Departure.String(), formats); err != nil {
+	if err := validate.Required("DepartureTime", "body", m.DepartureTime); err != nil {
 		return err
 	}
 
