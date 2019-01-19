@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	origin           = int64(532)
-	destination      = int64(1382)
+	origin           = int32(532)
+	destination      = int32(1382)
 	flightNumber     = "9W4777"
 	operatingCarrier = "Air France"
 	departure        = "1011"

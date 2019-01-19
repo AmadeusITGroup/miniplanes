@@ -16,7 +16,7 @@ import (
 type Airport struct {
 
 	// airport ID
-	AirportID int64 `json:"AirportID,omitempty"`
+	AirportID int32 `json:"AirportID,omitempty"`
 
 	// city
 	City string `json:"City,omitempty"`

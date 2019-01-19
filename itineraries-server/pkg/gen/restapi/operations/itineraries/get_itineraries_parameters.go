@@ -34,7 +34,15 @@ type GetItinerariesParams struct {
 	/*
 	  In: query
 	*/
+	DepartureDate *string
+	/*
+	  In: query
+	*/
 	From *string
+	/*
+	  In: query
+	*/
+	ReturnDate *string
 	/*
 	  In: query
 	*/
@@ -52,8 +60,18 @@ func (o *GetItinerariesParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	qs := runtime.Values(r.URL.Query())
 
+	qDepartureDate, qhkDepartureDate, _ := qs.GetOK("departureDate")
+	if err := o.bindDepartureDate(qDepartureDate, qhkDepartureDate, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qFrom, qhkFrom, _ := qs.GetOK("from")
 	if err := o.bindFrom(qFrom, qhkFrom, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qReturnDate, qhkReturnDate, _ := qs.GetOK("returnDate")
+	if err := o.bindReturnDate(qReturnDate, qhkReturnDate, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -65,6 +83,24 @@ func (o *GetItinerariesParams) BindRequest(r *http.Request, route *middleware.Ma
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindDepartureDate binds and validates parameter DepartureDate from query.
+func (o *GetItinerariesParams) bindDepartureDate(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.DepartureDate = &raw
+
 	return nil
 }
 
@@ -82,6 +118,24 @@ func (o *GetItinerariesParams) bindFrom(rawData []string, hasKey bool, formats s
 	}
 
 	o.From = &raw
+
+	return nil
+}
+
+// bindReturnDate binds and validates parameter ReturnDate from query.
+func (o *GetItinerariesParams) bindReturnDate(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.ReturnDate = &raw
 
 	return nil
 }

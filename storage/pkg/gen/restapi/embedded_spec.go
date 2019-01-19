@@ -362,7 +362,8 @@ func init() {
       "type": "object",
       "properties": {
         "AirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "City": {
           "type": "string"
@@ -851,7 +852,8 @@ func init() {
       "type": "object",
       "properties": {
         "AirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "City": {
           "type": "string"

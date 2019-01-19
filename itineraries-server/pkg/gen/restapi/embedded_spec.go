@@ -46,6 +46,16 @@ func init() {
             "type": "string",
             "name": "to",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "departureDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "returnDate",
+            "in": "query"
           }
         ],
         "responses": {
@@ -213,6 +223,16 @@ func init() {
           {
             "type": "string",
             "name": "to",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "departureDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "returnDate",
             "in": "query"
           }
         ],

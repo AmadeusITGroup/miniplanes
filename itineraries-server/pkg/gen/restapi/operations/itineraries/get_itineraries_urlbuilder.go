@@ -13,8 +13,10 @@ import (
 
 // GetItinerariesURL generates an URL for the get itineraries operation
 type GetItinerariesURL struct {
-	From *string
-	To   *string
+	DepartureDate *string
+	From          *string
+	ReturnDate    *string
+	To            *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -47,12 +49,28 @@ func (o *GetItinerariesURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
+	var departureDate string
+	if o.DepartureDate != nil {
+		departureDate = *o.DepartureDate
+	}
+	if departureDate != "" {
+		qs.Set("departureDate", departureDate)
+	}
+
 	var from string
 	if o.From != nil {
 		from = *o.From
 	}
 	if from != "" {
 		qs.Set("from", from)
+	}
+
+	var returnDate string
+	if o.ReturnDate != nil {
+		returnDate = *o.ReturnDate
+	}
+	if returnDate != "" {
+		qs.Set("returnDate", returnDate)
 	}
 
 	var to string

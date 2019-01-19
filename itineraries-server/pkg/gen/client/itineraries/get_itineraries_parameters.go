@@ -62,8 +62,12 @@ for the get itineraries operation typically these are written to a http.Request
 */
 type GetItinerariesParams struct {
 
+	/*DepartureDate*/
+	DepartureDate *string
 	/*From*/
 	From *string
+	/*ReturnDate*/
+	ReturnDate *string
 	/*To*/
 	To *string
 
@@ -105,6 +109,17 @@ func (o *GetItinerariesParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithDepartureDate adds the departureDate to the get itineraries params
+func (o *GetItinerariesParams) WithDepartureDate(departureDate *string) *GetItinerariesParams {
+	o.SetDepartureDate(departureDate)
+	return o
+}
+
+// SetDepartureDate adds the departureDate to the get itineraries params
+func (o *GetItinerariesParams) SetDepartureDate(departureDate *string) {
+	o.DepartureDate = departureDate
+}
+
 // WithFrom adds the from to the get itineraries params
 func (o *GetItinerariesParams) WithFrom(from *string) *GetItinerariesParams {
 	o.SetFrom(from)
@@ -114,6 +129,17 @@ func (o *GetItinerariesParams) WithFrom(from *string) *GetItinerariesParams {
 // SetFrom adds the from to the get itineraries params
 func (o *GetItinerariesParams) SetFrom(from *string) {
 	o.From = from
+}
+
+// WithReturnDate adds the returnDate to the get itineraries params
+func (o *GetItinerariesParams) WithReturnDate(returnDate *string) *GetItinerariesParams {
+	o.SetReturnDate(returnDate)
+	return o
+}
+
+// SetReturnDate adds the returnDate to the get itineraries params
+func (o *GetItinerariesParams) SetReturnDate(returnDate *string) {
+	o.ReturnDate = returnDate
 }
 
 // WithTo adds the to to the get itineraries params
@@ -135,6 +161,22 @@ func (o *GetItinerariesParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 	}
 	var res []error
 
+	if o.DepartureDate != nil {
+
+		// query param departureDate
+		var qrDepartureDate string
+		if o.DepartureDate != nil {
+			qrDepartureDate = *o.DepartureDate
+		}
+		qDepartureDate := qrDepartureDate
+		if qDepartureDate != "" {
+			if err := r.SetQueryParam("departureDate", qDepartureDate); err != nil {
+				return err
+			}
+		}
+
+	}
+
 	if o.From != nil {
 
 		// query param from
@@ -145,6 +187,22 @@ func (o *GetItinerariesParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		qFrom := qrFrom
 		if qFrom != "" {
 			if err := r.SetQueryParam("from", qFrom); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.ReturnDate != nil {
+
+		// query param returnDate
+		var qrReturnDate string
+		if o.ReturnDate != nil {
+			qrReturnDate = *o.ReturnDate
+		}
+		qReturnDate := qrReturnDate
+		if qReturnDate != "" {
+			if err := r.SetQueryParam("returnDate", qReturnDate); err != nil {
 				return err
 			}
 		}

@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	airportsId2Name = make(map[int64]string)
+	airportsId2Name = make(map[int32]string)
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name itineraries --spec ../swagger.yaml --exclude-main
@@ -48,6 +48,19 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
+
+		from := params.From
+		fmt.Printf("FROM: %s\n", *from)
+
+		to := params.To
+		fmt.Printf("TO: %s\n", *to)
+
+		departureDate := params.DepartureDate
+		fmt.Printf("Departure Date: %s\n", *departureDate)
+
+		returnDate := params.ReturnDate
+		fmt.Printf("Return Date: %s\n", *returnDate)
+
 		storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
 		transport := storageclient.DefaultTransportConfig().WithHost(storageURL)
 		client := storageclient.NewHTTPClientWithConfig(nil, transport)

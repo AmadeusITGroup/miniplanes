@@ -50,6 +50,12 @@ paths:
         - name: to
           in: query
           type: string
+        - name: departureDate
+          in: query
+          type: string
+        - name: returnDate
+          in: query
+          type: string
       responses:
         200:
           description: list of itineraries

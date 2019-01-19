@@ -261,6 +261,7 @@ definitions:
     properties:
       AirportID:
         type: integer
+        format: int32
       Name:
         type: string
       City:
