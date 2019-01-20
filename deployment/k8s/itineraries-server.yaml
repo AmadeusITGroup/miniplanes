@@ -35,6 +35,6 @@ spec:
         image: itineraries-server:latest
         imagePullPolicy: Never
         command: ["/itineraries-server"]
-        args: ["--port=8081"]
+        args: ["--port=8081", "--host=0.0.0.0"]
         ports:
         - containerPort: 8081

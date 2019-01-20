@@ -17,8 +17,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: storage-deployment
-  labels:
-    app: storage
 spec:
   replicas: 1
   selector:
@@ -34,23 +32,20 @@ spec:
         image: storage:latest
         imagePullPolicy: Never
         command: ["/storage"]
-        args: ["--port=8080", "--mongo-host=mongo", "--mongo-port=27017"]
+        args: ["--port=8080", "--host=0.0.0.0", "--mongo-host=mongo", "--mongo-port=27017"]
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
-#        readinessProbe:
-#          httpGet:
-#            path: /ready
-#            port: 8080
-#          initialDelaySeconds: 5 
-#          periodSeconds: 5
-#        livenessProbe:
-#          httpGet:
-#            path: /live
-#            port: 8080
-#          initialDelaySeconds: 5
-#          periodSeconds: 5
-         
- 
-
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5

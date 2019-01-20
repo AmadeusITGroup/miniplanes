@@ -36,6 +36,18 @@ spec:
         image: ui:latest
         imagePullPolicy: Never
         command: ["/ui"]
-        args: ["--port=8090"]
+        args: ["--port=8090", "--host=0.0.0.0"]
         ports:
         - containerPort: 8090
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
