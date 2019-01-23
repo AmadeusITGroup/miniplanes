@@ -25,24 +25,6 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 	}
 }
 
-func debugItinerary(i *itinerarymodels.Itinerary) {
-	fmt.Printf("ItineraryID: %s\n", i.ItineraryID)
-	fmt.Printf("Description: %s\n", i.Description)
-	fmt.Printf("Segments:\n")
-	debugSegments(i.Segments)
-}
-
-func debugSegments(ss []*itinerarymodels.Segment) {
-	for _, s := range ss {
-		debugSegment(s)
-	}
-}
-
-func debugSegment(s *itinerarymodels.Segment) {
-	fmt.Printf("%#v\n", s)
-	fmt.Printf("\t%s: %s -> %s, Departure(%s, %s). Arrival(%s, %s)\n", s.FlightNumber, s.Origin, s.Destination, s.DepartureDate, s.DepartureTime, s.ArrivalDate, s.ArrivalTime)
-}
-
 func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to string, separationDegree int) ([][]*itinerarymodels.Segment, error) {
 	fmt.Printf("computeAllSegments\n")
 	segments := [][]*itinerarymodels.Segment{}
@@ -66,7 +48,6 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 			continue
 		}
 		currentSegment := r.buildSegmentFromSchedule(s, departureDate)
-		//debugSegment(currentSegment)
 		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[*s.Destination], departureDate, *s.ArrivalTime, to, separationDegree-1)
 		if err != nil {
 			return [][]*itinerarymodels.Segment{}, err
@@ -130,12 +111,8 @@ type Graph interface {
 }
 
 type realGraph struct {
-	airports  []*storagemodels.Airport
-	schedules []*storagemodels.Schedule
-	//innerGraph *simple.WeightedDirectedGraph
-
-	//airportID2Node    map[int32]graph.Node
-	//snode2AirportID    map[graph.Node]int32
+	airports          []*storagemodels.Airport
+	schedules         []*storagemodels.Schedule
 	airportIDFromIATA map[string]int32
 	IATAFromAirportID map[int32]string
 }
@@ -170,11 +147,8 @@ func oKtoBeTaken(t1, t2 string) bool {
 // NewGraph creates the itinerary graph
 func NewGraph(airports []*storagemodels.Airport, schedules []*storagemodels.Schedule) (Graph, error) {
 	itineraryGraph := &realGraph{
-		schedules: schedules,
-		airports:  airports,
-		//innerGraph:        simple.NewWeightedDirectedGraph(0, math.Inf(1)),
-		//airportID2Node:    make(map[int32]graph.Node, 0),
-		//node2AirportID:    make(map[graph.Node]int32, 0),
+		schedules:         schedules,
+		airports:          airports,
 		airportIDFromIATA: make(map[string]int32, 0),
 		IATAFromAirportID: make(map[int32]string, 0),
 	}
@@ -182,70 +156,6 @@ func NewGraph(airports []*storagemodels.Airport, schedules []*storagemodels.Sche
 	for _, airport := range airports {
 		itineraryGraph.airportIDFromIATA[airport.IATA] = airport.AirportID
 		itineraryGraph.IATAFromAirportID[airport.AirportID] = airport.IATA
-		//itineraryGraph.nodeAdder().AddNode(simple.Node(airport.AirportID))
 	}
 	return itineraryGraph, nil
 }
-
-/*
-
-
-// Compute computes itineraries
-func (r *realGraph) Compute(from, departureDate, departureTime, to string, numberOfPaths int) ([]*itinerarymodels.Itinerary, error) {
-	solutions := []*itinerarymodels.Itinerary{}
-	fromAirportID, found := r.airportIDFromIATA[from]
-	if !found {
-		return solutions, fmt.Errorf("can't find airportID for %s", from)
-	}
-	toAirportID, found := r.airportIDFromIATA[to]
-	if !found {
-		return solutions, fmt.Errorf("can't find airportID for %s", to)
-	}
-	fmt.Printf(" %d -> %d\n", fromAirportID, toAirportID)
-
-	for _, s := range r.schedules {
-		fmt.Printf("Adding edge %d->%d\n", *s.Origin, *s.Destination)
-		if *s.Origin == fromAirportID && !oKtoBeTaken(departureTime, *s.DepartureTime) {
-			continue // skip too early flight
-		}
-		e := simple.WeightedEdge{
-			F: simple.Node(*s.Origin),
-			T: simple.Node(*s.Destination),
-			W: 1,
-		}
-		r.edgeAdder().SetWeightedEdge(e)
-	}
-
-	//paths := path.YenKShortestPaths(r.InnerGraph() /*.(graph.Graph)*/ //, numberOfPaths, simple.Node(fromAirportID), simple.Node(toAirportID))
-
-/*	for _, p := range paths {
-		if p == nil {
-			continue
-		}
-		itinerary := &itinerarymodels.Itinerary{
-			Description: "my current itinerary",
-			ItineraryID: "0",
-			Segments:    make([]*itinerarymodels.Segment, 0),
-		}
-		for _, s := range p {
-			airportID := s.ID()
-			fmt.Printf("AirportID -> %d\n", airportID)
-			s := &itinerarymodels.Segment{
-				ArrivalDate:      "25/12", //    string    `json:"ArrivalDate,omitempty"`
-				ArrivalTime:      "1200",  //    string    `json:"ArrivalTime,omitempty"`
-				ArriveNextDay:    false,   //    bool    `json:"ArriveNextDay,omitempty"`
-				DepartureDate:    "25/12", //    string    `json:"DepartureDate,omitempty"`
-				DepartureTime:    "1100",  //    string    `json:"DepartureTime,omitempty"`
-				Destination:      "JFK",   //    string    `json:"Destination,omitempty"`
-				FlightNumber:     "BA11",  //    string    `json:"FlightNumber,omitempty"`
-				OperatingCarrier: "BA",    //    string    `json:"OperatingCarrier,omitempty"`
-				Origin:           "NCE",   //    string    `json:"Origin,omitempty"`
-				SegmentID:        0,       //    int64    `json:"SegmentID,omitempty"`
-			}
-			itinerary.Segments = append(itinerary.Segments, s)
-		}
-		solutions = append(solutions, itinerary)
-	}
-	return solutions, nil
-}
-*/
