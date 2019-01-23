@@ -278,6 +278,86 @@ func TestCompute(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "two segments flight ",
+			args: args{
+				airports: []*storagemodels.Airport{
+					{
+						AirportID: 1,
+						IATA:      "NCE",
+					},
+					{
+						AirportID: 2,
+						IATA:      "JFK",
+					},
+					{
+						AirportID: 3,
+						IATA:      "CDG",
+					},
+				},
+				schedules: []*storagemodels.Schedule{
+					{
+						ArrivalTime:      NewString("1205"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1000"),
+						Destination:      NewInt(3),
+						FlightNumber:     NewString("AF01"),
+						OperatingCarrier: NewString("AF"),
+						Origin:           NewInt(1),
+						//ScheduleID    *int64
+					},
+					{
+						ArrivalTime:      NewString("2105"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1305"),
+						Destination:      NewInt(2),
+						FlightNumber:     NewString("BA01"),
+						OperatingCarrier: NewString("BA"),
+						Origin:           NewInt(3),
+						//ScheduleID    *int64
+					},
+				},
+				From:          "NCE",
+				To:            "JFK",
+				DepartureTime: "0800",
+				DepartureDate: "2412",
+			},
+			wantErrorMessage: "",
+			want: []*itinerarymodels.Itinerary{
+				&itinerarymodels.Itinerary{
+					Description: "2412:0800 - NCE-JFK",
+					ItineraryID: "MY ID",
+					Segments: []*itinerarymodels.Segment{
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1205",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1000",
+							Destination:      "CDG",
+							FlightNumber:     "AF01",
+							OperatingCarrier: "AF",
+							Origin:           "NCE",
+							SegmentID:        0,
+						},
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "2105",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1305",
+							Destination:      "JFK",
+							FlightNumber:     "BA01",
+							OperatingCarrier: "BA",
+							Origin:           "CDG",
+							SegmentID:        0,
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -288,7 +368,7 @@ func TestCompute(t *testing.T) {
 			got, err := g.Compute(tt.args.From, tt.args.DepartureDate, tt.args.DepartureTime, tt.args.To, tt.args.numberOfPaths)
 			if err != nil {
 				if err.Error() != tt.wantErrorMessage {
-					t.Errorf("Expected error was %q: got %q", tt.wantErrorMessage, err.Error())
+					t.Errorf("%s - Expected error was %q: got %q", tt.name, tt.wantErrorMessage, err.Error())
 				}
 				return
 			}
@@ -297,7 +377,7 @@ func TestCompute(t *testing.T) {
 				spew.Dump(tt.want)
 				fmt.Printf("\nGot:\n")
 				spew.Dump(got)
-				t.Error()
+				t.Errorf("%s", tt.name)
 			}
 		})
 	}

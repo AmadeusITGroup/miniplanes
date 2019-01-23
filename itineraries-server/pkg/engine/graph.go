@@ -26,7 +26,6 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 }
 
 func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to string, separationDegree int) ([][]*itinerarymodels.Segment, error) {
-	fmt.Printf("computeAllSegments\n")
 	segments := [][]*itinerarymodels.Segment{}
 	fromAirportID, found := r.airportIDFromIATA[from]
 	if !found {
@@ -40,40 +39,33 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 		// log.Infof("Found destination airport")
 		return segments, nil
 	}
-	fmt.Printf(" %d -> %d\n", fromAirportID, toAirportID)
 	for _, s := range r.schedules { // for each schedules...
-		fmt.Printf("Adding edge %d->%d\n", *s.Origin, *s.Destination)
-		if *s.Origin != fromAirportID || !oKtoBeTaken(departureTime, *s.DepartureTime) { // not good schedules or too early
+		if *s.Origin != fromAirportID {
+			continue
+		}
+		if !oKtoBeTaken(departureTime, *s.DepartureTime) { // not good schedules or too early
 			// log.Infof("Cannot be taken...")
 			continue
 		}
 		currentSegment := r.buildSegmentFromSchedule(s, departureDate)
+
 		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[*s.Destination], departureDate, *s.ArrivalTime, to, separationDegree-1)
 		if err != nil {
 			return [][]*itinerarymodels.Segment{}, err
 		}
+		ss := []*itinerarymodels.Segment{}
+		s := new(itinerarymodels.Segment)
+		copier.Copy(s, currentSegment)
+		ss = append(ss, s)
 		if len(currentSegmentFanout) == 0 {
-			s1 := []*itinerarymodels.Segment{}
-			s2 := new(itinerarymodels.Segment)
-			copier.Copy(s2, currentSegment)
-			s1 = append(s1, s2)
-			segments = append(segments, s1)
+			segments = append(segments, ss)
+		}
+		for i := range currentSegmentFanout {
+			ss2 := append(ss, currentSegmentFanout[i]...)
+			segments = append(segments, ss2)
 		}
 
-		for i := range currentSegmentFanout {
-			fmt.Printf("*\n")
-			s1 := make([]*itinerarymodels.Segment, len(currentSegmentFanout[i])+1)
-			s1 = append(s1, currentSegment)
-			s1 = append(currentSegmentFanout[1][:0:0], currentSegmentFanout[i]...)
-			//for j := range fanout[i] {
-			//	fmt.Printf("@\n")
-			//	s := fanout[i][j]
-			//	s1 = append(s1, s)
-			//}
-			segments = append(segments, s1)
-		}
 	}
-	fmt.Printf("4-> %d\n", len(segments))
 	return segments, nil
 }
 
@@ -125,11 +117,7 @@ func splitHourMinutes(t string) (int32, int32, error) {
 
 // it means t2 is later on than t1
 func oKtoBeTaken(t1, t2 string) bool {
-
-	fmt.Printf("okToBeTaken -> %s, %s\n", t1, t2)
-
 	h1, _, err := splitHourMinutes(t1)
-	fmt.Printf("h1 %d\n", h1)
 	if err != nil {
 		return false
 	}
@@ -137,7 +125,6 @@ func oKtoBeTaken(t1, t2 string) bool {
 	if err != nil {
 		return false
 	}
-	fmt.Printf("h2 %d\n", h2)
 	if h2 > h1 { // must be in same day
 		return true
 	}
