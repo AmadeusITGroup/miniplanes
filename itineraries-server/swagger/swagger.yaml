@@ -76,7 +76,7 @@ paths:
           schema:
             $ref: "../../storage/swagger/swagger.yaml#/definitions/error"
 definitions:
-  itinerary:
+  itinerary: # Itinerary it's an array of Segment (https://aviation.stackexchange.com/questions/14567/what-is-the-difference-between-slice-segment-and-leg)
     type: object
     properties:
       ItineraryID:

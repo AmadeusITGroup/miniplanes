@@ -13,7 +13,7 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
@@ -21,10 +21,12 @@ import (
 	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
+	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 )
 
 var (
-	airportsId2Name = make(map[int32]string)
+	airportID2Airport = make(map[int32]*storagemodels.Airport)
+	airportsIATA2ID   = make(map[string]int32)
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name itineraries --spec ../swagger.yaml --exclude-main
@@ -58,63 +60,47 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 		departureDate := params.DepartureDate
 		fmt.Printf("Departure Date: %s\n", *departureDate)
 
-		returnDate := params.ReturnDate
-		fmt.Printf("Return Date: %s\n", *returnDate)
+		departureTime := "0800"
+		fmt.Printf("Departure Time: %s\n", departureTime)
+
+		//returnDate := params.ReturnDate
+		//fmt.Printf("Return Date: %s\n", *returnDate)
 
 		storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
 		transport := storageclient.DefaultTransportConfig().WithHost(storageURL)
 		client := storageclient.NewHTTPClientWithConfig(nil, transport)
-		//client := storageclient.New(transport, strfmt.Default)
-		modItineraries := []*models.Itinerary{}
 
-		if len(airportsId2Name) == 0 {
-			getParams := &airports.GetAirportsParams{Context: context.Background()}
-			resp, err := client.Airports.GetAirports(getParams)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-				//return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
-				return itineraries.NewGetItinerariesNotFound()
-			}
-			for i := range resp.Payload {
-				a := resp.Payload[i]
-				airportsId2Name[a.AirportID] = a.IATA
-			}
-		}
-
-		getParams := &schedules.GetSchedulesParams{Context: context.Background()}
-		resp, err := client.Schedules.GetSchedules(getParams)
+		airportsParams := &airports.GetAirportsParams{Context: context.Background()}
+		airportsResp, err := client.Airports.GetAirports(airportsParams)
 		if err != nil {
-			return itineraries.NewGetItinerariesBadRequest()
+			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
 		}
 
-		for i := range resp.Payload {
-			schedule := resp.Payload[i]
-			segment := &models.Segment{
-				//ArrivalDate: *schedule.Arrival, // obtained from OperatedDay
-				ArrivalTime:      *schedule.ArrivalTime,
-				DepartureTime:    *schedule.DepartureTime,
-				ArriveNextDay:    *schedule.ArriveNextDay,
-				Destination:      airportsId2Name[*schedule.Destination],
-				FlightNumber:     *schedule.FlightNumber,
-				OperatingCarrier: *schedule.OperatingCarrier,
-				Origin:           airportsId2Name[*schedule.Origin],
-				SegmentID:        0,
-			}
-			itinerary := &models.Itinerary{
-				Description: "my awesome itinerary",
-				ItineraryID: "",
-				Segments:    []*models.Segment{segment},
-			}
-			modItineraries = append(modItineraries, itinerary)
-			break
+		schedulesParams := &schedules.GetSchedulesParams{Context: context.Background()}
+		schedulesResp, err := client.Schedules.GetSchedules(schedulesParams)
+		if err != nil {
+			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
 		}
+
+		itineraryGraph, err := engine.NewGraph(airportsResp.Payload, schedulesResp.Payload)
+		if err != nil {
+			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
+		}
+
+		modItineraries, err := itineraryGraph.Compute(*from, *departureDate, departureTime, *to, 5)
+		if err != nil {
+			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
+		}
+
 		return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
 	})
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		return middleware.NotImplemented("operation liveness.GetLive has not yet been implemented")
+		// liveness.NewGetLiveServiceUnavailable()
+		return liveness.NewGetLiveOK()
 	})
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		return middleware.NotImplemented("operation readiness.GetReady has not yet been implemented")
+		//readiness.NewGetReadyServiceUnavailable()
+		return readiness.NewGetReadyOK()
 	})
 
 	api.ServerShutdown = func() {}
