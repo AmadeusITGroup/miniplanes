@@ -134,6 +134,7 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			name: "two valid schedules",
+
 			args: args{
 				airports: []*storagemodels.Airport{
 					{
@@ -216,6 +217,7 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			name: "one valid schedule, one too early",
+
 			args: args{
 				airports: []*storagemodels.Airport{
 					{
@@ -359,7 +361,7 @@ func TestCompute(t *testing.T) {
 			},
 		},
 		{
-			name: "two segments flight ",
+			name: "2xtwo segments flights ",
 			args: args{
 				airports: []*storagemodels.Airport{
 					{
@@ -373,6 +375,10 @@ func TestCompute(t *testing.T) {
 					{
 						AirportID: 3,
 						IATA:      "CDG",
+					},
+					{
+						AirportID: 4,
+						IATA:      "CPH",
 					},
 				},
 				schedules: []*storagemodels.Schedule{
@@ -388,7 +394,7 @@ func TestCompute(t *testing.T) {
 						//ScheduleID    *int64
 					},
 					{
-						ArrivalTime:      NewString("2105"),
+						ArrivalTime:      NewString("1405"),
 						ArriveNextDay:    NewBool(false),
 						DaysOperated:     NewString("1234567"),
 						DepartureTime:    NewString("1305"),
@@ -396,6 +402,28 @@ func TestCompute(t *testing.T) {
 						FlightNumber:     NewString("BA01"),
 						OperatingCarrier: NewString("BA"),
 						Origin:           NewInt(3),
+						//ScheduleID    *int64
+					},
+					{
+						ArrivalTime:      NewString("1120"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1000"),
+						Destination:      NewInt(4),
+						FlightNumber:     NewString("AF02"),
+						OperatingCarrier: NewString("AF"),
+						Origin:           NewInt(1),
+						//ScheduleID    *int64
+					},
+					{
+						ArrivalTime:      NewString("1205"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1310"),
+						Destination:      NewInt(2),
+						FlightNumber:     NewString("AF18"),
+						OperatingCarrier: NewString("AF"),
+						Origin:           NewInt(4),
 						//ScheduleID    *int64
 					},
 				},
@@ -424,7 +452,7 @@ func TestCompute(t *testing.T) {
 						},
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "2105",
+							ArrivalTime:      "1405",
 							ArriveNextDay:    false,
 							DepartureDate:    "2412",
 							DepartureTime:    "1305",
@@ -436,7 +464,91 @@ func TestCompute(t *testing.T) {
 						},
 					},
 				},
+				&itinerarymodels.Itinerary{
+					Description: "2412:0800 - NCE-LHR",
+					ItineraryID: "MY ID",
+					Segments: []*itinerarymodels.Segment{
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1120",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1000",
+							Destination:      "CPH",
+							FlightNumber:     "AF02",
+							OperatingCarrier: "AF",
+							Origin:           "NCE",
+							SegmentID:        0,
+						},
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1205",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1310",
+							Destination:      "LHR",
+							FlightNumber:     "AF18",
+							OperatingCarrier: "AF",
+							Origin:           "CPH",
+							SegmentID:        0,
+						},
+					},
+				},
 			},
+		},
+		{
+			name: "no segments",
+			//enabled: true,
+			args: args{
+				airports: []*storagemodels.Airport{
+					{
+						AirportID: 1,
+						IATA:      "NCE",
+					},
+					{
+						AirportID: 2,
+						IATA:      "LHR",
+					},
+					{
+						AirportID: 3,
+						IATA:      "CDG",
+					},
+					{
+						AirportID: 4,
+						IATA:      "CPH",
+					},
+				},
+				schedules: []*storagemodels.Schedule{
+					{
+						ArrivalTime:      NewString("1205"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1000"),
+						Destination:      NewInt(3),
+						FlightNumber:     NewString("AF01"),
+						OperatingCarrier: NewString("AF"),
+						Origin:           NewInt(1),
+						//ScheduleID    *int64
+					},
+					{
+						ArrivalTime:      NewString("1120"),
+						ArriveNextDay:    NewBool(false),
+						DaysOperated:     NewString("1234567"),
+						DepartureTime:    NewString("1000"),
+						Destination:      NewInt(4),
+						FlightNumber:     NewString("AF02"),
+						OperatingCarrier: NewString("AF"),
+						Origin:           NewInt(1),
+						//ScheduleID    *int64
+					},
+				},
+				From:          "NCE",
+				To:            "LHR",
+				DepartureTime: "0800",
+				DepartureDate: "2412",
+			},
+			wantErrorMessage: "",
+			want:             []*itinerarymodels.Itinerary{},
 		},
 	}
 	for _, tt := range tests {

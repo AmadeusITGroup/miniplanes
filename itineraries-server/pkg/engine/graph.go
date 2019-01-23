@@ -13,15 +13,15 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 	arrivalDate := departureDate //TOOD fix bug here arrival date could be different
 	return &itinerarymodels.Segment{
 		ArrivalDate:      arrivalDate,
-		ArrivalTime:      *s.ArrivalTime,                      //    string    `json:"ArrivalTime,omitempty"`
-		ArriveNextDay:    *s.ArriveNextDay,                    //    bool    `json:"ArriveNextDay,omitempty"`
-		DepartureDate:    departureDate,                       //    string    `json:"DepartureDate,omitempty"`
-		DepartureTime:    *s.DepartureTime,                    //    string    `json:"DepartureTime,omitempty"`
-		Destination:      r.IATAFromAirportID[*s.Destination], //    string    `json:"Destination,omitempty"`
-		FlightNumber:     *s.FlightNumber,                     //    string    `json:"FlightNumber,omitempty"`
-		OperatingCarrier: *s.OperatingCarrier,                 //    string    `json:"OperatingCarrier,omitempty"`
-		Origin:           r.IATAFromAirportID[*s.Origin],      //    string    `json:"Origin,omitempty"`
-		SegmentID:        0,                                   //    int64    `json:"SegmentID,omitempty"`
+		ArrivalTime:      *s.ArrivalTime,
+		ArriveNextDay:    *s.ArriveNextDay,
+		DepartureDate:    departureDate,
+		DepartureTime:    *s.DepartureTime,
+		Destination:      r.IATAFromAirportID[*s.Destination],
+		FlightNumber:     *s.FlightNumber,
+		OperatingCarrier: *s.OperatingCarrier,
+		Origin:           r.IATAFromAirportID[*s.Origin],
+		SegmentID:        0,
 	}
 }
 
@@ -35,9 +35,12 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 	if !found {
 		return segments, fmt.Errorf("can't find airportID for %s", to)
 	}
-	if fromAirportID == toAirportID || separationDegree == 0 {
-		// log.Infof("Found destination airport")
+	if fromAirportID == toAirportID {
 		return segments, nil
+	}
+	if separationDegree == 0 {
+		// log.Infof("Found destination airport")
+		return segments, fmt.Errorf("no segments found")
 	}
 	for _, s := range r.schedules { // for each schedules...
 		if *s.Origin != fromAirportID {
@@ -48,7 +51,6 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 			continue
 		}
 		currentSegment := r.buildSegmentFromSchedule(s, departureDate)
-
 		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[*s.Destination], departureDate, *s.ArrivalTime, to, separationDegree-1)
 		if err != nil {
 			return [][]*itinerarymodels.Segment{}, err
@@ -58,13 +60,17 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 		copier.Copy(s, currentSegment)
 		ss = append(ss, s)
 		if len(currentSegmentFanout) == 0 {
-			segments = append(segments, ss)
+			if s.Destination == to {
+				segments = append(segments, ss) // if no fanout check destination
+			}
 		}
 		for i := range currentSegmentFanout {
+			if currentSegmentFanout[i][len(currentSegmentFanout[i])-1].Destination != to {
+				continue // only fanout with right destination is kept
+			}
 			ss2 := append(ss, currentSegmentFanout[i]...)
 			segments = append(segments, ss2)
 		}
-
 	}
 	return segments, nil
 }
