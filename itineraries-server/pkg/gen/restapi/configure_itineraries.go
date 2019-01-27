@@ -14,10 +14,12 @@ import (
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/version"
 	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
@@ -101,6 +103,13 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
 		//readiness.NewGetReadyServiceUnavailable()
 		return readiness.NewGetReadyOK()
+	})
+
+	api.VersionGetVersionHandler = version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
+		tmp := &models.Version{
+			Version: config.Version,
+		}
+		return version.NewGetVersionOK().WithPayload(tmp)
 	})
 
 	api.ServerShutdown = func() {}

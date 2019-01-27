@@ -22,6 +22,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/version"
 )
 
 // NewItinerariesAPI creates a new Itineraries instance
@@ -49,6 +50,9 @@ func NewItinerariesAPI(spec *loads.Document) *ItinerariesAPI {
 		}),
 		ReadinessGetReadyHandler: readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
 			return middleware.NotImplemented("operation ReadinessGetReady has not yet been implemented")
+		}),
+		VersionGetVersionHandler: version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
+			return middleware.NotImplemented("operation VersionGetVersion has not yet been implemented")
 		}),
 	}
 }
@@ -87,6 +91,8 @@ type ItinerariesAPI struct {
 	LivenessGetLiveHandler liveness.GetLiveHandler
 	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
 	ReadinessGetReadyHandler readiness.GetReadyHandler
+	// VersionGetVersionHandler sets the operation handler for the get version operation
+	VersionGetVersionHandler version.GetVersionHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -160,6 +166,10 @@ func (o *ItinerariesAPI) Validate() error {
 
 	if o.ReadinessGetReadyHandler == nil {
 		unregistered = append(unregistered, "readiness.GetReadyHandler")
+	}
+
+	if o.VersionGetVersionHandler == nil {
+		unregistered = append(unregistered, "version.GetVersionHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -274,6 +284,11 @@ func (o *ItinerariesAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/ready"] = readiness.NewGetReady(o.context, o.ReadinessGetReadyHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/version"] = version.NewGetVersion(o.context, o.VersionGetVersionHandler)
 
 }
 

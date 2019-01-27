@@ -14,6 +14,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/itineraries"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/readiness"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/version"
 )
 
 // Default itineraries HTTP client.
@@ -65,6 +66,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Itinerarie
 
 	cli.Readiness = readiness.New(transport, formats)
 
+	cli.Version = version.New(transport, formats)
+
 	return cli
 }
 
@@ -115,6 +118,8 @@ type Itineraries struct {
 
 	Readiness *readiness.Client
 
+	Version *version.Client
+
 	Transport runtime.ClientTransport
 }
 
@@ -127,5 +132,7 @@ func (c *Itineraries) SetTransport(transport runtime.ClientTransport) {
 	c.Liveness.SetTransport(transport)
 
 	c.Readiness.SetTransport(transport)
+
+	c.Version.SetTransport(transport)
 
 }

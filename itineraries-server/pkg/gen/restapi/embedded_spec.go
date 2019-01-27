@@ -136,6 +136,21 @@ func init() {
           }
         }
       }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "version"
+        ],
+        "responses": {
+          "200": {
+            "description": "version",
+            "schema": {
+              "$ref": "../../storage/swagger/swagger.yaml#/definitions/version"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -314,6 +329,21 @@ func init() {
           }
         }
       }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "version"
+        ],
+        "responses": {
+          "200": {
+            "description": "version",
+            "schema": {
+              "$ref": "#/definitions/version"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -383,6 +413,14 @@ func init() {
         "SegmentID": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "Version": {
+          "type": "string"
         }
       }
     }

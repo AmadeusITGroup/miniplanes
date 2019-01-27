@@ -7,6 +7,15 @@ schemes:
 - http
 #- https
 paths:
+  /version:
+    get:
+      tags:
+        - version
+      responses:
+        200:
+          description: version
+          schema:
+            $ref: "../../storage/swagger/swagger.yaml#/definitions/version" 
   /live:
     get:
       tags:
