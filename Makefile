@@ -17,7 +17,8 @@ storage-validate-swagger:
 	cd storage/swagger && swagger validate ./swagger.yaml
 
 storage-build: output
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
+	#VERSION := $(shell git rev-parse HEAD)
+	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniapp/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
 
 storage-image-build: storage-build
 	cp -f $(OUTPUTDIR)/storage storage/image

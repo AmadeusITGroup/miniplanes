@@ -8,6 +8,15 @@ schemes:
 - http
 #- https
 paths:
+  /version:
+    get:
+      tags:
+        - version
+      responses:
+        200:
+          description: version
+          schema:
+            $ref: "#/definitions/version" 
   /live:
     get:
       tags:
@@ -140,7 +149,7 @@ paths:
           schema: 
             $ref: "#/definitions/schedule"
       responses: 
-        "201":
+        201:
           description: "Created"
           schema: 
             $ref: "#/definitions/schedule"
@@ -216,6 +225,11 @@ parameters:
     required: true
          
 definitions:
+  version:
+    type: object
+    properties:
+      Version:
+        type: string
   course:
     type: object
     properties:

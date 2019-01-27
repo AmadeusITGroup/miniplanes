@@ -23,6 +23,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/version"
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name storage --spec ../swagger.yaml --exclude-main
@@ -137,6 +138,13 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	})
 	api.SchedulesUpdateScheduleHandler = schedules.UpdateScheduleHandlerFunc(func(params schedules.UpdateScheduleParams) middleware.Responder {
 		return middleware.NotImplemented("operation schedules.UpdateSchedule has not yet been implemented")
+	})
+
+	api.VersionGetVersionHandler = version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
+		tmp := &models.Version{
+			Version: config.Version,
+		}
+		return version.NewGetVersionOK().WithPayload(tmp)
 	})
 
 	api.ServerShutdown = func() {}

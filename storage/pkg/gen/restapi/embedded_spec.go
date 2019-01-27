@@ -326,6 +326,21 @@ func init() {
           "$ref": "#/parameters/idPathParameter"
         }
       ]
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "version"
+        ],
+        "responses": {
+          "200": {
+            "description": "version",
+            "schema": {
+              "$ref": "#/definitions/version"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -487,6 +502,14 @@ func init() {
         "ScheduleID": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "Version": {
+          "type": "string"
         }
       }
     }
@@ -816,6 +839,21 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "version"
+        ],
+        "responses": {
+          "200": {
+            "description": "version",
+            "schema": {
+              "$ref": "#/definitions/version"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -977,6 +1015,14 @@ func init() {
         "ScheduleID": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "Version": {
+          "type": "string"
         }
       }
     }

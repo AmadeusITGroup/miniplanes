@@ -25,6 +25,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/version"
 )
 
 // NewStorageAPI creates a new Storage instance
@@ -61,6 +62,9 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		}),
 		SchedulesGetSchedulesHandler: schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
 			return middleware.NotImplemented("operation SchedulesGetSchedules has not yet been implemented")
+		}),
+		VersionGetVersionHandler: version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
+			return middleware.NotImplemented("operation VersionGetVersion has not yet been implemented")
 		}),
 		SchedulesAddScheduleHandler: schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
 			return middleware.NotImplemented("operation SchedulesAddSchedule has not yet been implemented")
@@ -117,6 +121,8 @@ type StorageAPI struct {
 	ReadinessGetReadyHandler readiness.GetReadyHandler
 	// SchedulesGetSchedulesHandler sets the operation handler for the get schedules operation
 	SchedulesGetSchedulesHandler schedules.GetSchedulesHandler
+	// VersionGetVersionHandler sets the operation handler for the get version operation
+	VersionGetVersionHandler version.GetVersionHandler
 	// SchedulesAddScheduleHandler sets the operation handler for the add schedule operation
 	SchedulesAddScheduleHandler schedules.AddScheduleHandler
 	// SchedulesDeleteScheduleHandler sets the operation handler for the delete schedule operation
@@ -210,6 +216,10 @@ func (o *StorageAPI) Validate() error {
 
 	if o.SchedulesGetSchedulesHandler == nil {
 		unregistered = append(unregistered, "schedules.GetSchedulesHandler")
+	}
+
+	if o.VersionGetVersionHandler == nil {
+		unregistered = append(unregistered, "version.GetVersionHandler")
 	}
 
 	if o.SchedulesAddScheduleHandler == nil {
@@ -355,6 +365,11 @@ func (o *StorageAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/schedules"] = schedules.NewGetSchedules(o.context, o.SchedulesGetSchedulesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/version"] = version.NewGetVersion(o.context, o.VersionGetVersionHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

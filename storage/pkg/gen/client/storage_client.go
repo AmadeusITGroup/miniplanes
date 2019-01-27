@@ -17,6 +17,7 @@ import (
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/liveness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/readiness"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/version"
 )
 
 // Default storage HTTP client.
@@ -74,6 +75,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Storage {
 
 	cli.Schedules = schedules.New(transport, formats)
 
+	cli.Version = version.New(transport, formats)
+
 	return cli
 }
 
@@ -130,6 +133,8 @@ type Storage struct {
 
 	Schedules *schedules.Client
 
+	Version *version.Client
+
 	Transport runtime.ClientTransport
 }
 
@@ -148,5 +153,7 @@ func (c *Storage) SetTransport(transport runtime.ClientTransport) {
 	c.Readiness.SetTransport(transport)
 
 	c.Schedules.SetTransport(transport)
+
+	c.Version.SetTransport(transport)
 
 }
