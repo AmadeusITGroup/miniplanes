@@ -18,7 +18,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Itineraries Server", func() {
+var _ = Describe("itineraries-server", func() {
 	/*	It("Should have liveness probe", func() {
 			client := livenessclient.New(httptransport.New("localhost:8888", "", nil), strfmt.Default)
 			Eventually(func() error {

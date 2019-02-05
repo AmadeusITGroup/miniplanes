@@ -21,8 +21,7 @@ import (
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/spf13/pflag"
-
-	"k8s.io/client-go/rest"
+	//"k8s.io/client-go/rest"
 )
 
 func TestE2E(t *testing.T) {
@@ -30,13 +29,17 @@ func TestE2E(t *testing.T) {
 }
 
 var (
-	kubeConfig         *rest.Config
+	//kubeConfig         *rest.Config
 	kubeConfigFilePath string
+	StorageHost        string
+	StoragePort        int
 )
 
 func TestMain(m *testing.M) {
 
-	pflag.StringVar(&kubeConfigFilePath, "kubeconfig", "", "Path to kubeconfig")
+	//pflag.StringVar(&kubeConfigFilePath, "kubeconfig", "", "Path to kubeconfig")
+	pflag.StringVar(&StorageHost, "storage-host", "", "storage host/service name")
+	pflag.IntVar(&StoragePort, "storage-port", 0, "storage port number")
 	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	pflag.Parse()
 	goflag.CommandLine.Parse([]string{})
