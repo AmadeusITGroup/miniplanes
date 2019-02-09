@@ -14,8 +14,10 @@ limitations under the License.
 package config
 
 var (
-	MongoHost string
-	MongoPort int
+	MongoHost   string
+	MongoPort   int
+	MongoDBName string
 
 	Version string
 )
+

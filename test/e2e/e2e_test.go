@@ -50,5 +50,5 @@ func TestMain(m *testing.M) {
 // RunE2ETests runs e2e test
 func RunE2ETests(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
-	ginkgo.RunSpecs(t, "Workflow Suite")
+	ginkgo.RunSpecs(t, "miniapp suite")
 }

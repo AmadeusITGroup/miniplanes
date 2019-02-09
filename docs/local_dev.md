@@ -1,9 +1,19 @@
 
 
+## Working locally on your laptop (no container)
+
+### Test locally
+
+```shell
+$ ./hack/test_e2e_local.sh
+```
+
+
+## Working with minikube
 
 ### Populating mongo with local forward
-```shell 
- MYPORT=9999 #your unused port should be here
+```shell
+$ MYPORT=9999 #your unused port should be here
 $ kubectl port-forward pod/$(kubectl get pods -lrole=mongo -o=jsonpath='{.items[0].metadata.name}') ${MYPORT}:27017
 Forwarding from 127.0.0.1:9999 -> 27017
 Forwarding from [::1]:9999 -> 27017
@@ -17,3 +27,8 @@ $ mongoimport --port=${MYPORT} -d miniapp -c airlines --type csv --file data/air
 $ mongoimport --port=${MYPORT} -d miniapp -c routes --type csv --file data/routes.dat --fieldFile=data/routes_schema.dat
 $ mongoimport --port=${MYPORT} -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 ```
+
+
+## Working with kind
+
+TODO

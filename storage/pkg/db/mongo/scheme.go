@@ -14,7 +14,10 @@ limitations under the License.
 package mongo
 
 import (
-	"gopkg.in/mgo.v2/bson" // TODO: remove mongo here since it should be general enough
+	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	"github.com/jinzhu/copier"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Airline struct {
@@ -30,6 +33,12 @@ type Airline struct {
 
 }
 
+func (a Airline) ToModel() (*models.Airline, error) {
+	v := &models.Airline{}
+	err := copier.Copy(v, &a)
+	return v, err
+}
+
 type Course struct {
 	ID                   bson.ObjectId `json:"id" bson:"_id"`
 	Airline              string        `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
@@ -42,6 +51,12 @@ type Course struct {
 	Stops                string        `json:"stops" bson:"stops"`                               //Number of stops on this flight ("0" for direct)
 	Equipment            string        `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
 
+}
+
+func (c Course) ToModel() (*models.Course, error) {
+	v := &models.Course{}
+	err := copier.Copy(v, &c)
+	return v, err
 }
 
 type Airport struct {
@@ -63,6 +78,12 @@ type Airport struct {
 
 }
 
+func (a Airport) ToModel() (*models.Airport, error) {
+	v := &models.Airport{}
+	err := copier.Copy(v, &a)
+	return v, err
+}
+
 type Schedule struct {
 	ID               bson.ObjectId `json:"id" bson:"_id"`
 	Origin           int32         `json:"origin" bson:"origin"`
@@ -73,4 +94,10 @@ type Schedule struct {
 	Departure        string        `json:"departure" bson:"departure"`
 	Arrival          string        `json:"arrival" bson:"arrival"`
 	ArriveNextDay    bool          `json:"arriveNextDay" bson:"arriveNextDay"`
+}
+
+func (s Schedule) ToModel() (*models.Schedule, error) {
+	v := &models.Schedule{}
+	err := copier.Copy(v, &s)
+	return v, err
 }

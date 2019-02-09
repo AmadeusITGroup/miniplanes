@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jinzhu/copier"
+	log "github.com/sirupsen/logrus"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/backend/mongo"
+	"github.com/amadeusitgroup/miniapp/storage/pkg/db/mongo"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
@@ -35,111 +35,110 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
-
+	api.Logger = log.Infof
 	api.JSONConsumer = runtime.JSONConsumer()
-
 	api.JSONProducer = runtime.JSONProducer()
 
-	// Airlines
+	// GET Airlines
 	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
-		dbAirlines, err := db.GetAirlines()
+		modAirlines, err := db.GetAirlines()
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airlines: %v", err)
+			log.Warn(message)
 			return airlines.NewGetAirlinesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		modAirlines := []*models.Airline{}
-		for _, a := range dbAirlines {
-			tmp := &models.Airline{}
-			copier.Copy(tmp, a)
-			modAirlines = append(modAirlines, tmp)
 		}
 		return airlines.NewGetAirlinesOK().WithPayload(modAirlines)
 	})
 
-	// Airports
+	// GET Airports
 	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
-		dbAirports, err := db.GetAirports()
+		modAirports, err := db.GetAirports()
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airports: %v", err)
+			log.Warn(message)
 			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
-		}
-		modAirports := []*models.Airport{}
-		for _, a := range dbAirports {
-			tmp := &models.Airport{}
-			copier.Copy(tmp, a)
-			modAirports = append(modAirports, tmp)
 		}
 		return airports.NewGetAirportsOK().WithPayload(modAirports)
 	})
 
+	// GET Courses
 	api.CoursesGetCoursesHandler = courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
-		return middleware.NotImplemented("operation courses.GetCourses has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		modCourses, err := db.GetCourses()
+		if err != nil {
+			message := fmt.Sprintf("unable to retrieve courses: %v", err)
+			log.Warn(message)
+			return courses.NewGetCoursesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+		}
+		return courses.NewGetCoursesOK().WithPayload(modCourses)
 	})
 
+	// GET Liveness
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
 		if err := db.Ping(); err != nil {
-			return liveness.NewGetLiveServiceUnavailable()
+			message := fmt.Sprintf("unable to ping DB %s: %v", db.DialString(), err)
+			log.Warnf(message)
+			return liveness.NewGetLiveServiceUnavailable().WithPayload(&models.Error{Code: http.StatusServiceUnavailable, Message: &message})
 		}
+		log.Debug("Yep we're alive")
 		return liveness.NewGetLiveOK()
 	})
 
+	// GET Readiness
 	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
 		if err := db.Ping(); err != nil {
-			return readiness.NewGetReadyServiceUnavailable()
+			message := fmt.Sprintf("unable to ping DB %s: %v", db.DialString(), err)
+			log.Warnf(message)
+			return readiness.NewGetReadyServiceUnavailable().WithPayload(&models.Error{Code: http.StatusServiceUnavailable, Message: &message})
 		}
+		log.Debug("Ready, sir!")
 		return readiness.NewGetReadyOK()
 	})
 
+	// GET Schedules
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
-		dbSchedules, err := db.GetSchedules()
+		modSchedules, err := db.GetSchedules()
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airports: %v", err)
 			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
-		modSchedules := []*models.Schedule{}
-		for _, a := range dbSchedules {
-
-			tmp := &models.Schedule{
-				ArrivalTime:      &a.Arrival,
-				ArriveNextDay:    &a.ArriveNextDay,
-				DaysOperated:     &a.DaysOperated,
-				DepartureTime:    &a.Departure,
-				Destination:      &a.Destination,
-				FlightNumber:     &a.FlightNumber,
-				OperatingCarrier: &a.OperatingCarrier,
-				Origin:           &a.Origin,
-				//ScheduleID:       a.ScheduleID,
-			}
-			modSchedules = append(modSchedules, tmp)
-		}
 		return schedules.NewGetSchedulesOK().WithPayload(modSchedules)
 	})
+
+	// AddSchedule
 	api.SchedulesAddScheduleHandler = schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
-		return middleware.NotImplemented("operation schedules.AddSchedule has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		modSchedule, err := db.InsertSchedule(params.Schedule)
+		if err != nil {
+			return schedules.NewAddScheduleDefault(422) // todo Add 422 Unprocessable entity, 409 conflict (even if alrady exists)
+		}
+		return schedules.NewAddScheduleCreated().WithPayload(modSchedule)
 	})
+
+	// DELETE Schedule
 	api.SchedulesDeleteScheduleHandler = schedules.DeleteScheduleHandlerFunc(func(params schedules.DeleteScheduleParams) middleware.Responder {
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		err := db.DeleteSchedule(params.ID)
 		return middleware.NotImplemented("operation schedules.DeleteSchedule has not yet been implemented")
 	})
+
+	// GET Schedule<ID>
 	api.SchedulesGetScheduleHandler = schedules.GetScheduleHandlerFunc(func(params schedules.GetScheduleParams) middleware.Responder {
 		return middleware.NotImplemented("operation schedules.GetSchedule has not yet been implemented")
 	})
+
+	// PUT Schedule
 	api.SchedulesUpdateScheduleHandler = schedules.UpdateScheduleHandlerFunc(func(params schedules.UpdateScheduleParams) middleware.Responder {
 		return middleware.NotImplemented("operation schedules.UpdateSchedule has not yet been implemented")
 	})
 
+	// GetVersion
 	api.VersionGetVersionHandler = version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
 		tmp := &models.Version{
 			Version: config.Version,

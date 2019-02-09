@@ -153,7 +153,6 @@ paths:
           description: "Created"
           schema: 
             $ref: "#/definitions/schedule"
-
         default: 
           description: "unexpected error"
           schema: 
@@ -193,6 +192,8 @@ paths:
           description: Updated Succesfully
           schema:
             $ref: "#/definitions/schedule"
+ #       409:
+ #         description: conflict
         400:
           description: invalid id
         404:
