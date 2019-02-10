@@ -173,7 +173,7 @@ func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
 	return schedules, nil //  TODO: don't swallow errors
 }
 
-func (m *MongoDB) DeleteSchedule(id int32) error {
+func (m *MongoDB) DeleteSchedule(id int64) error {
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
 		log.Errorf("Cannot connect to  MongoDB: %v", err)

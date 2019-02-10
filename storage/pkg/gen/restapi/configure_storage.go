@@ -125,7 +125,10 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	api.SchedulesDeleteScheduleHandler = schedules.DeleteScheduleHandlerFunc(func(params schedules.DeleteScheduleParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
 		err := db.DeleteSchedule(params.ID)
-		return middleware.NotImplemented("operation schedules.DeleteSchedule has not yet been implemented")
+		if err != nil {
+			return schedules.NewDeleteScheduleBadRequest()
+		}
+		return schedules.NewDeleteScheduleNoContent()
 	})
 
 	// GET Schedule<ID>

@@ -207,7 +207,6 @@ paths:
         - schedules
       operationId: deleteSchedule
       description: "Delete an existant schedules"
-
       responses:
         204:
           description: Deleted successfully
