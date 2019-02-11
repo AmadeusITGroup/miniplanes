@@ -133,20 +133,31 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	// GET Schedule<ID>
 	api.SchedulesGetScheduleHandler = schedules.GetScheduleHandlerFunc(func(params schedules.GetScheduleParams) middleware.Responder {
-		return middleware.NotImplemented("operation schedules.GetSchedule has not yet been implemented")
+		//return middleware.NotImplemented("operation schedules.GetSchedule has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		schedule, err := db.GetSchedule(params.ID)
+		if err != nil {
+			return schedules.NewGetSchedulesBadRequest()
+		}
+		return schedules.NewGetScheduleOK().WithPayload(schedule)
 	})
 
 	// PUT Schedule
 	api.SchedulesUpdateScheduleHandler = schedules.UpdateScheduleHandlerFunc(func(params schedules.UpdateScheduleParams) middleware.Responder {
-		return middleware.NotImplemented("operation schedules.UpdateSchedule has not yet been implemented")
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort)
+		schedule, err := db.UpdateSchedule(params.ID, params.Schedule)
+		if err != nil {
+			return schedules.NewUpdateScheduleBadRequest()
+		}
+		return schedules.NewUpdateScheduleCreated().WithPayload(schedule)
 	})
 
 	// GetVersion
 	api.VersionGetVersionHandler = version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
-		tmp := &models.Version{
+		log.Tracef("Serving Version: %s", config.Version)
+		return version.NewGetVersionOK().WithPayload(&models.Version{
 			Version: config.Version,
-		}
-		return version.NewGetVersionOK().WithPayload(tmp)
+		})
 	})
 
 	api.ServerShutdown = func() {}

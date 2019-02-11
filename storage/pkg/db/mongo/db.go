@@ -173,6 +173,41 @@ func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
 	return schedules, nil //  TODO: don't swallow errors
 }
 
+func (m *MongoDB) GetSchedule(id int64) (*models.Schedule, error) {
+	mgoDB, err := mgo.Dial(m.DialString())
+	if err != nil {
+		log.Errorf("Cannot connect to  MongoDB: %v", err)
+		return nil, err
+	}
+	var (
+		modSchedule *models.Schedule
+		schedule    Schedule
+	)
+
+	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Find(bson.M{"ID": id}).All(&schedule)
+	if err != nil {
+		return nil, err
+	}
+	copier.Copy(modSchedule, schedule)
+	return modSchedule, nil
+}
+
+func (m *MongoDB) UpdateSchedule(id int64, schedule *models.Schedule) (*models.Schedule, error) {
+	mgoDB, err := mgo.Dial(m.DialString())
+	if err != nil {
+		log.Errorf("Cannot connect to  MongoDB: %v", err)
+		return nil, err
+	}
+	var s Schedule
+	copier.Copy(&s, schedule)
+	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Update(bson.M{"ID": id}, s)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: UPDATE REF
+	return schedule, nil
+}
+
 func (m *MongoDB) DeleteSchedule(id int64) error {
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
