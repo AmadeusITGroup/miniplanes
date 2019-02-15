@@ -21,8 +21,13 @@ import (
 // NewGetItinerariesParams creates a new GetItinerariesParams object
 // with the default values initialized.
 func NewGetItinerariesParams() *GetItinerariesParams {
-	var ()
+	var (
+		departureTimeDefault = string("1200")
+		returnTimeDefault    = string("1200")
+	)
 	return &GetItinerariesParams{
+		DepartureTime: &departureTimeDefault,
+		ReturnTime:    &returnTimeDefault,
 
 		timeout: cr.DefaultTimeout,
 	}
@@ -31,8 +36,13 @@ func NewGetItinerariesParams() *GetItinerariesParams {
 // NewGetItinerariesParamsWithTimeout creates a new GetItinerariesParams object
 // with the default values initialized, and the ability to set a timeout on a request
 func NewGetItinerariesParamsWithTimeout(timeout time.Duration) *GetItinerariesParams {
-	var ()
+	var (
+		departureTimeDefault = string("1200")
+		returnTimeDefault    = string("1200")
+	)
 	return &GetItinerariesParams{
+		DepartureTime: &departureTimeDefault,
+		ReturnTime:    &returnTimeDefault,
 
 		timeout: timeout,
 	}
@@ -41,8 +51,13 @@ func NewGetItinerariesParamsWithTimeout(timeout time.Duration) *GetItinerariesPa
 // NewGetItinerariesParamsWithContext creates a new GetItinerariesParams object
 // with the default values initialized, and the ability to set a context for a request
 func NewGetItinerariesParamsWithContext(ctx context.Context) *GetItinerariesParams {
-	var ()
+	var (
+		departureTimeDefault = string("1200")
+		returnTimeDefault    = string("1200")
+	)
 	return &GetItinerariesParams{
+		DepartureTime: &departureTimeDefault,
+		ReturnTime:    &returnTimeDefault,
 
 		Context: ctx,
 	}
@@ -51,9 +66,14 @@ func NewGetItinerariesParamsWithContext(ctx context.Context) *GetItinerariesPara
 // NewGetItinerariesParamsWithHTTPClient creates a new GetItinerariesParams object
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewGetItinerariesParamsWithHTTPClient(client *http.Client) *GetItinerariesParams {
-	var ()
+	var (
+		departureTimeDefault = string("1200")
+		returnTimeDefault    = string("1200")
+	)
 	return &GetItinerariesParams{
-		HTTPClient: client,
+		DepartureTime: &departureTimeDefault,
+		ReturnTime:    &returnTimeDefault,
+		HTTPClient:    client,
 	}
 }
 
@@ -64,10 +84,14 @@ type GetItinerariesParams struct {
 
 	/*DepartureDate*/
 	DepartureDate *string
+	/*DepartureTime*/
+	DepartureTime *string
 	/*From*/
 	From *string
 	/*ReturnDate*/
 	ReturnDate *string
+	/*ReturnTime*/
+	ReturnTime *string
 	/*To*/
 	To *string
 
@@ -120,6 +144,17 @@ func (o *GetItinerariesParams) SetDepartureDate(departureDate *string) {
 	o.DepartureDate = departureDate
 }
 
+// WithDepartureTime adds the departureTime to the get itineraries params
+func (o *GetItinerariesParams) WithDepartureTime(departureTime *string) *GetItinerariesParams {
+	o.SetDepartureTime(departureTime)
+	return o
+}
+
+// SetDepartureTime adds the departureTime to the get itineraries params
+func (o *GetItinerariesParams) SetDepartureTime(departureTime *string) {
+	o.DepartureTime = departureTime
+}
+
 // WithFrom adds the from to the get itineraries params
 func (o *GetItinerariesParams) WithFrom(from *string) *GetItinerariesParams {
 	o.SetFrom(from)
@@ -140,6 +175,17 @@ func (o *GetItinerariesParams) WithReturnDate(returnDate *string) *GetItinerarie
 // SetReturnDate adds the returnDate to the get itineraries params
 func (o *GetItinerariesParams) SetReturnDate(returnDate *string) {
 	o.ReturnDate = returnDate
+}
+
+// WithReturnTime adds the returnTime to the get itineraries params
+func (o *GetItinerariesParams) WithReturnTime(returnTime *string) *GetItinerariesParams {
+	o.SetReturnTime(returnTime)
+	return o
+}
+
+// SetReturnTime adds the returnTime to the get itineraries params
+func (o *GetItinerariesParams) SetReturnTime(returnTime *string) {
+	o.ReturnTime = returnTime
 }
 
 // WithTo adds the to to the get itineraries params
@@ -177,6 +223,22 @@ func (o *GetItinerariesParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 
 	}
 
+	if o.DepartureTime != nil {
+
+		// query param departureTime
+		var qrDepartureTime string
+		if o.DepartureTime != nil {
+			qrDepartureTime = *o.DepartureTime
+		}
+		qDepartureTime := qrDepartureTime
+		if qDepartureTime != "" {
+			if err := r.SetQueryParam("departureTime", qDepartureTime); err != nil {
+				return err
+			}
+		}
+
+	}
+
 	if o.From != nil {
 
 		// query param from
@@ -203,6 +265,22 @@ func (o *GetItinerariesParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		qReturnDate := qrReturnDate
 		if qReturnDate != "" {
 			if err := r.SetQueryParam("returnDate", qReturnDate); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	if o.ReturnTime != nil {
+
+		// query param returnTime
+		var qrReturnTime string
+		if o.ReturnTime != nil {
+			qrReturnTime = *o.ReturnTime
+		}
+		qReturnTime := qrReturnTime
+		if qReturnTime != "" {
+			if err := r.SetQueryParam("returnTime", qReturnTime); err != nil {
 				return err
 			}
 		}

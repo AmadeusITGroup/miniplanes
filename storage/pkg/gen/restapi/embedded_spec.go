@@ -428,7 +428,8 @@ func init() {
           "type": "string"
         },
         "DestinationAirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "Equipment": {
           "type": "string"
@@ -437,7 +438,8 @@ func init() {
           "type": "string"
         },
         "SourceAirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "Stops": {
           "type": "integer"
@@ -941,7 +943,8 @@ func init() {
           "type": "string"
         },
         "DestinationAirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "Equipment": {
           "type": "string"
@@ -950,7 +953,8 @@ func init() {
           "type": "string"
         },
         "SourceAirportID": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int32"
         },
         "Stops": {
           "type": "integer"

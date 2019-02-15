@@ -42,9 +42,11 @@ func TestE2E(t *testing.T) {
 
 var (
 	//kubeConfig         *rest.Config
-	kubeConfigFilePath string
-	StorageHost        string
-	StoragePort        int
+	//kubeConfigFilePath string
+	StorageHost           string
+	StoragePort           int
+	ItinerariesServerHost string
+	ItinerariesServerPort int
 )
 
 func TestMain(m *testing.M) {
@@ -52,6 +54,8 @@ func TestMain(m *testing.M) {
 	//pflag.StringVar(&kubeConfigFilePath, "kubeconfig", "", "Path to kubeconfig")
 	pflag.StringVar(&StorageHost, "storage-host", "", "storage host/service name")
 	pflag.IntVar(&StoragePort, "storage-port", 0, "storage port number")
+	pflag.StringVar(&ItinerariesServerHost, "itineraries-server-host", "", "ItinerariesServer host/service name")
+	pflag.IntVar(&ItinerariesServerPort, "itineraries-server-port", 0, "ItinerariesServer port number")
 	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	pflag.Parse()
 	goflag.CommandLine.Parse([]string{})

@@ -10,18 +10,20 @@ else
   exit -1
 fi
 
-
-
 ROOTDIR=$(git rev-parse --show-toplevel)
 
-#TODO check mongo is running
-
-#e2e storage
+#storage
 ${ROOTDIR}/_output/storage --mongo-host 127.0.0.1 --port 9999 &
-REGPFPID=$!
+STOPID=$!
 
-sleep 5
+#itineraries-server
+${ROOTDIR}/_output/itineraries-server --storage-host  127.0.0.1 --storage-port 9999 --port 8888 &
+ISPID=$!
 
-cd ${ROOTDIR}/test/e2e && go test -c . && ./e2e.test --storage-host 127.0.0.1 --storage-port 9999
+sleep 3
 
-kill $REGPFPID
+echo "Starting test"
+cd ${ROOTDIR}/test/e2e && go test -c . && ./e2e.test --storage-host 127.0.0.1 --storage-port 9999 --itineraries-server-host 127.0.0.1 --itineraries-server-port 8888
+
+kill $ISPID
+kill $STOPID

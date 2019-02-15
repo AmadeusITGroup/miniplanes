@@ -241,10 +241,12 @@ definitions:
         type: string
       SourceAirportID:
         type: integer
+        format: int32
       DestinationAirport:
         type: string
       DestinationAirportID:
         type: integer
+        format: int32
       CodeShare:
         type: string
       Stops:

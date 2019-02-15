@@ -29,14 +29,22 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	loads "github.com/go-openapi/loads"
 	flag "github.com/spf13/pflag"
+)
+
+const (
+	storageHostParamName = "storage-host"
+	storageHostDefault   = "storage"
+	storagePortParamName = "storage-port"
+	storagePortDefault   = 12345
 )
 
 func main() {
@@ -47,10 +55,8 @@ func main() {
 	}
 
 	var server *restapi.Server // make sure init is called
-
-	// Custom Vars
-	flag.IntVar(&config.StoragePort, "storage-port", 8080, "the port of storage service")
-	flag.StringVar(&config.StorageHost, "storage-host", "storage", "the name of the storage service")
+	flag.IntVar(&config.StoragePort, storagePortParamName, storagePortDefault, "the port of storage service")
+	flag.StringVar(&config.StorageHost, storageHostParamName, storageHostDefault, "the name of the storage service")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, "Usage:\n")
@@ -66,6 +72,10 @@ func main() {
 	}
 
 	flag.Parse()
+
+	log.Infof("Running itineraries-server version: %s", config.Version)
+	log.Infof("Running itineraries-server with %s: %s", storageHostParamName, config.StorageHost)
+	log.Infof("Running itineraries-server with %s: %d", storagePortParamName, config.StoragePort)
 
 	api := operations.NewItinerariesAPI(swaggerSpec)
 	server = restapi.NewServer(api)

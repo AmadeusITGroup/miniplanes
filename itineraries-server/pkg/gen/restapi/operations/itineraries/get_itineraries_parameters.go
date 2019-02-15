@@ -16,10 +16,22 @@ import (
 )
 
 // NewGetItinerariesParams creates a new GetItinerariesParams object
-// no default values defined in spec.
+// with the default values initialized.
 func NewGetItinerariesParams() GetItinerariesParams {
 
-	return GetItinerariesParams{}
+	var (
+		// initialize parameters with default values
+
+		departureTimeDefault = string("1200")
+
+		returnTimeDefault = string("1200")
+	)
+
+	return GetItinerariesParams{
+		DepartureTime: &departureTimeDefault,
+
+		ReturnTime: &returnTimeDefault,
+	}
 }
 
 // GetItinerariesParams contains all the bound params for the get itineraries operation
@@ -37,12 +49,22 @@ type GetItinerariesParams struct {
 	DepartureDate *string
 	/*
 	  In: query
+	  Default: "1200"
+	*/
+	DepartureTime *string
+	/*
+	  In: query
 	*/
 	From *string
 	/*
 	  In: query
 	*/
 	ReturnDate *string
+	/*
+	  In: query
+	  Default: "1200"
+	*/
+	ReturnTime *string
 	/*
 	  In: query
 	*/
@@ -65,6 +87,11 @@ func (o *GetItinerariesParams) BindRequest(r *http.Request, route *middleware.Ma
 		res = append(res, err)
 	}
 
+	qDepartureTime, qhkDepartureTime, _ := qs.GetOK("departureTime")
+	if err := o.bindDepartureTime(qDepartureTime, qhkDepartureTime, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qFrom, qhkFrom, _ := qs.GetOK("from")
 	if err := o.bindFrom(qFrom, qhkFrom, route.Formats); err != nil {
 		res = append(res, err)
@@ -72,6 +99,11 @@ func (o *GetItinerariesParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	qReturnDate, qhkReturnDate, _ := qs.GetOK("returnDate")
 	if err := o.bindReturnDate(qReturnDate, qhkReturnDate, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qReturnTime, qhkReturnTime, _ := qs.GetOK("returnTime")
+	if err := o.bindReturnTime(qReturnTime, qhkReturnTime, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -100,6 +132,25 @@ func (o *GetItinerariesParams) bindDepartureDate(rawData []string, hasKey bool, 
 	}
 
 	o.DepartureDate = &raw
+
+	return nil
+}
+
+// bindDepartureTime binds and validates parameter DepartureTime from query.
+func (o *GetItinerariesParams) bindDepartureTime(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetItinerariesParams()
+		return nil
+	}
+
+	o.DepartureTime = &raw
 
 	return nil
 }
@@ -136,6 +187,25 @@ func (o *GetItinerariesParams) bindReturnDate(rawData []string, hasKey bool, for
 	}
 
 	o.ReturnDate = &raw
+
+	return nil
+}
+
+// bindReturnTime binds and validates parameter ReturnTime from query.
+func (o *GetItinerariesParams) bindReturnTime(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetItinerariesParams()
+		return nil
+	}
+
+	o.ReturnTime = &raw
 
 	return nil
 }

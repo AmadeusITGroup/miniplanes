@@ -28,7 +28,7 @@ type Course struct {
 	DestinationAirport string `json:"DestinationAirport,omitempty"`
 
 	// destination airport ID
-	DestinationAirportID int64 `json:"DestinationAirportID,omitempty"`
+	DestinationAirportID int32 `json:"DestinationAirportID,omitempty"`
 
 	// equipment
 	Equipment string `json:"Equipment,omitempty"`
@@ -37,7 +37,7 @@ type Course struct {
 	SourceAirport string `json:"SourceAirport,omitempty"`
 
 	// source airport ID
-	SourceAirportID int64 `json:"SourceAirportID,omitempty"`
+	SourceAirportID int32 `json:"SourceAirportID,omitempty"`
 
 	// stops
 	Stops int64 `json:"Stops,omitempty"`

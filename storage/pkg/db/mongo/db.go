@@ -34,7 +34,6 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
 	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -53,12 +52,14 @@ const (
 type MongoDB struct {
 	mongoHost string
 	mongoPort string
+	dbName    string
 }
 
-func NewMongoDB(mongoHost string, mongoPort int) *MongoDB {
+func NewMongoDB(mongoHost string, mongoPort int, dbName string) *MongoDB {
 	return &MongoDB{
 		mongoHost: mongoHost,
 		mongoPort: strconv.Itoa(mongoPort),
+		dbName:    dbName,
 	}
 }
 
@@ -80,7 +81,7 @@ func (m *MongoDB) GetAirlines() ([]*models.Airline, error) {
 	}
 	defer mgoDB.Close()
 	var dbAirlines []*Airline
-	if err = mgoDB.DB(config.MongoDBName).C(airlinesCollection).Find(nil).All(&dbAirlines); err != nil {
+	if err = mgoDB.DB(m.dbName).C(airlinesCollection).Find(nil).All(&dbAirlines); err != nil {
 		return airlines, err
 	}
 	for i := range dbAirlines {
@@ -103,7 +104,7 @@ func (m *MongoDB) GetCourses() ([]*models.Course, error) {
 	}
 	defer mgoDB.Close()
 	var dbCourses []*Course
-	if err := mgoDB.DB(config.MongoDBName).C(coursesCollection).Find(nil).Sort("-when").Limit(100).All(&dbCourses); err != nil {
+	if err := mgoDB.DB(m.dbName).C(coursesCollection).Find(nil).Sort("-when").Limit(100).All(&dbCourses); err != nil {
 		return courses, err
 	}
 	for i := range dbCourses {
@@ -126,7 +127,7 @@ func (m *MongoDB) GetAirports() ([]*models.Airport, error) {
 	}
 	defer mgoDB.Close()
 	dbAirports := []*Airport{}
-	if err := mgoDB.DB(config.MongoDBName).C(airportsCollection).Find(nil).All(&dbAirports); err != nil {
+	if err := mgoDB.DB(m.dbName).C(airportsCollection).Find(nil).All(&dbAirports); err != nil {
 		return airports, err
 	}
 	for i := range dbAirports {
@@ -149,12 +150,12 @@ func (m *MongoDB) InsertSchedule(s *models.Schedule) (*models.Schedule, error) {
 	schedule := new(Schedule)
 	copier.Copy(schedule, s)
 	schedule.ID = bson.NewObjectId()
-	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Insert(schedule)
+	err = mgoDB.DB(m.dbName).C(schedulesCollection).Insert(schedule)
 	if err != nil {
 		return nil, err
 	}
 	var v models.Schedule
-	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).FindId(schedule.ID).One(&v)
+	err = mgoDB.DB(m.dbName).C(schedulesCollection).FindId(schedule.ID).One(&v)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +172,7 @@ func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
 	defer mgoDB.Close()
 
 	var dbSchedules []*Schedule
-	if err := mgoDB.DB(config.MongoDBName).C(schedulesCollection).Find(nil).All(&schedules); err != nil {
+	if err := mgoDB.DB(m.dbName).C(schedulesCollection).Find(nil).All(&schedules); err != nil {
 		return schedules, err
 	}
 	for i := range dbSchedules {
@@ -196,7 +197,7 @@ func (m *MongoDB) GetSchedule(id int64) (*models.Schedule, error) {
 		schedule    Schedule
 	)
 
-	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Find(bson.M{"ID": id}).All(&schedule)
+	err = mgoDB.DB(m.dbName).C(schedulesCollection).Find(bson.M{"ID": id}).All(&schedule)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +213,7 @@ func (m *MongoDB) UpdateSchedule(id int64, schedule *models.Schedule) (*models.S
 	}
 	var s Schedule
 	copier.Copy(&s, schedule)
-	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Update(bson.M{"ID": id}, s)
+	err = mgoDB.DB(m.dbName).C(schedulesCollection).Update(bson.M{"ID": id}, s)
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +227,6 @@ func (m *MongoDB) DeleteSchedule(id int64) error {
 		log.Errorf("Cannot connect to  MongoDB: %v", err)
 		return err
 	}
-	err = mgoDB.DB(config.MongoDBName).C(schedulesCollection).Remove(bson.M{"ID": id})
+	err = mgoDB.DB(m.dbName).C(schedulesCollection).Remove(bson.M{"ID": id})
 	return err
 }

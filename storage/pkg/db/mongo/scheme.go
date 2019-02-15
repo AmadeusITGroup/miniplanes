@@ -98,13 +98,14 @@ func (a Airport) ToModel() (*models.Airport, error) {
 
 type Schedule struct {
 	ID               bson.ObjectId `json:"id" bson:"_id"`
+	SchduleID        int64         `json:"scheduleID" bson:"scheduleID"`
 	Origin           int32         `json:"origin" bson:"origin"`
 	Destination      int32         `json:"destination" bson:"destination"`
 	FlightNumber     string        `json:"flightNumber" bson:"flightNumber"`
 	OperatingCarrier string        `json:"operatingCarrier" bson:"operatingCarrier"`
 	DaysOperated     string        `json:"daysOperated" bson:"daysOperated"`
-	Departure        string        `json:"departure" bson:"departure"`
-	Arrival          string        `json:"arrival" bson:"arrival"`
+	DepartureTime    string        `json:"departure" bson:"departure"`
+	ArrivalTime      string        `json:"arrival" bson:"arrival"`
 	ArriveNextDay    bool          `json:"arriveNextDay" bson:"arriveNextDay"`
 }
 

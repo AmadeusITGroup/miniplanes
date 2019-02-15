@@ -1,119 +1,205 @@
+/*
+
+MIT License
+
+Copyright (c) 2019 Amadeus s.a.s.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
 // This file is safe to edit. Once it exists it will not be overwritten
 
 package restapi
 
 import (
-	"context"
 	"crypto/tls"
 	"fmt"
+
 	"net/http"
+
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
+	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	log "github.com/sirupsen/logrus"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/version"
-	storageclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
-	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	storage_models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 )
+
+//go:generate swagger generate server --target .. --name itineraries --spec ../swagger/swagger.yaml
 
 var (
-	airportID2Airport = make(map[int32]*storagemodels.Airport)
-	airportsIATA2ID   = make(map[string]int32)
+	airports  []*storage_models.Airport
+	schedules []*storage_models.Schedule
 )
 
-//go:generate swagger generate server --target ../../pkg/gen --name itineraries --spec ../swagger.yaml --exclude-main
-
 func configureFlags(api *operations.ItinerariesAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
+}
+
+func makeDescription(from, to string) string {
+	return fmt.Sprintf("Itinerary: %s - %s", from, to)
+}
+
+func refreshSchedulesIfNeeded() {
+	log.Trace("Refreshhing schedules")
+}
+
+func refreshAirportsIfNeeded() {
+	log.Trace("Refreshing Airports")
+
+}
+
+func makeItineraryID() string {
+	return "this_is_my_itinerary_ID"
+}
+
+func getItineraries(from, to, departureDate, departureTime *string) ([]*models.Itinerary, error) {
+	refreshSchedulesIfNeeded()
+	refreshAirportsIfNeeded()
+
+	itineraryGraph, err := engine.NewGraph(airports, schedules)
+	if err != nil {
+		return []*models.Itinerary{}, fmt.Errorf("unable to instantiate itineraries-server engine: %v", err)
+	}
+	maxNumberOfPaths := 10
+	return itineraryGraph.Compute(*from, *departureDate, *departureTime, *to, maxNumberOfPaths)
+	/*var itineraries []*models.Itinerary
+	if err != nil {
+		return itineraries, err
+	}
+	for _, itinerary := range solutions {
+		var segments []*models.Segment
+		for _, segment := range itinerary.Segments {
+			s := &models.Segment{
+				From:
+			}
+			segments = append(segments, s)
+		}
+		if len(segments) != 0 {
+			i := &models.Itinerary{
+				Description: makeDescription(*from, *to),
+				Segments:    segments,
+				ItineraryID: makeItineraryID(),
+			}
+			itineraries = append(itineraries, i)
+		}
+	}
+	return itineraries, nil
+	*/
+}
+
+func isAlive() bool {
+	return true // TODO: fill it
+}
+
+func isReady() bool {
+	return true // TODO: fill it
 }
 
 func configureAPI(api *operations.ItinerariesAPI) http.Handler {
-	// configure the api here
 	api.ServeError = errors.ServeError
-
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
-
+	api.Logger = log.Printf
 	api.JSONConsumer = runtime.JSONConsumer()
-
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
-
-		from := params.From
-		fmt.Printf("FROM: %s\n", *from)
-
-		to := params.To
-		fmt.Printf("TO: %s\n", *to)
-
-		departureDate := params.DepartureDate
-		fmt.Printf("Departure Date: %s\n", *departureDate)
-
-		departureTime := "0800"
-		fmt.Printf("Departure Time: %s\n", departureTime)
-
-		//returnDate := params.ReturnDate
-		//fmt.Printf("Return Date: %s\n", *returnDate)
-
-		storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
-		transport := storageclient.DefaultTransportConfig().WithHost(storageURL)
-		client := storageclient.NewHTTPClientWithConfig(nil, transport)
-
-		airportsParams := &airports.GetAirportsParams{Context: context.Background()}
-		airportsResp, err := client.Airports.GetAirports(airportsParams)
-		if err != nil {
-			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
-		}
-
-		schedulesParams := &schedules.GetSchedulesParams{Context: context.Background()}
-		schedulesResp, err := client.Schedules.GetSchedules(schedulesParams)
-		if err != nil {
-			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
-		}
-
-		itineraryGraph, err := engine.NewGraph(airportsResp.Payload, schedulesResp.Payload)
-		if err != nil {
-			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
-		}
-
-		modItineraries, err := itineraryGraph.Compute(*from, *departureDate, departureTime, *to, 5)
-		if err != nil {
-			return itineraries.NewGetItinerariesNotFound() // TODO: try later set error
-		}
-
-		return itineraries.NewGetItinerariesOK().WithPayload(modItineraries)
-	})
 	api.LivenessGetLiveHandler = liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
-		// liveness.NewGetLiveServiceUnavailable()
-		return liveness.NewGetLiveOK()
-	})
-	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
-		//readiness.NewGetReadyServiceUnavailable()
-		return readiness.NewGetReadyOK()
+		var r middleware.Responder
+		r = liveness.NewGetLiveServiceUnavailable()
+		if isAlive() {
+			r = liveness.NewGetLiveOK()
+		}
+		return r
 	})
 
-	api.VersionGetVersionHandler = version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
-		tmp := &models.Version{
-			Version: config.Version,
+	api.ReadinessGetReadyHandler = readiness.GetReadyHandlerFunc(func(params readiness.GetReadyParams) middleware.Responder {
+		var r middleware.Responder
+		r = readiness.NewGetReadyServiceUnavailable()
+		if isReady() {
+			r = readiness.NewGetReadyOK()
 		}
-		return version.NewGetVersionOK().WithPayload(tmp)
+		return r
+	})
+
+	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
+		mergedParams := itineraries.NewGetItinerariesParams()
+		if params.From == nil || len(*params.From) == 0 {
+			errorMessage := fmt.Sprintf("No From")
+			log.Error(errorMessage)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		mergedParams.From = params.From
+		log.Infof("From: %s", *mergedParams.From)
+
+		if params.To == nil || len(*params.To) == 0 {
+			errorMessage := fmt.Sprintf("No To")
+			log.Error(errorMessage)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		mergedParams.To = params.To
+		log.Infof("To: %s", *params.To)
+
+		if params.DepartureDate == nil || len(*params.DepartureDate) == 0 {
+			errorMessage := fmt.Sprintf("No DepartureDate")
+			log.Error(errorMessage)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		mergedParams.DepartureDate = params.DepartureDate
+		log.Infof("DepartureDate: %s", *mergedParams.DepartureDate)
+
+		if params.DepartureTime != nil && len(*params.DepartureTime) != 0 {
+			mergedParams.DepartureTime = params.DepartureTime
+		}
+		log.Infof("DepartureTime: %s", *params.DepartureTime)
+
+		if params.ReturnDate == nil || len(*params.ReturnDate) == 0 {
+			errorMessage := fmt.Sprintf("No ReturnDate")
+			log.Error(errorMessage)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		mergedParams.ReturnDate = params.ReturnDate
+		log.Infof("ReturnDate: %s", *params.ReturnDate)
+		if params.ReturnTime != nil && len(*params.ReturnTime) != 0 {
+			mergedParams.ReturnTime = params.ReturnTime
+		}
+		log.Infof("ReturnTime: %s", *mergedParams.ReturnTime)
+
+		its, err := getItineraries(mergedParams.From, mergedParams.To, mergedParams.DepartureDate, mergedParams.DepartureTime)
+		if err != nil {
+			errorMessage := fmt.Sprintf("Cannot get itineraries: %v", err)
+			log.Error(errorMessage)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+		}
+		if len(its) == 0 {
+			errorMessage := fmt.Sprintf("No itineraries found")
+			log.Warn(errorMessage)
+			return itineraries.NewGetItinerariesNotFound().WithPayload(&models.Error{Code: http.StatusNotFound, Message: &errorMessage})
+		}
+		return itineraries.NewGetItinerariesOK().WithPayload(its)
 	})
 
 	api.ServerShutdown = func() {}
-
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
 

@@ -62,9 +62,17 @@ paths:
         - name: departureDate
           in: query
           type: string
+        - name: departureTime
+          in: query
+          type: string
+          default: "1200"
         - name: returnDate
           in: query
           type: string
+        - name: returnTime
+          in: query
+          type: string
+          default: "1200"
       responses:
         200:
           description: list of itineraries

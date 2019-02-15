@@ -54,7 +54,19 @@ func init() {
           },
           {
             "type": "string",
+            "default": "1200",
+            "name": "departureTime",
+            "in": "query"
+          },
+          {
+            "type": "string",
             "name": "returnDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "1200",
+            "name": "returnTime",
             "in": "query"
           }
         ],
@@ -247,7 +259,19 @@ func init() {
           },
           {
             "type": "string",
+            "default": "1200",
+            "name": "departureTime",
+            "in": "query"
+          },
+          {
+            "type": "string",
             "name": "returnDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "1200",
+            "name": "returnTime",
             "in": "query"
           }
         ],
