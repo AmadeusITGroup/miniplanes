@@ -463,17 +463,6 @@ func init() {
     },
     "schedule": {
       "type": "object",
-      "required": [
-        "ScheduleID",
-        "Origin",
-        "Destination",
-        "FlightNumber",
-        "OperatingCarrier",
-        "DaysOperated",
-        "DepartureTime",
-        "ArrivalTime",
-        "ArriveNextDay"
-      ],
       "properties": {
         "ArrivalTime": {
           "type": "string"
@@ -978,17 +967,6 @@ func init() {
     },
     "schedule": {
       "type": "object",
-      "required": [
-        "ScheduleID",
-        "Origin",
-        "Destination",
-        "FlightNumber",
-        "OperatingCarrier",
-        "DaysOperated",
-        "DepartureTime",
-        "ArrivalTime",
-        "ArriveNextDay"
-      ],
       "properties": {
         "ArrivalTime": {
           "type": "string"

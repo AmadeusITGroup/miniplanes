@@ -101,6 +101,7 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 
 	// GET Schedules
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
+		log.Info("Serving Schedules...")
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modSchedules, err := db.GetSchedules()
 		if err != nil {

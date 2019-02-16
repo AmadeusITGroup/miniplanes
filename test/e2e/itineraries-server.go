@@ -139,11 +139,14 @@ var _ = Describe("itineraries-server", func() {
 			params.DepartureDate = &bth
 			back := "3012"
 			params.ReturnDate = &back
-			_, err := client.GetItineraries(params)
+			OK, err := client.GetItineraries(params)
 			if err != nil { // TODO: reflect.equal error
-				return nil
+				return err
 			}
-			return fmt.Errorf("expected error")
+			if len(OK.Payload) == 0 {
+				return fmt.Errorf("no itineraries found")
+			}
+			return nil
 		}, "10s", "1s").ShouldNot(HaveOccurred())
 	})
 })

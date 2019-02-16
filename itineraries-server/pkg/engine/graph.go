@@ -29,6 +29,7 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/copier"
+	log "github.com/sirupsen/logrus"
 
 	itinerarymodels "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
 	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
@@ -38,16 +39,29 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 	arrivalDate := departureDate //TOOD fix bug here arrival date could be different
 	return &itinerarymodels.Segment{
 		ArrivalDate:      arrivalDate,
-		ArrivalTime:      *s.ArrivalTime,
-		ArriveNextDay:    *s.ArriveNextDay,
+		ArrivalTime:      s.ArrivalTime,
+		ArriveNextDay:    s.ArriveNextDay,
 		DepartureDate:    departureDate,
-		DepartureTime:    *s.DepartureTime,
-		Destination:      r.IATAFromAirportID[*s.Destination],
-		FlightNumber:     *s.FlightNumber,
-		OperatingCarrier: *s.OperatingCarrier,
-		Origin:           r.IATAFromAirportID[*s.Origin],
+		DepartureTime:    s.DepartureTime,
+		Destination:      r.IATAFromAirportID[s.Destination],
+		FlightNumber:     s.FlightNumber,
+		OperatingCarrier: s.OperatingCarrier,
+		Origin:           r.IATAFromAirportID[s.Origin],
 		SegmentID:        0,
 	}
+}
+
+func checkScheduleIntegrity(s *storagemodels.Schedule) error {
+	if s.Origin == 0 {
+		return fmt.Errorf("no origin airport found for schedule")
+	}
+	if s.Destination == 0 {
+		return fmt.Errorf("no destination airport found for schedule")
+	}
+	if len(s.DepartureTime) == 0 {
+		return fmt.Errorf("no departureTime found for schedule")
+	}
+	return nil
 }
 
 func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to string, separationDegree int) ([][]*itinerarymodels.Segment, error) {
@@ -64,19 +78,22 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 		return segments, nil
 	}
 	if separationDegree == 0 {
-		// log.Infof("Found destination airport")
 		return segments, fmt.Errorf("no segments found")
 	}
 	for _, s := range r.schedules { // for each schedules...
-		if *s.Origin != fromAirportID {
+		if err := checkScheduleIntegrity(s); err != nil {
+			log.Warnf("bad schedule found: %v", err)
 			continue
 		}
-		if !oKtoBeTaken(departureTime, *s.DepartureTime) { // not good schedules or too early
-			// log.Infof("Cannot be taken...")
+		if s.Origin != fromAirportID {
+			continue
+		}
+		if !oKtoBeTaken(departureTime, s.DepartureTime) { // not good schedules or too early
+			log.Tracef("Impossible to take flight with: requested departure %s - flight departure %s", departureDate, s.DepartureTime)
 			continue
 		}
 		currentSegment := r.buildSegmentFromSchedule(s, departureDate)
-		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[*s.Destination], departureDate, *s.ArrivalTime, to, separationDegree-1)
+		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[s.Destination], departureDate, s.ArrivalTime, to, separationDegree-1)
 		if err != nil {
 			return [][]*itinerarymodels.Segment{}, err
 		}

@@ -98,7 +98,7 @@ func (a Airport) ToModel() (*models.Airport, error) {
 
 type Schedule struct {
 	ID               bson.ObjectId `json:"id" bson:"_id"`
-	SchduleID        int64         `json:"scheduleID" bson:"scheduleID"`
+	ScheduleID       int64         `json:"scheduleID" bson:"scheduleID"`
 	Origin           int32         `json:"origin" bson:"origin"`
 	Destination      int32         `json:"destination" bson:"destination"`
 	FlightNumber     string        `json:"flightNumber" bson:"flightNumber"`

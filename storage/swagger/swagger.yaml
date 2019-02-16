@@ -300,16 +300,16 @@ definitions:
         type: string
   schedule:
     type: object
-    required:
-      - "ScheduleID"
-      - "Origin"
-      - "Destination"
-      - "FlightNumber"
-      - "OperatingCarrier"
-      - "DaysOperated"
-      - "DepartureTime"
-      - "ArrivalTime"
-      - "ArriveNextDay"
+#    required:
+#      - "ScheduleID"
+#      - "Origin"
+#      - "Destination"
+#      - "FlightNumber"
+#      - "OperatingCarrier"
+#      - "DaysOperated"
+#      - "DepartureTime"
+#      - "ArrivalTime"
+#      - "ArriveNextDay"
     properties:
       ScheduleID:
         type: integer

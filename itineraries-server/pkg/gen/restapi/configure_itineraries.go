@@ -33,6 +33,7 @@ import (
 
 	"net/http"
 
+	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
@@ -40,12 +41,16 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
+	airportsclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
+	schedulesclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
 	storage_models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	httptransport "github.com/go-openapi/runtime/client"
 )
 
 //go:generate swagger generate server --target .. --name itineraries --spec ../swagger/swagger.yaml
@@ -64,11 +69,27 @@ func makeDescription(from, to string) string {
 
 func refreshSchedulesIfNeeded() {
 	log.Trace("Refreshhing schedules")
+	storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
+	client := schedulesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
+	Ok, err := client.GetSchedules(schedulesclient.NewGetSchedulesParams())
+	if err != nil {
+		log.Errorf("Current number of schedule %d. Unable to refresh Schedules: %v", len(schedules))
+		return
+	}
+	schedules = Ok.Payload
+
 }
 
 func refreshAirportsIfNeeded() {
 	log.Trace("Refreshing Airports")
-
+	storageURL := fmt.Sprintf("%s:%d", config.StorageHost, config.StoragePort)
+	client := airportsclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
+	Ok, err := client.GetAirports(airportsclient.NewGetAirportsParams())
+	if err != nil {
+		log.Errorf("Current number of airports %d. Unable to refresh airports: %v", len(airports))
+		return
+	}
+	airports = Ok.Payload
 }
 
 func makeItineraryID() string {
@@ -145,56 +166,57 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 	api.ItinerariesGetItinerariesHandler = itineraries.GetItinerariesHandlerFunc(func(params itineraries.GetItinerariesParams) middleware.Responder {
 		mergedParams := itineraries.NewGetItinerariesParams()
 		if params.From == nil || len(*params.From) == 0 {
-			errorMessage := fmt.Sprintf("No From")
-			log.Error(errorMessage)
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+			message := fmt.Sprintf("No Origin:")
+			log.Error(message)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.From = params.From
 		log.Infof("From: %s", *mergedParams.From)
 
 		if params.To == nil || len(*params.To) == 0 {
-			errorMessage := fmt.Sprintf("No To")
-			log.Error(errorMessage)
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+			message := fmt.Sprintf("No Destination")
+			log.Error(message)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.To = params.To
 		log.Infof("To: %s", *params.To)
 
 		if params.DepartureDate == nil || len(*params.DepartureDate) == 0 {
-			errorMessage := fmt.Sprintf("No DepartureDate")
-			log.Error(errorMessage)
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+			message := fmt.Sprintf("No DepartureDate")
+			log.Error(message)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.DepartureDate = params.DepartureDate
 		log.Infof("DepartureDate: %s", *mergedParams.DepartureDate)
 
 		if params.DepartureTime != nil && len(*params.DepartureTime) != 0 {
 			mergedParams.DepartureTime = params.DepartureTime
-		}
+		} // otherwise DepartureTime is defaulted from swagger
 		log.Infof("DepartureTime: %s", *params.DepartureTime)
 
 		if params.ReturnDate == nil || len(*params.ReturnDate) == 0 {
-			errorMessage := fmt.Sprintf("No ReturnDate")
-			log.Error(errorMessage)
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+			message := fmt.Sprintf("No ReturnDate")
+			log.Error(message)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.ReturnDate = params.ReturnDate
 		log.Infof("ReturnDate: %s", *params.ReturnDate)
+
 		if params.ReturnTime != nil && len(*params.ReturnTime) != 0 {
 			mergedParams.ReturnTime = params.ReturnTime
-		}
+		} // otherwise ReturnTime is defaulted from swagger
 		log.Infof("ReturnTime: %s", *mergedParams.ReturnTime)
 
 		its, err := getItineraries(mergedParams.From, mergedParams.To, mergedParams.DepartureDate, mergedParams.DepartureTime)
 		if err != nil {
-			errorMessage := fmt.Sprintf("Cannot get itineraries: %v", err)
-			log.Error(errorMessage)
-			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &errorMessage})
+			message := fmt.Sprintf("Couldn't get itineraries: %v", err)
+			log.Error(message)
+			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		if len(its) == 0 {
-			errorMessage := fmt.Sprintf("No itineraries found")
-			log.Warn(errorMessage)
-			return itineraries.NewGetItinerariesNotFound().WithPayload(&models.Error{Code: http.StatusNotFound, Message: &errorMessage})
+			message := fmt.Sprintf("No itineraries found")
+			log.Warn(message)
+			return itineraries.NewGetItinerariesNotFound().WithPayload(&models.Error{Code: http.StatusNotFound, Message: &message})
 		}
 		return itineraries.NewGetItinerariesOK().WithPayload(its)
 	})

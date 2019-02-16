@@ -59,13 +59,13 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	// origin destination flightNumber operatingCarrier daysOperated departure arrival
 	schedules := []storagemodels.Schedule{
 		storagemodels.Schedule{
-			Origin:           &destination,
-			Destination:      &origin,
-			FlightNumber:     &flightNumber,
-			OperatingCarrier: &operatingCarrier,
-			DaysOperated:     &daysOperated,
-			DepartureTime:    &departure,
-			ArrivalTime:      &arrival,
+			Origin:           destination,
+			Destination:      origin,
+			FlightNumber:     flightNumber,
+			OperatingCarrier: operatingCarrier,
+			DaysOperated:     daysOperated,
+			DepartureTime:    departure,
+			ArrivalTime:      arrival,
 		},
 	}
 	w.WriteHeader(200)

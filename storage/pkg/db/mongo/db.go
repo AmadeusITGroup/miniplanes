@@ -172,7 +172,7 @@ func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
 	defer mgoDB.Close()
 
 	var dbSchedules []*Schedule
-	if err := mgoDB.DB(m.dbName).C(schedulesCollection).Find(nil).All(&schedules); err != nil {
+	if err := mgoDB.DB(m.dbName).C(schedulesCollection).Find(nil).All(&dbSchedules); err != nil {
 		return schedules, err
 	}
 	for i := range dbSchedules {
