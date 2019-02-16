@@ -31,11 +31,6 @@ storage-generate-server:
 storage-generate-client:
 	cd storage/swagger && swagger generate client --target ../pkg/gen --name storage --spec ./swagger.yaml
 
-storage-e2e-local:
-	echo "mongo should run locally" # TODO write a script for all this
-	echo "storage should be executed with _output/storage --mongo-host 127.0.0.1  --port 9999"
-	cd test/e2e/ && go test -c . && ./e2e.test --storage-host 127.0.0.1 --storage-port 9999
-
 itineraries-server-validate-swagger:
 	cd itineraries-server/swagger && swagger validate ./swagger.yaml
 
@@ -62,12 +57,9 @@ ui-image-build: ui-build
 	cd  ui/image && docker build . -t $(PREFIX)ui:$(TAG)
 	rm -rf ui/image/ui
 
+test_local: build
+	cd itineraries-server/pkg/engine && go test .
+	./hack/test_e2e_local.sh
+
 clean: $(OUTPUTDIR)
 	rm -rf $(OUTPUTDIR)
-
-#TMP target for local tests
-start-ui: ${OUTPUTDIR}
-	cd ui && ./ui
-
-start-itineraries-server: $(OUTPUTDIR)
-	output/itineraries-server --port=41807

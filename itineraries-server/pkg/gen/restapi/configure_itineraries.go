@@ -73,11 +73,10 @@ func refreshSchedulesIfNeeded() {
 	client := schedulesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
 	Ok, err := client.GetSchedules(schedulesclient.NewGetSchedulesParams())
 	if err != nil {
-		log.Errorf("Current number of schedule %d. Unable to refresh Schedules: %v", len(schedules))
+		log.Errorf("Current number of schedule %d. Unable to refresh Schedules: %v", len(schedules), err)
 		return
 	}
 	schedules = Ok.Payload
-
 }
 
 func refreshAirportsIfNeeded() {
@@ -86,7 +85,7 @@ func refreshAirportsIfNeeded() {
 	client := airportsclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
 	Ok, err := client.GetAirports(airportsclient.NewGetAirportsParams())
 	if err != nil {
-		log.Errorf("Current number of airports %d. Unable to refresh airports: %v", len(airports))
+		log.Errorf("Current number of airports %d. Unable to refresh airports: %v", len(airports), err)
 		return
 	}
 	airports = Ok.Payload
@@ -97,38 +96,15 @@ func makeItineraryID() string {
 }
 
 func getItineraries(from, to, departureDate, departureTime *string) ([]*models.Itinerary, error) {
+
 	refreshSchedulesIfNeeded()
 	refreshAirportsIfNeeded()
-
 	itineraryGraph, err := engine.NewGraph(airports, schedules)
 	if err != nil {
 		return []*models.Itinerary{}, fmt.Errorf("unable to instantiate itineraries-server engine: %v", err)
 	}
-	maxNumberOfPaths := 10
+	maxNumberOfPaths := 5
 	return itineraryGraph.Compute(*from, *departureDate, *departureTime, *to, maxNumberOfPaths)
-	/*var itineraries []*models.Itinerary
-	if err != nil {
-		return itineraries, err
-	}
-	for _, itinerary := range solutions {
-		var segments []*models.Segment
-		for _, segment := range itinerary.Segments {
-			s := &models.Segment{
-				From:
-			}
-			segments = append(segments, s)
-		}
-		if len(segments) != 0 {
-			i := &models.Itinerary{
-				Description: makeDescription(*from, *to),
-				Segments:    segments,
-				ItineraryID: makeItineraryID(),
-			}
-			itineraries = append(itineraries, i)
-		}
-	}
-	return itineraries, nil
-	*/
 }
 
 func isAlive() bool {
@@ -171,7 +147,7 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.From = params.From
-		log.Infof("From: %s", *mergedParams.From)
+		log.Tracef("From: %s", *mergedParams.From)
 
 		if params.To == nil || len(*params.To) == 0 {
 			message := fmt.Sprintf("No Destination")
@@ -179,7 +155,7 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.To = params.To
-		log.Infof("To: %s", *params.To)
+		log.Tracef("To: %s", *params.To)
 
 		if params.DepartureDate == nil || len(*params.DepartureDate) == 0 {
 			message := fmt.Sprintf("No DepartureDate")
@@ -187,12 +163,12 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.DepartureDate = params.DepartureDate
-		log.Infof("DepartureDate: %s", *mergedParams.DepartureDate)
+		log.Tracef("DepartureDate: %s", *mergedParams.DepartureDate)
 
 		if params.DepartureTime != nil && len(*params.DepartureTime) != 0 {
 			mergedParams.DepartureTime = params.DepartureTime
 		} // otherwise DepartureTime is defaulted from swagger
-		log.Infof("DepartureTime: %s", *params.DepartureTime)
+		log.Tracef("DepartureTime: %s", *params.DepartureTime)
 
 		if params.ReturnDate == nil || len(*params.ReturnDate) == 0 {
 			message := fmt.Sprintf("No ReturnDate")
@@ -200,12 +176,12 @@ func configureAPI(api *operations.ItinerariesAPI) http.Handler {
 			return itineraries.NewGetItinerariesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
 		mergedParams.ReturnDate = params.ReturnDate
-		log.Infof("ReturnDate: %s", *params.ReturnDate)
+		log.Tracef("ReturnDate: %s", *params.ReturnDate)
 
 		if params.ReturnTime != nil && len(*params.ReturnTime) != 0 {
 			mergedParams.ReturnTime = params.ReturnTime
 		} // otherwise ReturnTime is defaulted from swagger
-		log.Infof("ReturnTime: %s", *mergedParams.ReturnTime)
+		log.Tracef("ReturnTime: %s", *mergedParams.ReturnTime)
 
 		its, err := getItineraries(mergedParams.From, mergedParams.To, mergedParams.DepartureDate, mergedParams.DepartureTime)
 		if err != nil {

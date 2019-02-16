@@ -83,7 +83,7 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 			log.Warnf(message)
 			return liveness.NewGetLiveServiceUnavailable().WithPayload(&models.Error{Code: http.StatusServiceUnavailable, Message: &message})
 		}
-		log.Debug("Yep we're alive")
+		log.Debug("Storage is alive!")
 		return liveness.NewGetLiveOK()
 	})
 
@@ -95,17 +95,17 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 			log.Warnf(message)
 			return readiness.NewGetReadyServiceUnavailable().WithPayload(&models.Error{Code: http.StatusServiceUnavailable, Message: &message})
 		}
-		log.Debug("Ready, sir!")
+		log.Trace("Storage is ready!")
 		return readiness.NewGetReadyOK()
 	})
 
 	// GET Schedules
 	api.SchedulesGetSchedulesHandler = schedules.GetSchedulesHandlerFunc(func(params schedules.GetSchedulesParams) middleware.Responder {
-		log.Info("Serving Schedules...")
+		log.Trace("Serving Schedules...")
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modSchedules, err := db.GetSchedules()
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Could't get schedules: %v\n", err)
 			message := fmt.Sprintf("unable to retrieve airports: %v", err)
 			return airports.NewGetAirportsBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
 		}
@@ -117,7 +117,7 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modSchedule, err := db.InsertSchedule(params.Schedule)
 		if err != nil {
-			return schedules.NewAddScheduleDefault(422) // todo Add 422 Unprocessable entity, 409 conflict (even if alrady exists)
+			return schedules.NewAddScheduleDefault(422) // todo Add 422 Unprocessable entity, 409 conflict (even if already exists)
 		}
 		return schedules.NewAddScheduleCreated().WithPayload(modSchedule)
 	})
