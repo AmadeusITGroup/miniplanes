@@ -34,29 +34,35 @@ import (
 
 	flag "github.com/spf13/pflag"
 
+	"github.com/amadeusitgroup/miniapp/ui/cmd/config"
 	"github.com/amadeusitgroup/miniapp/ui/pkg/www"
 )
 
-var (
-	Port                   int
-	StorageServicePort     int
-	StorageServiceName     string
-	ItinerariesServicePort int
-	ItinerariesServiceName string
+const (
+	portParamName                  = "port"
+	portDefault                    = 8080
+	storageHostParamName           = "storage-host"
+	storageHostDefault             = "storage"
+	storagePortParamName           = "storage-port"
+	storagePortDefault             = 12345
+	itinerariesServerPortParamName = "itineraries-server-port"
+	itinerariesServerPortDefault   = 54321
+	itinerariesServerHostParamName = "itineraries-server-host"
+	itinerariesServerHostDefault   = "itineraries-server"
 )
 
 func main() {
 
-	flag.IntVar(&Port, "port", 8080, "defines the ui port")
-	flag.StringVar(&StorageServiceName, "storage-service", "storage", "defines the storage server endpoint")
-	flag.IntVar(&StorageServicePort, "storage-port", 8090, "defines the storage service port")
-	flag.StringVar(&ItinerariesServiceName, "itineraries-service", "itineraries", "defines the itineraries server endpoint")
-	flag.IntVar(&ItinerariesServicePort, "itineraries-port", 8100, "defines the itineraries service port")
+	flag.IntVar(&config.Port, portParamName, portDefault, "defines the ui port")
+	flag.StringVar(&config.StorageHost, storageHostParamName, storageHostDefault, "defines the storage server endpoint")
+	flag.IntVar(&config.StoragePort, storagePortParamName, storagePortDefault, "defines the storage service port")
+	flag.StringVar(&config.ItinerariesServerHost, itinerariesServerHostParamName, itinerariesServerHostDefault, "defines the itineraries server endpoint")
+	flag.IntVar(&config.ItinerariesServerPort, itinerariesServerPortParamName, itinerariesServerPortDefault, "defines the itineraries service port")
 
 	flag.Parse()
 
 	serverCfg := www.Config{
-		Host:         "localhost:" + strconv.Itoa(Port),
+		Host:         "localhost:" + strconv.Itoa(config.Port),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
