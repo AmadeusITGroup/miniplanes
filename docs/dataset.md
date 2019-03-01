@@ -2,7 +2,7 @@
 
 Source of this data is https://openflights.org/data.html no Amadeus or Amadeus customer data has been used.
 
-Data has been downloaed and saved here on 30th of August 2018.
+Data has been downloaed and saved here on 30th of August 2018. As far as we understood data are _real_ data from airlines/airports updated to 2014. For the sake of this application is largely enough.
 
 ## airports database
 
@@ -47,17 +47,13 @@ Codeshare	"Y" if this flight is a codeshare (that is, not operated by Airline, b
 Stops	Number of stops on this flight ("0" for direct)
 Equipment	3-letter codes for plane type(s) generally used on this flight, separated by spaces
 
-
-
-In mongo we use miniapp DB. That it should be initialized.
+In mongo we use miniapp DB. 
 
 Mongo structure should be something like
-miniapp.airports
-miniapp.airlines
-miniapp.courses
-
-To import data we do
-
+`miniapp.airports`
+`miniapp.airlines`
+`miniapp.courses`
+`miniapp.schedules`
 
 ## Local mongodb
 

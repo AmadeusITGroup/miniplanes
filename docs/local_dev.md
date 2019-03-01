@@ -28,7 +28,6 @@ $ mongoimport --port=${MYPORT} -d miniapp -c routes --type csv --file data/route
 $ mongoimport --port=${MYPORT} -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 ```
 
-
 ## Working with kind
 
 TODO
