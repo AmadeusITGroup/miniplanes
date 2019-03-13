@@ -19,28 +19,30 @@
 
 <body>
 
-    <table>
-        <tr>
-            <th>Origin</th>
-            <th>Arrival</th>
-            <th>DaysOperated</th>
-            <th>Departure</th>
-            <th>Destination</th>
-            <th>FlightNumber</th>
-            <th>Operating Carrier</th>
-        </tr>
-        {{range $y, $x := . }}
-        <tr>
-            <td>{{$x.Origin}}</td>
-            <td>{{$x.Arrival}}</td>
-            <td>{{$x.DaysOperated}}</td>
-            <td>{{$x.Departure}}</td>
-            <td>{{$x.Destination}}</td>
-            <td>{{$x.FlightNumber}}</td>
-            <td>{{$x.OperatingCarrier}}</td>
-        </tr>
-        {{end}}
-    </table>
+        <table>
+           
+            {{range $y, $x := . }}
+            <tr>
+            <td>{{$x.Description}}</td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Flight Number</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        </tr>
+                        {{range $w, $z := $x.Segments}}
+                        <tr>
+                        <td>{{$z.FlightNumber}}</td>
+                        <td>{{$z.Origin}} {{$z.DepartureDate}}/{{$z.DepartureTime}}</td>
+                        <td>{{$z.Destination}} {{$z.ArrivalDate}}/{{$z.ArrivalTime}}</td>
+                        </tr>
+                        {{end}}
+                </table>
+            </td>
+            </tr>
+            {{end}}
+        </table>
 </body>
 
 </html>

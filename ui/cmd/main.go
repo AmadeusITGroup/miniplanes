@@ -26,12 +26,12 @@ SOFTWARE.
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
 	"github.com/amadeusitgroup/miniapp/ui/cmd/config"
@@ -73,5 +73,5 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt)
 	<-sigChan
 
-	fmt.Println("main : shutting down")
+	log.Info("Thanks for running ui. Hope it was OK")
 }

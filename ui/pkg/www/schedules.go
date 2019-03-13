@@ -27,10 +27,17 @@ package www
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 
-	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	itinerariesclient "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/itineraries"
+	httptransport "github.com/go-openapi/runtime/client"
+
+	"github.com/amadeusitgroup/miniapp/ui/cmd/config"
+	"github.com/go-openapi/strfmt"
+
 	//"k8s.io/client-go/third_party/forked/golang/template"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -50,26 +57,35 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	if err := r.ParseForm(); err != nil {
-		// log.Error
+		log.Errorf("Cannot parse request %v: %v", r, err)
 		return
 	}
-	// Here we should get the schedules...
 
-	//532,1382,9W4777,Air France,1234567,0600,0905
-	// origin destination flightNumber operatingCarrier daysOperated departure arrival
-	schedules := []storagemodels.Schedule{
-		storagemodels.Schedule{
-			Origin:           destination,
-			Destination:      origin,
-			FlightNumber:     flightNumber,
-			OperatingCarrier: operatingCarrier,
-			DaysOperated:     daysOperated,
-			DepartureTime:    departure,
-			ArrivalTime:      arrival,
-		},
+	log.Debugf("Request From %s - To %s", r.PostForm.Get("from"), r.PostForm.Get("to"))
+	log.Debugf("Departure Date:%s Time:%s", r.PostForm.Get("departureDate"), r.PostForm.Get("departureTime"))
+	log.Debugf("Return Date:%s Time:%s", r.PostForm.Get("returnDate"), r.PostForm.Get("returnTime"))
+
+	itinerariesServerURL := fmt.Sprintf("%s:%d", config.ItinerariesServerHost, config.ItinerariesServerPort)
+	client := itinerariesclient.New(httptransport.New(itinerariesServerURL, "", nil), strfmt.Default)
+	params := itinerariesclient.NewGetItinerariesParams()
+	from := r.PostForm.Get("from")
+	params.From = &from
+	to := r.PostForm.Get("to")
+	params.To = &to
+	departureDate := r.PostForm.Get("departureDate")
+	params.DepartureDate = &departureDate
+	returnDate := r.PostForm.Get("returnDate")
+	params.ReturnDate = &returnDate
+	OK, err := client.GetItineraries(params)
+	if err != nil {
+		log.Errorf("couldn't get itineraries: %v", err)
+		w.WriteHeader(500)
+		return
 	}
+	itineraries := OK.Payload
+
 	w.WriteHeader(200)
 	buf := new(bytes.Buffer)
-	schedulesViewTpl.Execute(buf, schedules)
+	schedulesViewTpl.Execute(buf, itineraries)
 	w.Write(buf.Bytes())
 }

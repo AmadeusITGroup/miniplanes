@@ -159,12 +159,12 @@ var _bindataTemplatesIndexhtml = []byte(`<!DOCTYPE html>
     </div>
     <div>
       <div>
-        Departure Date:<input type="date" name="departure" value="2018-07-22" min="2018-01-01" max="2018-12-31">
-        Departure Time<input type="time" id="appt" name="appt" min="9:00" max="18:00" required>
+        Departure Date:<input type="date" name="departureDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
+        Departure Time<input type="time" name="departureTime" min="5:00" max="23:00" value="11:00" required>
       </div>
       <div>
-        Return Date: <input type="date" name="return" value="2018-07-22" min="2018-01-01" max="2018-12-31">
-        Return Time <input type="time" id="appt" name="appt" min="9:00" max="18:00" required>
+        Return Date: <input type="date" name="returnDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
+        Return Time <input type="time" name="returnTime" min="9:00" max="18:00" value="11:00" required>
       </div>
     </div>
     <input type="submit" value="Submit">
@@ -263,28 +263,30 @@ var _bindataTemplatesSchedulesviewhtml = []byte(`<!DOCTYPE html>
 
 <body>
 
-    <table>
-        <tr>
-            <th>Origin</th>
-            <th>Arrival</th>
-            <th>DaysOperated</th>
-            <th>Departure</th>
-            <th>Destination</th>
-            <th>FlightNumber</th>
-            <th>Operating Carrier</th>
-        </tr>
-        {{range $y, $x := . }}
-        <tr>
-            <td>{{$x.Origin}}</td>
-            <td>{{$x.Arrival}}</td>
-            <td>{{$x.DaysOperated}}</td>
-            <td>{{$x.Departure}}</td>
-            <td>{{$x.Destination}}</td>
-            <td>{{$x.FlightNumber}}</td>
-            <td>{{$x.OperatingCarrier}}</td>
-        </tr>
-        {{end}}
-    </table>
+        <table>
+           
+            {{range $y, $x := . }}
+            <tr>
+            <td>{{$x.Description}}</td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Flight Number</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        </tr>
+                        {{range $w, $z := $x.Segments}}
+                        <tr>
+                        <td>{{$z.FlightNumber}}</td>
+                        <td>{{$z.Origin}} {{$z.DepartureDate}}/{{$z.DepartureTime}}</td>
+                        <td>{{$z.Destination}} {{$z.ArrivalDate}}/{{$z.ArrivalTime}}</td>
+                        </tr>
+                        {{end}}
+                </table>
+            </td>
+            </tr>
+            {{end}}
+        </table>
 </body>
 
 </html>`)

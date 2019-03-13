@@ -31,13 +31,13 @@ import (
 	"fmt"
 	"os"
 
+	loads "github.com/go-openapi/loads"
 	log "github.com/sirupsen/logrus"
+	flag "github.com/spf13/pflag"
 
 	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi"
 	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
-	loads "github.com/go-openapi/loads"
-	flag "github.com/spf13/pflag"
 )
 
 const (
@@ -84,5 +84,6 @@ func main() {
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
+	log.Info("Thanks for running itineraries-server. Hope it was OK")
 
 }

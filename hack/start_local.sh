@@ -9,8 +9,8 @@ else
   exit -1
 fi
 
-make clean
-make build
+#make clean
+#make build
 
 ROOTDIR=$(git rev-parse --show-toplevel)
 
@@ -27,8 +27,8 @@ UIPID=$!
 
 sleep 3
 
-echo "Starting test"
-cd ${ROOTDIR}/test/e2e && go test -c . && ./e2e.test --storage-host 127.0.0.1 --storage-port 9999 --itineraries-server-host 127.0.0.1 --itineraries-server-port 8888
+read  -n 1 -p "Enter to stop..." input
+
 
 kill $UIPID
 kill $ISPID

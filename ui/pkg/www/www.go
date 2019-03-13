@@ -40,6 +40,7 @@ import (
 	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
 	"github.com/amadeusitgroup/miniapp/ui/assets"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 // Templates
@@ -127,7 +128,7 @@ func Start(cfg Config) *HTMLServer {
 
 	// Start the listener
 	go func() {
-		fmt.Printf("\nHTMLServer : Service started : Host=%v\n", cfg.Host)
+		log.Infof("HTMLServer : Service started : Host=%v", cfg.Host)
 		htmlServer.server.ListenAndServe()
 		htmlServer.wg.Done()
 	}()
@@ -142,12 +143,12 @@ func (htmlServer *HTMLServer) Stop() error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	fmt.Printf("\nHTMLServer : Service stopping\n")
+	log.Debugf("HTMLServer : Service stopping")
 
 	// Attempt the graceful shutdown by closing the listener
 	// and completing all inflight requests
 	if err := htmlServer.server.Shutdown(ctx); err != nil {
-		fmt.Printf("Error shutting down: %v", err)
+		log.Errorf("shutting down: %v", err)
 		// Looks like we timed out on the graceful shutdown. Force close.
 		//		if err := htmlServer.server.Close(); err != nil {
 		//			fmt.Printf("\nHTMLServer : Service stopping : Error=%v\n", err)
@@ -156,7 +157,7 @@ func (htmlServer *HTMLServer) Stop() error {
 	}
 	// Wait for the listener to report that it is closed.
 	htmlServer.wg.Wait()
-	fmt.Printf("\nHTMLServer : Stopped\n")
+	log.Infof("HTMLServer : Stopped")
 	return nil
 }
 
