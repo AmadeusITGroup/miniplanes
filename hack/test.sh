@@ -15,7 +15,7 @@ kubectl port-forward ${ui_pod_name} ${ui_svc_target_port}:${ui_svc_port} &
 
 UISVCPID=$!
 
-echo "RUN TEST TEST E2E.. But for the moment... Just see if ui is there"
+echo "RUN TEST E2E.. But for the moment... Just see if ui is there"
 
 STATUS=$(http -h  localhost:8090/airports | grep HTTP | cut -d ' ' -f 2)
 if  [ "$STATUS" = "200" ]; then
