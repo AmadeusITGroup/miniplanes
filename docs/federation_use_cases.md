@@ -8,7 +8,7 @@ A more and more asked requirements is that data should be collected, stored and 
 
 ## Specific Workload Cluster (aka clusters as cattle)
 
-By design Federation-V2 offers the ability to place specific workloads to specific clusters. For exampple one may reserve high intesive computing workload with clusters where GPU are available, DBs workload in clusters where  a lot of storage space is offered, keeping very short and volatile workloads for public clouds with [preemptible vms](https://cloud.google.com/preemptible-vms/) or [spot instances](https://aws.amazon.com/ec2/spot/). Having the ability
+By design Federation-V2 offers the ability to place specific workloads to specific clusters. For example one may reserve high intesive computing workload with clusters where GPU are available, DBs workload in clusters where a lot of storage space is offered, keeping very short and volatile workloads for public clouds with [preemptible vms](https://cloud.google.com/preemptible-vms/) or [spot instances](https://aws.amazon.com/ec2/spot/). Having the ability
 
 * Federation-V2 concept: placementPolicy, workload customization (overriding),
 * `miniplanes` use case: one cluster with all the storage (_pet_ cluster) and one or more cluster with computing resource only.

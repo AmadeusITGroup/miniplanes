@@ -1,6 +1,6 @@
 #Disclaimer
 
-Source of this data is https://openflights.org/data.html no Amadeus or Amadeus customer data has been used.
+Source of this data is [openflights.org](http://www.openflights.org/data.html) no Amadeus or Amadeus customer data has been used.
 
 Data has been downloaed and saved here on 30th of August 2018. As far as we understood data are _real_ data from airlines/airports updated to 2014. For the sake of this application is largely enough.
 
@@ -74,7 +74,7 @@ $ mongoimport -d miniplanes -c schedules --type csv --file data/schedules.dat --
 
 ## Scheduling
 
-First idea of scheduling comes from [https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx] but it has been largely modified (unluckily in a non producible way).
+First idea of scheduling comes from [jetairways](https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx) but it has been largely modified (unluckily in a non producible way).
 
 
 ## Docker mongodb
