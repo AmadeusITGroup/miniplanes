@@ -1,6 +1,6 @@
+# Mongo
 
-
-How to print schema
+## How to print schema
 
 ```
 $ mongo

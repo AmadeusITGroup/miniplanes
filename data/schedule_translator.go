@@ -84,7 +84,7 @@ type airport struct {
 	Source    string        `json:"source" bson:"source"`       //Source of this data. "OurAirports" for data sourced from OurAirports, "Legacy" for old data not matched to OurAirports (mostly DAFIF), "User" for unverified user contributions. In airports.csv, only source=OurAirports is included.
 }
 
-type airportMap struct {
+type airportIdentifiers struct {
 	ID         bson.ObjectId `json:"id" bson:"_id"`
 	PseudoName string        `json:"pseudoName" bson:"pseudoName"`
 	Name       string        `json:"name" bson:"name"`
@@ -93,11 +93,11 @@ type airportMap struct {
 }
 
 const (
-	dbName                = "miniplanes"
-	routesCollection      = "routes"
-	airportsCollection    = "airports"
-	airlinesCollection    = "airlines"
-	airportsMapCollection = "airportsmap"
+	dbName                        = "miniplanes"
+	routesCollection              = "routes"
+	airportsCollection            = "airports"
+	airlinesCollection            = "airlines"
+	airportsIdentifiersCollection = "airportsmap"
 )
 
 func findAirportID(airportName string, airports []*airport) (int64, error) {
@@ -109,7 +109,7 @@ func findAirportID(airportName string, airports []*airport) (int64, error) {
 	return 0, fmt.Errorf("couldn't find airport %q", airportName)
 }
 
-func getIDFromName(airports []*airport, airportsMap []*airportMap, airportName string) (int64, error) {
+func getIDFromName(airports []*airport, airportsIdentifiers []*airportIdentifiers, airportName string) (int64, error) {
 	if len(airportName) == 0 {
 		return 0, fmt.Errorf("Empty airport name given")
 	}
@@ -121,10 +121,10 @@ func getIDFromName(airports []*airport, airportsMap []*airportMap, airportName s
 			return a.AirportID, nil
 		}
 	}
-	for _, a := range airportsMap {
+	for _, a := range airportsIdentifiers {
 		if airportName == a.Name {
 			if a.AirportID == 0 {
-				log.Fatalf("2 Empty IATA code for in airportMap %q", a.Name)
+				log.Fatalf("2 Empty IATA code for in airportIdentifiers %q", a.Name)
 			}
 			return a.AirportID, nil
 		}
@@ -135,7 +135,7 @@ func getIDFromName(airports []*airport, airportsMap []*airportMap, airportName s
 	for _, a := range airports {
 		if withAirport == a.Name {
 			if a.AirportID == 0 {
-				log.Fatalf("3 Empty IATA code for in airportMap %q", a.Name)
+				log.Fatalf("3 Empty IATA code for in airportIdentifiers %q", a.Name)
 			}
 			return a.AirportID, nil
 		}
@@ -154,16 +154,6 @@ func getIDFromName(airports []*airport, airportsMap []*airportMap, airportName s
 	return 0, fmt.Errorf("can't find code for %q", airportName)
 }
 
-type byCityName []*airport
-
-func (b byCityName) Len() int {
-	return len(b)
-}
-
-func (b byCityName) Swap(i, j int) {
-	b[i], b[j] = b[j], b[i]
-}
-
 func main() {
 	csvFile, _ := ioutil.ReadFile("JetAirwaysFlightSchedules.csv")
 
@@ -178,9 +168,9 @@ func main() {
 		log.Fatalf("Cannot get airpts: %v\n", err)
 	}
 
-	var airportsMap []*airportMap
-	if err := db.DB(dbName).C(airportsMapCollection).Find(nil).All(&airportsMap); err != nil {
-		log.Fatalf("Cannot get airportsMap: %v\n", err)
+	var airportsIdentifiers []*airportIdentifiers
+	if err := db.DB(dbName).C(airportsIdentifiersCollection).Find(nil).All(&airportsIdentifiers); err != nil {
+		log.Fatalf("Cannot get airportsIdentifiers: %v\n", err)
 	}
 
 	s := string(csvFile)
@@ -199,13 +189,13 @@ func main() {
 			r[7] = "1234567"
 		}
 
-		origin, err := getIDFromName(airports, airportsMap, r[0])
+		origin, err := getIDFromName(airports, airportsIdentifiers, r[0])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Origin. Cannot obtain IATA code for %q\n", r[0])
 			continue
 		}
 
-		destination, err := getIDFromName(airports, airportsMap, r[2])
+		destination, err := getIDFromName(airports, airportsIdentifiers, r[2])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Destination. Cannot obtain IATA code for %q -> %#v\n", r[2], r)
 			continue
