@@ -16,7 +16,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	models "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 )
 
 // NewUpdateScheduleParams creates a new UpdateScheduleParams object

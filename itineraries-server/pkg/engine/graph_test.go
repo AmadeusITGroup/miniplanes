@@ -30,8 +30,8 @@ import (
 	"reflect"
 	"testing"
 
-	itinerarymodels "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
-	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	itinerarymodels "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
+	storagemodels "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	"github.com/davecgh/go-spew/spew"
 )
 

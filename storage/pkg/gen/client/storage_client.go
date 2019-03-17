@@ -11,13 +11,13 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airlines"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/courses"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/liveness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/readiness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/version"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airlines"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/courses"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/liveness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/readiness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/schedules"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/version"
 )
 
 // Default storage HTTP client.

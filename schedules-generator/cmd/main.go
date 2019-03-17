@@ -37,9 +37,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/db"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/db/mongo"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/db"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/db/mongo"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 )
 
 type departureArrivalTime struct {
@@ -173,7 +173,7 @@ func main() {
 
 	log.Infof("%s %s %d\n", csvFileName, mongoIP, mongoPort)
 
-	m := mongo.NewMongoDB(mongoIP, mongoPort, "miniapp")
+	m := mongo.NewMongoDB(mongoIP, mongoPort, "miniplanes")
 	ID2Airports := map[int32]*models.Airport{}
 	airports, err := m.GetAirports()
 	if err != nil || len(airports) == 0 {

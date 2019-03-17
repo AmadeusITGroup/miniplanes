@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	models "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 )
 
 // NewAddScheduleParams creates a new AddScheduleParams object

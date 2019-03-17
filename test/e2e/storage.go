@@ -28,11 +28,11 @@ package e2e
 import (
 	"fmt"
 
-	airlinesclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airlines"
-	airportsclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
-	coursesclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/courses"
-	livenessclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/liveness"
-	readinessclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/readiness"
+	airlinesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airlines"
+	airportsclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
+	coursesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/courses"
+	livenessclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/liveness"
+	readinessclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/readiness"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 

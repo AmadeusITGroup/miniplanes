@@ -13,5 +13,5 @@ spec:
         command:
          - "bin/bash"
          - "-c"
-         - "mongoimport --host=mongo.default.svc.cluster.local -d miniapp -c courses --type csv --file courses.dat --fieldFile=courses_schema.dat"
+         - "mongoimport --host=mongo.default.svc.cluster.local -d miniplanes -c courses --type csv --file courses.dat --fieldFile=courses_schema.dat"
       restartPolicy: Never

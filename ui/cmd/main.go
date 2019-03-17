@@ -34,8 +34,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
-	"github.com/amadeusitgroup/miniapp/ui/cmd/config"
-	"github.com/amadeusitgroup/miniapp/ui/pkg/www"
+	"github.com/amadeusitgroup/miniplanes/ui/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/ui/pkg/www"
 )
 
 const (

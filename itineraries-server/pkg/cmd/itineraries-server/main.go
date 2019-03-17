@@ -31,8 +31,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/restapi"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/restapi/operations"
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
 )

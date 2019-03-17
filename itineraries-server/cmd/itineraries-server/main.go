@@ -35,9 +35,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi/operations"
 )
 
 const (
@@ -61,7 +61,7 @@ func main() {
 		fmt.Fprint(os.Stderr, "Usage:\n")
 		fmt.Fprint(os.Stderr, "  itineraries-server [OPTIONS]\n\n")
 
-		title := "miniapp itineraries-server"
+		title := "miniplanes itineraries-server"
 		fmt.Fprint(os.Stderr, title+"\n\n")
 		desc := "needs to add a description"
 		if desc != "" {

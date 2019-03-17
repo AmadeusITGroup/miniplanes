@@ -39,6 +39,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+//CVSFileSchedule schedule representation
 type CVSFileSchedule struct {
 	Origin      int64
 	Destination int64
@@ -52,6 +53,7 @@ type CVSFileSchedule struct {
 	//EffTill          string // date in format dd-Mon-YY
 }
 
+//ToStrings return fields of the schedule read for CSV format
 func (s *CVSFileSchedule) ToStrings() []string {
 	return []string{
 		strconv.Itoa(int(s.Origin)),
@@ -91,7 +93,7 @@ type airportMap struct {
 }
 
 const (
-	dbName                = "miniapp"
+	dbName                = "miniplanes"
 	routesCollection      = "routes"
 	airportsCollection    = "airports"
 	airlinesCollection    = "airlines"

@@ -24,7 +24,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "needs to add a description",
-    "title": "miniapp storage",
+    "title": "miniplanes storage",
     "version": "1.0.0"
   },
   "host": "storage:33775",
@@ -523,7 +523,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "needs to add a description",
-    "title": "miniapp storage",
+    "title": "miniplanes storage",
     "version": "1.0.0"
   },
   "host": "storage:33775",

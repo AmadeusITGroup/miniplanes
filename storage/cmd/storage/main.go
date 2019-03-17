@@ -34,9 +34,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
-	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/storage/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations"
 )
 
 const (
@@ -46,7 +46,7 @@ const (
 	mongoPortDefault   = 27017
 
 	mongoDBNameParamName = "mongo-db-name"
-	mongoDBNameDefault   = "miniapp"
+	mongoDBNameDefault   = "miniplanes"
 )
 
 func main() {
@@ -64,7 +64,7 @@ func main() {
 		fmt.Fprint(os.Stderr, "Usage:\n")
 		fmt.Fprint(os.Stderr, "  storage-server [OPTIONS]\n\n")
 
-		title := "miniapp storage"
+		title := "miniplanes storage"
 		fmt.Fprint(os.Stderr, title+"\n\n")
 		desc := "needs to add a description"
 		if desc != "" {

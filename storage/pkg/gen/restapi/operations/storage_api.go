@@ -19,13 +19,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/courses"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/version"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airlines"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airports"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/courses"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/liveness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/schedules"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/version"
 )
 
 // NewStorageAPI creates a new Storage instance

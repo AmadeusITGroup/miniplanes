@@ -11,10 +11,10 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/itineraries"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/liveness"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/readiness"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/version"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/itineraries"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/liveness"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/readiness"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/version"
 )
 
 // Default itineraries HTTP client.

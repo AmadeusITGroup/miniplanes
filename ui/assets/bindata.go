@@ -130,7 +130,7 @@ var _bindataTemplatesIndexhtml = []byte(`<!DOCTYPE html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Miniapp User Interface</title>
+  <title>Miniplanes User Interface</title>
 
 
   <!--link rel="stylesheet" href="/static/style.css"––>
@@ -205,7 +205,7 @@ func bindataTemplatesIndexhtml() (*asset, error) {
 var _bindataTemplatesNavigationbarhtml = []byte(`<!-- Navigation Bar -->
 <nav class="navbar navbar-light bg-light">
     <div class="container">
-        <span class="navbar-brand">MiniApp</span>
+        <span class="navbar-brand">MiniPlanes</span>
         <ul class="nav justify-content-end">
             <li class="nav-item">
                 <a id="homeNav" class="nav-link" href="/">Home</a>

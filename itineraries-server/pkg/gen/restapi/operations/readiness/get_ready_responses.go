@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
+	models "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
 )
 
 // GetReadyOKCode is the HTTP code returned for type GetReadyOK
