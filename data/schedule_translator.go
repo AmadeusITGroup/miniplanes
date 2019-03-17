@@ -39,8 +39,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-//CVSFileSchedule schedule representation
-type CVSFileSchedule struct {
+//CSVFileSchedule schedule representation
+type CSVFileSchedule struct {
 	Origin      int64
 	Destination int64
 	//Via              string
@@ -54,7 +54,7 @@ type CVSFileSchedule struct {
 }
 
 //ToStrings return fields of the schedule read for CSV format
-func (s *CVSFileSchedule) ToStrings() []string {
+func (s *CSVFileSchedule) ToStrings() []string {
 	return []string{
 		strconv.Itoa(int(s.Origin)),
 		strconv.Itoa(int(s.Destination)),
@@ -215,7 +215,7 @@ func main() {
 			continue
 		}
 
-		s := CVSFileSchedule{
+		s := CSVFileSchedule{
 			Origin:      origin,
 			Destination: destination,
 			//Via:              r[3],
