@@ -30,10 +30,10 @@ import (
 	"fmt"
 	"net/http"
 
-	itinerariesclient "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/itineraries"
+	itinerariesclient "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/itineraries"
 	httptransport "github.com/go-openapi/runtime/client"
 
-	"github.com/amadeusitgroup/miniapp/ui/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/ui/cmd/config"
 	"github.com/go-openapi/strfmt"
 
 	//"k8s.io/client-go/third_party/forked/golang/template"

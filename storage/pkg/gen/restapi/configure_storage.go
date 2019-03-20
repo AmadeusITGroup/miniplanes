@@ -13,17 +13,17 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/amadeusitgroup/miniapp/storage/cmd/config"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/db/mongo"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airlines"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/airports"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/courses"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/liveness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/readiness"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/schedules"
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations/version"
+	"github.com/amadeusitgroup/miniplanes/storage/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/db/mongo"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airlines"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airports"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/courses"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/liveness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/schedules"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/version"
 )
 
 //go:generate swagger generate server --target ../../pkg/gen --name storage --spec ../swagger.yaml --exclude-main

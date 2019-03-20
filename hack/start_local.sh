@@ -9,9 +9,6 @@ else
   exit -1
 fi
 
-#make clean
-#make build
-
 ROOTDIR=$(git rev-parse --show-toplevel)
 
 #storage

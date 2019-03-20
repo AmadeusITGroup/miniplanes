@@ -1,6 +1,6 @@
 #Disclaimer
 
-Source of this data is https://openflights.org/data.html no Amadeus or Amadeus customer data has been used.
+Source of this data is [openflights.org](http://www.openflights.org/data.html) no Amadeus or Amadeus customer data has been used.
 
 Data has been downloaed and saved here on 30th of August 2018. As far as we understood data are _real_ data from airlines/airports updated to 2014. For the sake of this application is largely enough.
 
@@ -47,13 +47,13 @@ Codeshare	"Y" if this flight is a codeshare (that is, not operated by Airline, b
 Stops	Number of stops on this flight ("0" for direct)
 Equipment	3-letter codes for plane type(s) generally used on this flight, separated by spaces
 
-In mongo we use miniapp DB. 
+In mongo we use miniplanes DB. 
 
 Mongo structure should be something like
-`miniapp.airports`
-`miniapp.airlines`
-`miniapp.courses`
-`miniapp.schedules`
+`miniplanes.airports`
+`miniplanes.airlines`
+`miniplanes.courses`
+`miniplanes.schedules`
 
 ## Local mongodb
 
@@ -61,20 +61,20 @@ cleanup openflight airports file:
 
 ```shell
 $ sed -i "s/\\\\\"/'/g" data/airports.dat
-$ mongoimport -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
+$ mongoimport -d miniplanes -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
 ```
 
 same for _airlines_ and _courses_ but no clean-up needed.
 
 ```shell
-$ mongoimport -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
-$ mongoimport -d miniapp -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
-$ mongoimport -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
+$ mongoimport -d miniplanes -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
+$ mongoimport -d miniplanes -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
+$ mongoimport -d miniplanes -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 ```
 
 ## Scheduling
 
-First idea of scheduling comes from [https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx] but it has been largely modified (unluckily in a non producible way).
+First idea of scheduling comes from [jetairways](https://www.jetairways.com/en/fr/planyourtravel/flight-schedules.aspx) but it has been largely modified (unluckily in a non producible way).
 
 
 ## Docker mongodb
@@ -91,9 +91,9 @@ then to load your data you should something like
 $ mongoContainer=$(docker ps -aqf "name=mongodb")
 $ mongoIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mongoContainer)
 $ sed -i "s/\\\\\"/'/g" data/airports.dat
-$ mongoimport -h $mongoIP -d miniapp -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
-$ mongoimport -h $mongoIP -d miniapp -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
-$ mongoimport -h $mongoIP -d miniapp -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
-$ mongoimport -h $mongoIP -d miniapp -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
+$ mongoimport -h $mongoIP -d miniplanes -c airports --type csv --file data/airports.dat --fieldFile=data/airports_schema.dat
+$ mongoimport -h $mongoIP -d miniplanes -c airlines --type csv --file data/airlines.dat --fieldFile=data/airlines_schema.dat
+$ mongoimport -h $mongoIP -d miniplanes -c courses --type csv --file data/courses.dat --fieldFile=data/courses_schema.dat
+$ mongoimport -h $mongoIP -d miniplanes -c schedules --type csv --file data/schedules.dat --fieldFile=data/schedules_schema.dat
 
 ```

@@ -13,7 +13,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
+	models "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
 )
 
 // GetItinerariesReader is a Reader for the GetItineraries structure.

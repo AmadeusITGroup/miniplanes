@@ -26,7 +26,7 @@ SOFTWARE.
 package mongo
 
 import (
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	"github.com/jinzhu/copier"
 
 	"gopkg.in/mgo.v2/bson"

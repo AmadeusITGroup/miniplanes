@@ -31,8 +31,8 @@ import (
 	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
 
-	itinerarymodels "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
-	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	itinerarymodels "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
+	storagemodels "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 )
 
 func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departureDate string) *itinerarymodels.Segment {

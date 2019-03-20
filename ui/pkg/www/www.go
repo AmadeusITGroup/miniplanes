@@ -37,8 +37,8 @@ import (
 	"sync"
 	"time"
 
-	storagemodels "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
-	"github.com/amadeusitgroup/miniapp/ui/assets"
+	storagemodels "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/ui/assets"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )

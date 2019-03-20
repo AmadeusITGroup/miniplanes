@@ -25,7 +25,7 @@ import (
 	flag "github.com/spf13/pflag"
 	"golang.org/x/net/netutil"
 
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations"
 )
 
 const (

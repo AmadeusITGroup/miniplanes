@@ -26,7 +26,7 @@ SOFTWARE.
 
 package db
 
-import "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+import "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 
 // DB defines db interface
 type DB interface {

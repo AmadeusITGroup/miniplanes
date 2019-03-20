@@ -34,7 +34,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -48,7 +48,7 @@ const (
 	schedulesCollection = "schedules"
 )
 
-// MongoDB implements miniapp storage interface for MongoDB
+// MongoDB implements miniplanes storage interface for MongoDB
 type MongoDB struct {
 	mongoHost string
 	mongoPort string

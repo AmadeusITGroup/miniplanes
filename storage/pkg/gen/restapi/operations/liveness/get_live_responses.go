@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	models "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 )
 
 // GetLiveOKCode is the HTTP code returned for type GetLiveOK

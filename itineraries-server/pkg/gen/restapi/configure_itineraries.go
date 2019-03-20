@@ -33,10 +33,10 @@ import (
 
 	"net/http"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/engine"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/liveness"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/readiness"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/cmd/config"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/engine"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi/operations/liveness"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi/operations/readiness"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
@@ -44,12 +44,12 @@ import (
 	"github.com/go-openapi/strfmt"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/models"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations"
-	"github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/restapi/operations/itineraries"
-	airportsclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/airports"
-	schedulesclient "github.com/amadeusitgroup/miniapp/storage/pkg/gen/client/schedules"
-	storage_models "github.com/amadeusitgroup/miniapp/storage/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi/operations"
+	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/restapi/operations/itineraries"
+	airportsclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
+	schedulesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/schedules"
+	storage_models "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	httptransport "github.com/go-openapi/runtime/client"
 )
 

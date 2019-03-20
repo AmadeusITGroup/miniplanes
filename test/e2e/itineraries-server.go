@@ -28,9 +28,9 @@ package e2e
 import (
 	"fmt"
 
-	itinerariesclient "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/itineraries"
-	livenessclient "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/liveness"
-	readinessclient "github.com/amadeusitgroup/miniapp/itineraries-server/pkg/gen/client/readiness"
+	itinerariesclient "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/itineraries"
+	livenessclient "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/liveness"
+	readinessclient "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/readiness"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 

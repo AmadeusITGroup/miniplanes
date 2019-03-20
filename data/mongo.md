@@ -1,10 +1,10 @@
+# Mongo
 
-
-How to print schema
+## How to print schema
 
 ```
 $ mongo
-> use miniapp;
+> use miniplanes;
 > function printSchema(obj) { for (var key in obj) { print(key, typeof obj[key]); } };
 >  schemaObj=db.airlines.findOne()
 > printSchema(schemaObj)

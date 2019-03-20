@@ -18,7 +18,7 @@ storage-validate-swagger:
 
 storage-build: output
 	#VERSION := $(shell git rev-parse HEAD)
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniapp/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
+	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniplanes/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
 
 storage-image-build: storage-build
 	cp -f $(OUTPUTDIR)/storage storage/image
@@ -35,7 +35,7 @@ itineraries-server-validate-swagger:
 	cd itineraries-server/swagger && swagger validate ./swagger.yaml
 
 itineraries-server-build: output
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo  -ldflags "-w -X github.com/amadeusitgroup/miniapp/itineraries-server/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/itineraries-server itineraries-server/cmd/itineraries-server/main.go
+	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo  -ldflags "-w -X github.com/amadeusitgroup/miniplanes/itineraries-server/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/itineraries-server itineraries-server/cmd/itineraries-server/main.go
 
 itineraries-server-image-build: itineraries-server-build
 	cp -f $(OUTPUTDIR)/itineraries-server itineraries-server/image
