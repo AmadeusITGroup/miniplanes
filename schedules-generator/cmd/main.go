@@ -212,15 +212,15 @@ func main() {
 			flightNumber := strings.Join([]string{course.Airline, fmt.Sprintf("%03d", flightNumberPerAirline[course.Airline])}, "")
 			daysOperated := "1234567"
 			schedules = append(schedules, &models.Schedule{
-				ScheduleID:       &scheduleID,
-				Origin:           &course.SourceAirportID,
-				Destination:      &course.DestinationAirportID,
-				FlightNumber:     &flightNumber,
-				OperatingCarrier: &course.Airline,
-				DaysOperated:     &daysOperated,
-				DepartureTime:    &d.departure,
-				ArrivalTime:      &d.arrival,
-				ArriveNextDay:    &d.arriveNextDay,
+				ScheduleID:       scheduleID,
+				Origin:           course.SourceAirportID,
+				Destination:      course.DestinationAirportID,
+				FlightNumber:     flightNumber,
+				OperatingCarrier: course.Airline,
+				DaysOperated:     daysOperated,
+				DepartureTime:    d.departure,
+				ArrivalTime:      d.arrival,
+				ArriveNextDay:    d.arriveNextDay,
 			})
 		}
 	}
@@ -236,12 +236,12 @@ func main() {
 				fmt.Sprintf("%d", s.ScheduleID),
 				fmt.Sprint(s.Origin),
 				fmt.Sprint(s.Destination),
-				*s.FlightNumber,
-				*s.OperatingCarrier,
-				*s.DaysOperated,
-				*s.DepartureTime,
-				*s.ArrivalTime,
-				strconv.FormatBool(*s.ArriveNextDay),
+				s.FlightNumber,
+				s.OperatingCarrier,
+				s.DaysOperated,
+				s.DepartureTime,
+				s.ArrivalTime,
+				strconv.FormatBool(s.ArriveNextDay),
 			}
 			err := writer.Write(data)
 			if err != nil {

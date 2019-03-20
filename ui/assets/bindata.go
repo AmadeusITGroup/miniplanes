@@ -127,13 +127,13 @@ func bindataTemplatesAdminviewhtml() (*asset, error) {
 var _bindataTemplatesIndexhtml = []byte(`<!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Miniplanes User Interface</title>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Miniplanes User Interface</title>
 
 
-  <!--link rel="stylesheet" href="/static/style.css"––>
+    <!--link rel="stylesheet" href="/static/style.css"––>
   <!--link rel="stylesheet" href="/static/navigation_bar.css"––>
 
 </head>
@@ -142,40 +142,38 @@ var _bindataTemplatesIndexhtml = []byte(`<!DOCTYPE html>
 <body>
 
    <!--Optional JavaScript-->
-  <!--jQuery first, then Popper.js, then Bootstrap JS-->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-    crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
-    crossorigin="anonymous"></script>
+    <!--jQuery first, then Popper.js, then Bootstrap JS-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+            crossorigin="anonymous"></script>
 
-  Put some images here...
+    Put some images here...
 
-  <form action="/search_schedules" , method="POST">
-    <div>
-      From:<input type="text" name="from" value="">
-      To:<input type="text" name="to" value="">
-    </div>
-    <div>
+    <form action="/search_schedules" , method="POST">
       <div>
-        Departure Date:<input type="date" name="departureDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
-        Departure Time<input type="time" name="departureTime" min="5:00" max="23:00" value="11:00" required>
+        From:<input type="text" name="from" value="">
+        To:<input type="text" name="to" value="">
       </div>
       <div>
-        Return Date: <input type="date" name="returnDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
-        Return Time <input type="time" name="returnTime" min="9:00" max="18:00" value="11:00" required>
+        <div>
+          Departure Date:<input type="date" name="departureDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
+          Departure Time<input type="time" name="departureTime" min="5:00" max="23:00" value="11:00" required>
+        </div>
+        <div>
+          Return Date: <input type="date" name="returnDate" value="2019-07-22" min="2019-01-01" max="2019-12-31">
+          Return Time <input type="time" name="returnTime" min="9:00" max="18:00" value="11:00" required>
+        </div>
       </div>
-    </div>
-    <input type="submit" value="Submit">
-  </form>
+      <input type="submit" value="Submit">
+    </form>
 
 
-  </body>
+    </body>
 
 
-</html>
-`)
+</html>`)
 
 func bindataTemplatesIndexhtmlBytes() ([]byte, error) {
 	return _bindataTemplatesIndexhtml, nil
