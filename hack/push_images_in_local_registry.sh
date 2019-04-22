@@ -1,11 +1,5 @@
 #!/bin/env bash
 
-function handle_int() {
-  kill $REGPFPID
-  echo "port-forward stopped"
-  exit
-}
-
 source ./hack/common.sh
 
 kubectl port-forward --namespace kube-system $(kubectl get pods -n kube-system -l=k8s-app=kube-registry,version=v0 -o=jsonpath='{.items[0].metadata.name}') 5000:5000 &

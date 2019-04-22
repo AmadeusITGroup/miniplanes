@@ -2,14 +2,34 @@
 
 source ./hack/common.sh
 
-minikube start --kubernetes-version=v1.11.0 --vm-driver=kvm
+#minikube start --kubernetes-version=v1.11.0 --vm-driver=kvm2
 
-minikube addons enable registry
+#TODO: handle registry
+#minikube addons enable registry
+eval $(minikube docker-env)
 
 wait_until minikube_up_and_running
-
-#kubectl create -f https://gist.githubusercontent.com/coco98/b750b3debc6d517308596c248daf3bb1/raw/6efc11eb8c2dce167ba0a5e557833cc4ff38fa7c/kube-registry.yaml
 
 wait_until kube-system_up_and_running
 
 #./hack/start_mongo.sh
+#Start mongo
+
+TMPFILE=$(mktemp)
+/usr/bin/openssl rand -base64 741 > $TMPFILE
+
+#TODO: checks errs :) for example if resources already created
+kubectl create secret generic shared-bootstrap-data --from-file=internal-auth-mongodb-keyfile=$TMPFILE
+kubectl apply -f deployment/k8s/mongo.yaml
+
+make image
+
+wait_until mongo_up_and_running 2 60
+rm -rf $TMPFILE
+
+#Populate mongo...
+
+
+kubectl create -f deployment/k8s/miniplanes
+
+#TODO: create schedules

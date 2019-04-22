@@ -9,21 +9,21 @@ OUTPUTDIR=_output
 output:
 	mkdir -p $(OUTPUTDIR)
 
-build: storage-build itineraries-server-build ui-build
+build: storage-build itineraries-server-build ui-build schedules-generator-build
 
-images: storage-image-build itineraries-server-image-build ui-image-build
+image: storage-build itineraries-server-build ui-build schedules-generator-build
+	docker build . -t $(PREFIX)miniplanes:$(TAG)
 
 storage-validate-swagger:
 	cd storage/swagger && swagger validate ./swagger.yaml
 
 storage-build: output
-	#VERSION := $(shell git rev-parse HEAD)
 	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniplanes/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
 
 storage-image-build: storage-build
 	cp -f $(OUTPUTDIR)/storage storage/image
 	cd  storage/image && docker build .  -t $(PREFIX)storage:$(TAG)
-	rm -rf storage/storage
+	rm -rf storage/image/storage
 
 storage-generate-server:
 	cd storage/swagger && swagger generate server --target ../pkg/gen  --flag-strategy pflag --exclude-main --name storage --spec ./swagger.yaml
@@ -56,6 +56,14 @@ ui-image-build: ui-build
 	cp -f $(OUTPUTDIR)/ui ui/image
 	cd  ui/image && docker build . -t $(PREFIX)ui:$(TAG)
 	rm -rf ui/image/ui
+
+schedules-generator-build: output
+	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/schedules-generator schedules-generator/cmd/main.go
+
+schedules-generator-image-build: schedules-generator-build
+	cp -f $(OUTPUTDIR)/schedules-generator schedules-generator/image
+	cd schedules-generator/image  && docker build . -t $(PREFIX)schedules-generator:$(TAG)
+	rm -rf schedules-generator/image/schedules-generator
 
 test_local: build
 	cd itineraries-server/pkg/engine && go test .

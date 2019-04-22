@@ -62,7 +62,7 @@ func main() {
 	flag.Parse()
 
 	serverCfg := www.Config{
-		Host:         "localhost:" + strconv.Itoa(config.Port),
+		Host:         "0.0.0.0:" + strconv.Itoa(config.Port),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}

@@ -4,7 +4,6 @@ source ./hack/common.sh
 
 TMPFILE=$(mktemp)
 /usr/bin/openssl rand -base64 741 > $TMPFILE
-
 #TODO: checks errs :) for example if resources already created
 
 kubectl create secret generic shared-bootstrap-data --from-file=internal-auth-mongodb-keyfile=$TMPFILE

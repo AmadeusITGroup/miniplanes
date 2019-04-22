@@ -1,4 +1,16 @@
 
+## Dependecies
+
+`miniplanes` development environment depends on two external tools:
+* `swagger`: supplied by `go-swagger`
+* `go-bindata`: supplied by `go-bindata`
+
+in order to build `miniplanes` executable you need both. You can install on your development environment via usual:
+
+```shell
+$ go get ...
+$ go get ...
+```
 
 ## How to populate DB
 

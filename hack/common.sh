@@ -7,6 +7,12 @@ command -v curl >/dev/null 2>&1 || { echo >&2 "can't find curl. Aborting."; exit
 
 ROOTDIR=$(git rev-parse --show-toplevel)
 
+function handle_int() {
+  kill $REGPFPID
+  echo "port-forward stopped"
+  exit
+}
+
 echo_red() {
   local RED='\033[0;31m'
   NC='\033[0m'
@@ -48,9 +54,9 @@ wait_until() {
 }
 
 minikube_up_and_running() {
-  clusterStatus=$(minikube status --format='{{ .ClusterStatus }}')
-  minikubeStatus=$(minikube status --format='{{ .MinikubeStatus }}')
-  if [[ "${clusterStatus}" == "Running" && "${minikubeStatus}" == "Running" ]]
+  apiStatus=$(minikube status --format='{{ .ApiServer }}')
+  hostStatus=$(minikube status --format='{{ .Host }}')
+  if [[ "${apiStatus}" == "Running" && "${hostStatus}" == "Running" ]]
   then
     echo "0"
     return

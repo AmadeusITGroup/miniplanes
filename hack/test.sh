@@ -1,11 +1,5 @@
 #!/bin/env bash
 
-function handle_int() {
-  kill $REGPFPID
-  echo "port-forward stopped"
-  exit
-}
-
 source ./hack/common.sh
 
 ui_pod_name=$(kubectl get pods -l app=ui -o=jsonpath='{.items[0].metadata.name}')

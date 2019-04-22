@@ -1,0 +1,62 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongo
+  labels:
+    name: mongo
+spec:
+  selector:
+    role: mongo
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  type: ClusterIP
+---
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: mongo
+spec:
+  replicas: 1
+  selector:
+    role: mongo
+  template:
+    metadata:
+      labels:
+        name: mongo-node
+        role: mongo
+    spec:
+      containers:
+        - name: mongo-node
+          image: mongo
+          command:
+            - mongod
+            - "--bind_ip"
+            - 0.0.0.0
+            - "--smallfiles"
+            - "--noprealloc"
+#            - "--replSet"
+#            - rs0
+#            - "--auth"
+#            - "--clusterAuthMode"
+#            - "keyFile"
+#            - "--keyFile"
+#            - "/etc/secrets-volume/internal-auth-mongodb-keyfile"
+#            - "--setParameter"
+#            - "authenticationMechanisms=SCRAM-SHA-1"
+          resources:
+            requests:
+              cpu: 0.2
+              memory: 200Mi
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+#            - name: secrets-volume
+#              readOnly: true
+#              mountPath: /etc/secrets-volume
+      volumes:
+        - name: mongo-persistent-storage
+          emptyDir: {}

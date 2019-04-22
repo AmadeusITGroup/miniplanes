@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate-schedules
+spec:
+  template:
+    metadata:
+      name: generate-schedules
+    spec:
+      containers:
+      - name: schedules-generator
+        image: miniplanes:latest
+        command:
+         - "bin/bash"
+         - "-c"
+         - "schedules-generator --mongo-host=mongo.default.svc.cluster.local"
+      restartPolicy: Never
