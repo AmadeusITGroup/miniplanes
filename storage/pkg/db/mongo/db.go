@@ -26,22 +26,22 @@ SOFTWARE.
 package mongo
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/jinzhu/copier"
+	log "github.com/sirupsen/logrus"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
-	log "github.com/sirupsen/logrus"
 )
 
 var mongoHost string
 
 const (
-	coursesCollection   = "courses"
 	airportsCollection  = "airports"
 	airlinesCollection  = "airlines"
 	airlinesCourses     = "courses"
@@ -72,7 +72,9 @@ func (m *MongoDB) DialString() string {
 	return strings.Join([]string{m.mongoHost, m.mongoPort}, ":")
 }
 
+// GetAirlines returns all airlines stored in mongo db
 func (m *MongoDB) GetAirlines() ([]*models.Airline, error) {
+	log.Debugf("MongoDB.GetAirlines")
 	var airlines []*models.Airline
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
@@ -82,6 +84,7 @@ func (m *MongoDB) GetAirlines() ([]*models.Airline, error) {
 	defer mgoDB.Close()
 	var dbAirlines []*Airline
 	if err = mgoDB.DB(m.dbName).C(airlinesCollection).Find(nil).All(&dbAirlines); err != nil {
+		log.Errorf("Unable to get airlines: %v", err)
 		return airlines, err
 	}
 	for i := range dbAirlines {
@@ -95,30 +98,49 @@ func (m *MongoDB) GetAirlines() ([]*models.Airline, error) {
 	return airlines, nil //  TODO: don't swallow errors
 }
 
-func (m *MongoDB) GetCourses() ([]*models.Course, error) {
-	var courses []*models.Course
+// InsertAirline insert airline if is not already stored in mongo db
+func (m *MongoDB) InsertAirline(a *models.Airline) (*models.Airline, error) {
+	log.Debugf("MongoDB.InsertAirlines")
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
-		log.Errorf("Cannot connect to  MongoDB: %v", err)
-		return courses, err
+		log.Errorf("Cannot connect to MongoDB: %v", err)
+		return nil, fmt.Errorf("cannot dial mongo: %v", err)
 	}
 	defer mgoDB.Close()
-	var dbCourses []*Course
-	if err := mgoDB.DB(m.dbName).C(coursesCollection).Find(nil).Sort("-when").Limit(100).All(&dbCourses); err != nil {
-		return courses, err
+
+	var dbAirlines []*Airline
+	if err = mgoDB.DB(m.dbName).C(airlinesCollection).Find(nil).All(&dbAirlines); err != nil {
+		return nil, err
 	}
-	for i := range dbCourses {
-		c, err := dbCourses[i].ToModel()
+	for i := range dbAirlines {
+		modAirline, err := dbAirlines[i].ToModel()
 		if err != nil {
-			log.Errorf("Unable to remap course mongo scheme to Course model: %v - v", err, dbCourses[i])
+			log.Errorf("Unable to remap airline mongo scheme to Airline model: %v - %v", err, dbAirlines[i])
 			continue
 		}
-		courses = append(courses, c)
+		if modAirline.AirlineID == a.AirlineID {
+			log.Errorf("Airline with ID %d already exists in DB", modAirline.AirlineID)
+			return nil, new(ConflictError)
+		}
 	}
-	return courses, nil // TODO: don't swallow errors
+	airline := new(Airline)
+	err = copier.Copy(airline, a)
+	if err != nil {
+		log.Errorf("Cannot convert model airline to mongo airline: %v", err)
+		return nil, new(UnprocessableError)
+	}
+	airline.ID = bson.NewObjectId()
+	err = mgoDB.DB(m.dbName).C(airlinesCollection).Insert(airline)
+	if err != nil {
+		log.Errorf("Cannot insert airline in mongo DB: %v", err)
+		return nil, err
+	}
+	log.Infof("airline #%v inserted", a)
+	return a, nil
 }
 
 func (m *MongoDB) GetAirports() ([]*models.Airport, error) {
+	log.Debugf("MongoDB.GetAirports")
 	var airports []*models.Airport
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
@@ -141,7 +163,49 @@ func (m *MongoDB) GetAirports() ([]*models.Airport, error) {
 	return airports, nil // TODO: don't swallow errors
 }
 
+// InsertAirport insert airport if is not already stored in mongo db
+func (m *MongoDB) InsertAirport(a *models.Airport) (*models.Airport, error) {
+	log.Debugf("MongoDB.InsertAirport")
+	mgoDB, err := mgo.Dial(m.DialString())
+	if err != nil {
+		log.Errorf("Cannot connect to MongoDB: %v", err)
+		return nil, fmt.Errorf("cannot dial mongo: %v", err)
+	}
+	defer mgoDB.Close()
+
+	dbAirports := []*Airport{}
+	if err := mgoDB.DB(m.dbName).C(airportsCollection).Find(nil).All(&dbAirports); err != nil {
+		return nil, err
+	}
+	for i := range dbAirports {
+		modAiport, err := dbAirports[i].ToModel()
+		if err != nil {
+			log.Errorf("Unable to remap airline mongo scheme to Airport model: %v - %v", err, dbAirports[i])
+			continue
+		}
+		if modAiport.AirportID == a.AirportID {
+			log.Errorf("Airport with ID %d already exists in DB", modAiport.AirportID)
+			return nil, new(ConflictError)
+		}
+	}
+	airport := new(Airport)
+	err = copier.Copy(airport, a)
+	if err != nil {
+		log.Errorf("Cannot convert model airline to mongo airline: %v", err)
+		return nil, new(UnprocessableError)
+	}
+	airport.ID = bson.NewObjectId()
+	err = mgoDB.DB(m.dbName).C(airportsCollection).Insert(airport)
+	if err != nil {
+		log.Errorf("Cannot insert airport in mongo DB: %v", err)
+		return nil, err
+	}
+	log.Infof("airport #%v inserted", a)
+	return a, nil
+}
+
 func (m *MongoDB) InsertSchedule(s *models.Schedule) (*models.Schedule, error) {
+	log.Debugf("MongoDB.InsertSchedule")
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
 		log.Fatal("cannot dial mongo: ", err)
@@ -163,6 +227,7 @@ func (m *MongoDB) InsertSchedule(s *models.Schedule) (*models.Schedule, error) {
 }
 
 func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
+	log.Debugf("MongoDB.GetSchedules")
 	var schedules []*models.Schedule
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
@@ -187,6 +252,7 @@ func (m *MongoDB) GetSchedules() ([]*models.Schedule, error) {
 }
 
 func (m *MongoDB) GetSchedule(id int64) (*models.Schedule, error) {
+	log.Debugf("MongoDB.GetSchedule")
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
 		log.Errorf("Cannot connect to  MongoDB: %v", err)
@@ -206,6 +272,7 @@ func (m *MongoDB) GetSchedule(id int64) (*models.Schedule, error) {
 }
 
 func (m *MongoDB) UpdateSchedule(id int64, schedule *models.Schedule) (*models.Schedule, error) {
+	log.Debugf("MongoDB.UpdateSchedule")
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
 		log.Errorf("Cannot connect to  MongoDB: %v", err)
@@ -222,6 +289,7 @@ func (m *MongoDB) UpdateSchedule(id int64, schedule *models.Schedule) (*models.S
 }
 
 func (m *MongoDB) DeleteSchedule(id int64) error {
+	log.Debugf("MongoDB.DeleteSchedule")
 	mgoDB, err := mgo.Dial(m.DialString())
 	if err != nil {
 		log.Errorf("Cannot connect to  MongoDB: %v", err)

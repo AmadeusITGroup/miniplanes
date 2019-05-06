@@ -18,6 +18,9 @@ type Airport struct {
 	// airport ID
 	AirportID int32 `json:"AirportID,omitempty"`
 
+	// altitude
+	Altitude float64 `json:"Altitude,omitempty"`
+
 	// city
 	City string `json:"City,omitempty"`
 
@@ -46,7 +49,7 @@ type Airport struct {
 	TZ string `json:"TZ,omitempty"`
 
 	// timezone
-	Timezone string `json:"timezone,omitempty"`
+	Timezone int64 `json:"timezone,omitempty"`
 }
 
 // Validate validates this airport

@@ -21,7 +21,6 @@ import (
 
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airlines"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airports"
-	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/courses"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/schedules"
@@ -51,9 +50,6 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		AirportsGetAirportsHandler: airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
 			return middleware.NotImplemented("operation AirportsGetAirports has not yet been implemented")
 		}),
-		CoursesGetCoursesHandler: courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
-			return middleware.NotImplemented("operation CoursesGetCourses has not yet been implemented")
-		}),
 		LivenessGetLiveHandler: liveness.GetLiveHandlerFunc(func(params liveness.GetLiveParams) middleware.Responder {
 			return middleware.NotImplemented("operation LivenessGetLive has not yet been implemented")
 		}),
@@ -65,6 +61,12 @@ func NewStorageAPI(spec *loads.Document) *StorageAPI {
 		}),
 		VersionGetVersionHandler: version.GetVersionHandlerFunc(func(params version.GetVersionParams) middleware.Responder {
 			return middleware.NotImplemented("operation VersionGetVersion has not yet been implemented")
+		}),
+		AirlinesAddAirlineHandler: airlines.AddAirlineHandlerFunc(func(params airlines.AddAirlineParams) middleware.Responder {
+			return middleware.NotImplemented("operation AirlinesAddAirline has not yet been implemented")
+		}),
+		AirportsAddAirportHandler: airports.AddAirportHandlerFunc(func(params airports.AddAirportParams) middleware.Responder {
+			return middleware.NotImplemented("operation AirportsAddAirport has not yet been implemented")
 		}),
 		SchedulesAddScheduleHandler: schedules.AddScheduleHandlerFunc(func(params schedules.AddScheduleParams) middleware.Responder {
 			return middleware.NotImplemented("operation SchedulesAddSchedule has not yet been implemented")
@@ -113,8 +115,6 @@ type StorageAPI struct {
 	AirlinesGetAirlinesHandler airlines.GetAirlinesHandler
 	// AirportsGetAirportsHandler sets the operation handler for the get airports operation
 	AirportsGetAirportsHandler airports.GetAirportsHandler
-	// CoursesGetCoursesHandler sets the operation handler for the get courses operation
-	CoursesGetCoursesHandler courses.GetCoursesHandler
 	// LivenessGetLiveHandler sets the operation handler for the get live operation
 	LivenessGetLiveHandler liveness.GetLiveHandler
 	// ReadinessGetReadyHandler sets the operation handler for the get ready operation
@@ -123,6 +123,10 @@ type StorageAPI struct {
 	SchedulesGetSchedulesHandler schedules.GetSchedulesHandler
 	// VersionGetVersionHandler sets the operation handler for the get version operation
 	VersionGetVersionHandler version.GetVersionHandler
+	// AirlinesAddAirlineHandler sets the operation handler for the add airline operation
+	AirlinesAddAirlineHandler airlines.AddAirlineHandler
+	// AirportsAddAirportHandler sets the operation handler for the add airport operation
+	AirportsAddAirportHandler airports.AddAirportHandler
 	// SchedulesAddScheduleHandler sets the operation handler for the add schedule operation
 	SchedulesAddScheduleHandler schedules.AddScheduleHandler
 	// SchedulesDeleteScheduleHandler sets the operation handler for the delete schedule operation
@@ -202,10 +206,6 @@ func (o *StorageAPI) Validate() error {
 		unregistered = append(unregistered, "airports.GetAirportsHandler")
 	}
 
-	if o.CoursesGetCoursesHandler == nil {
-		unregistered = append(unregistered, "courses.GetCoursesHandler")
-	}
-
 	if o.LivenessGetLiveHandler == nil {
 		unregistered = append(unregistered, "liveness.GetLiveHandler")
 	}
@@ -220,6 +220,14 @@ func (o *StorageAPI) Validate() error {
 
 	if o.VersionGetVersionHandler == nil {
 		unregistered = append(unregistered, "version.GetVersionHandler")
+	}
+
+	if o.AirlinesAddAirlineHandler == nil {
+		unregistered = append(unregistered, "airlines.AddAirlineHandler")
+	}
+
+	if o.AirportsAddAirportHandler == nil {
+		unregistered = append(unregistered, "airports.AddAirportHandler")
 	}
 
 	if o.SchedulesAddScheduleHandler == nil {
@@ -349,11 +357,6 @@ func (o *StorageAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/courses"] = courses.NewGetCourses(o.context, o.CoursesGetCoursesHandler)
-
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
 	o.handlers["GET"]["/live"] = liveness.NewGetLive(o.context, o.LivenessGetLiveHandler)
 
 	if o.handlers["GET"] == nil {
@@ -370,6 +373,16 @@ func (o *StorageAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/version"] = version.NewGetVersion(o.context, o.VersionGetVersionHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/airlines"] = airlines.NewAddAirline(o.context, o.AirlinesAddAirlineHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/airports"] = airports.NewAddAirport(o.context, o.AirportsAddAirportHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

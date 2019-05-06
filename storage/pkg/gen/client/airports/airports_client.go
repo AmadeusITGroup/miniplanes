@@ -52,6 +52,34 @@ func (a *Client) GetAirports(params *GetAirportsParams) (*GetAirportsOK, error) 
 
 }
 
+/*
+AddAirport Creates an Airport entry. Duplicates are not allowed
+*/
+func (a *Client) AddAirport(params *AddAirportParams) (*AddAirportCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewAddAirportParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "addAirport",
+		Method:             "POST",
+		PathPattern:        "/airports",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &AddAirportReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*AddAirportCreated), nil
+
+}
+
 // SetTransport changes the transport on the client
 func (a *Client) SetTransport(transport runtime.ClientTransport) {
 	a.transport = transport

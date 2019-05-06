@@ -19,7 +19,7 @@ More documentations can be found in [docs folder](./docs)
 
 ## Deployment
 
-At the moment `miniplanes` runs in an Openshift/Kubernetes cluster. 
+At the moment `miniplanes` runs in an Openshift/Kubernetes cluster.
 The manifest files are available in `.../manifests/k8s` folder.
 
 Due to its simplicity `miniplanes` can  easily deployed locally on a system.
@@ -31,8 +31,8 @@ Manifest files are in `deployment` directory.
 
 ## To deploy it locally
 
-`miniplanes` can be deployed locally in a `minikube`/`kind` environment. One can find a script in `hack/deploy_all.sh`
+`miniplanes` can be deployed in a `minikube`/`kind` environment. One can find a script in `hack/deploy_all.sh`
 
 ## How to contribute
 
-See documentation [here](./docs/contrinute.md)
+See [related doc](./docs/contrinute.md)

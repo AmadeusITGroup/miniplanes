@@ -69,5 +69,9 @@ test_local: build
 	cd itineraries-server/pkg/engine && go test .
 	./hack/test_e2e_local.sh
 
+.PHONY: test
+test:
+	go test `go list ./... | grep -vE 'e2e|gen|data'`
+
 clean: $(OUTPUTDIR)
 	rm -rf $(OUTPUTDIR)

@@ -53,7 +53,7 @@ func (a *Client) GetSchedules(params *GetSchedulesParams) (*GetSchedulesOK, erro
 }
 
 /*
-AddSchedule Creates a new schdule. Duplicates are not allowed
+AddSchedule Creates a new schedule. Duplicates are not allowed
 */
 func (a *Client) AddSchedule(params *AddScheduleParams) (*AddScheduleCreated, error) {
 	// TODO: Validate the params before sending

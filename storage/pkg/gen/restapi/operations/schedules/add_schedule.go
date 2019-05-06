@@ -31,7 +31,7 @@ func NewAddSchedule(ctx *middleware.Context, handler AddScheduleHandler) *AddSch
 
 /*AddSchedule swagger:route POST /schedules schedules addSchedule
 
-Creates a new schdule. Duplicates are not allowed
+Creates a new schedule. Duplicates are not allowed
 
 */
 type AddSchedule struct {

@@ -34,7 +34,7 @@ import (
 
 type Airline struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
-	AirlineID string        `json:"airlineID" bson:"airlineID"` // Unique OpenFlights identifier for this airline.
+	AirlineID int64         `json:"airlineID" bson:"airlineID"` // Unique OpenFlights identifier for this airline.
 	Name      string        `json:"name" bson:"name"`           // Name of the airline.
 	Alias     string        `json:"alias" bson:"alias"`         //Alias of the airline. For example, All Nippon Airways is commonly known as "ANA".
 	IATA      string        `json:"IATA" bson:"IATA"`           //2-letter IATA code, if available.
@@ -48,26 +48,6 @@ type Airline struct {
 func (a Airline) ToModel() (*models.Airline, error) {
 	v := &models.Airline{}
 	err := copier.Copy(v, &a)
-	return v, err
-}
-
-type Course struct {
-	ID                   bson.ObjectId `json:"id" bson:"_id"`
-	Airline              string        `json:"airline" bson:"airline"`                           //2-letter (IATA) or 3-letter (ICAO) code of the airline
-	AirlineID            string        `json:"airlineID" bson:"airlineID"`                       // Unique OpenFlights identifier for this airline.
-	SourceAirport        string        `json:"sourceAirport" bson:"sourceAirport"`               //3-letter (IATA) or 4-letter (ICAO) code of the source airport.
-	SourceAirportID      int32         `json:"sourceAirportID" bson:"sourceAirportID"`           //Unique OpenFlights identifier for source airport (see Airport)
-	DestinationAirport   string        `json:"destinationAirport" bson:"destinationAirport"`     //3-letter (IATA) or 4-letter (ICAO) code of the destination airport.
-	DestinationAirportID int32         `json:"destinationAirportID" bson:"destinationAirportID"` //Unique OpenFlights identifier for destination airport (see Airport)
-	Codeshare            string        `json:"codeshare" bson:"codeshare"`                       //"Y" if this flight is a codeshare (that is, not operated by Airline, but another carrier), empty otherwise.
-	Stops                string        `json:"stops" bson:"stops"`                               //Number of stops on this flight ("0" for direct)
-	Equipment            string        `json:"equipment" bson:"equipment"`                       //3-letter codes for plane type(s) generally used on this flight, separated by spaces
-
-}
-
-func (c Course) ToModel() (*models.Course, error) {
-	v := &models.Course{}
-	err := copier.Copy(v, &c)
 	return v, err
 }
 

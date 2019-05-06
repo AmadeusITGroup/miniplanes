@@ -26,6 +26,7 @@ SOFTWARE.
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -35,12 +36,36 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-openapi/strfmt"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/db"
-	"github.com/amadeusitgroup/miniplanes/storage/pkg/db/mongo"
+	airportsclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
+	schedulesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/schedules"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
+	httptransport "github.com/go-openapi/runtime/client"
 )
+
+type Route struct {
+	// airline
+	Airline string
+	// airline ID
+	AirlineID int64
+	// code share
+	CodeShare string
+	// destination airport
+	DestinationAirport string
+	// destination airport ID
+	DestinationAirportID int32
+	// equipment
+	Equipment string
+	// source airport
+	SourceAirport string
+	// source airport ID
+	SourceAirportID int32
+	// stops
+	Stops int64
+}
 
 type departureArrivalTime struct {
 	departure     string
@@ -146,59 +171,107 @@ func computeDepartureArrivalTimes(origin, destination *models.Airport) ([]*depar
 }
 
 const (
-	defaultMongoIP   = "127.0.0.1"
-	defaultMongoPort = 27017
+	storageHostParamName = "storage-host"
+	storageHostDefault   = "storage"
+	storagePortParamName = "storage-port"
+	storagePortDefault   = 12345
+	routesFileParamName  = "routes-file"
+	routesFileDefault    = "routes.dat"
 )
 
 var (
-	csvFileName string
-	mongoIP     string
-	mongoPort   int
+	storagePort int
+	storageHost string
+	routesFile  string
 )
 
 func init() {
 
-	flag.StringVar(&csvFileName, "csv-file-name", "", "csv file to be generated. If no csv-file-name is supplied schedules will be inserted in mongo")
-	flag.StringVar(&mongoIP, "mongo-host", defaultMongoIP, "mongo endpoint")
-	flag.IntVar(&mongoPort, "mongoPort", defaultMongoPort, "mongo port")
+	flag.IntVar(&storagePort, storagePortParamName, storagePortDefault, "the port of storage service")
+	flag.StringVar(&storageHost, storageHostParamName, storageHostDefault, "the name of the storage service")
+	flag.StringVar(&routesFile, routesFileParamName, routesFileDefault, "routes file")
+
 }
 
 func main() {
 
 	flag.Parse()
-	generateCSV := false
-	if len(csvFileName) > 0 {
-		generateCSV = true
+
+	log.Infof("%s %d\n", storageHost, storagePort)
+
+	storageURL := fmt.Sprintf("%s:%d", storageHost, storagePort)
+	client := airportsclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
+	OK, err := client.GetAirports(airportsclient.NewGetAirportsParams())
+	if err != nil {
+		log.Fatalf("Unable to load airports from storage %s : %v", storageURL, err)
 	}
-
-	log.Infof("%s %s %d\n", csvFileName, mongoIP, mongoPort)
-
-	m := mongo.NewMongoDB(mongoIP, mongoPort, "miniplanes")
 	ID2Airports := map[int32]*models.Airport{}
-	airports, err := m.GetAirports()
-	if err != nil || len(airports) == 0 {
-		log.Fatalf("Unable to load airports %s : %v", m.DialString(), err)
-	}
-	for i := range airports {
-		ID2Airports[airports[i].AirportID] = airports[i]
+	for i := range OK.Payload {
+		ID2Airports[OK.Payload[i].AirportID] = OK.Payload[i]
 	}
 
-	courses, err := m.GetCourses()
-	if err != nil || len(courses) == 0 {
+	rFile, err := os.Open(routesFile)
+	if err != nil {
+		log.Fatalf("Unable to import routes: %v", err)
+	}
+	reader := csv.NewReader(bufio.NewReader(rFile))
+	var routes []Route
+	for {
+		line, error := reader.Read()
+		if error == io.EOF {
+			break
+		} else if error != nil {
+			log.Fatal(error)
+		}
+		airlineID, err := strconv.ParseInt(line[1], 10, 64)
+		if err != nil {
+			continue
+		}
+
+		destinationAirportID, err := strconv.ParseInt(line[5], 10, 32)
+		if err != nil {
+			continue
+		}
+
+		sourceAirportID, err := strconv.ParseInt(line[3], 10, 32)
+		if err != nil {
+			continue
+		}
+		stops, err := strconv.ParseInt(line[7], 10, 64)
+		if err != nil {
+			continue
+		}
+		//		airline
+		//		airlineID
+		//		sourceAirport
+		//		sourceAirportID
+		//		destinationAirport
+		//		destinationAirportID
+		//		codeshare
+		//		stops
+		//		equipment
+
+		r := Route{
+			Airline:              line[0],
+			AirlineID:            airlineID,
+			SourceAirport:        line[3],
+			SourceAirportID:      int32(sourceAirportID),
+			DestinationAirport:   line[3],
+			DestinationAirportID: int32(destinationAirportID),
+			CodeShare:            line[6],
+			Stops:                stops,
+			Equipment:            line[8]}
+		routes = append(routes, r)
+	}
+	if err != nil || len(routes) == 0 {
 		log.Fatalf("Unable to load courses: %v", err)
 	}
 
-	var file io.Writer
-	if generateCSV {
-		file, err = os.Create(csvFileName)
-		if err != nil {
-			log.Fatalf("Couldn't open file\n")
-		}
-	}
-	schedules := []*models.Schedule{}
+	//schedules := []*models.Schedule{}
 	flightNumberPerAirline := map[string]int16{}
+	sclient := schedulesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
 	var scheduleID int64
-	for i, course := range courses {
+	for i, course := range routes {
 		scheduleID = int64(i)
 		flightNumberPerAirline[course.Airline] = flightNumberPerAirline[course.Airline] + 1
 
@@ -211,7 +284,8 @@ func main() {
 			log.Infof("DepartureTime: %s, ArrivalTime: %s", d.departure, d.arrival)
 			flightNumber := strings.Join([]string{course.Airline, fmt.Sprintf("%03d", flightNumberPerAirline[course.Airline])}, "")
 			daysOperated := "1234567"
-			schedules = append(schedules, &models.Schedule{
+			addSchedulePayload := schedulesclient.NewAddScheduleParams()
+			addSchedulePayload.Schedule = &models.Schedule{
 				ScheduleID:       scheduleID,
 				Origin:           course.SourceAirportID,
 				Destination:      course.DestinationAirportID,
@@ -221,39 +295,11 @@ func main() {
 				DepartureTime:    d.departure,
 				ArrivalTime:      d.arrival,
 				ArriveNextDay:    d.arriveNextDay,
-			})
-		}
-	}
-
-	if generateCSV {
-		file, err = os.Create(csvFileName)
-		if err != nil {
-			log.Fatalf("Couldn't open file\n")
-		}
-		writer := csv.NewWriter(file)
-		for _, s := range schedules {
-			data := []string{
-				fmt.Sprintf("%d", s.ScheduleID),
-				fmt.Sprint(s.Origin),
-				fmt.Sprint(s.Destination),
-				s.FlightNumber,
-				s.OperatingCarrier,
-				s.DaysOperated,
-				s.DepartureTime,
-				s.ArrivalTime,
-				strconv.FormatBool(s.ArriveNextDay),
 			}
-			err := writer.Write(data)
+			//sclient := schedulesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
+			_, err := sclient.AddSchedule(addSchedulePayload)
 			if err != nil {
-				log.Errorf("Something went wrong writing csv file: %v\n", err)
-				continue
-			}
-			writer.Flush()
-		}
-	} else {
-		for _, s := range schedules {
-			if _, err := m.InsertSchedule(s); err != nil {
-				log.Errorf("Couldn't insert schedule %#v: %v\n", s, err)
+				log.Errorf("Unable to add schedule: %v\n", err)
 			}
 		}
 	}

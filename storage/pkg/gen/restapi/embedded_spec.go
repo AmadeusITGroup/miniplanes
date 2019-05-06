@@ -60,6 +60,44 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Creates a new airline. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "airlines"
+        ],
+        "operationId": "addAirline",
+        "parameters": [
+          {
+            "description": "Airline\"",
+            "name": "airline\"",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/airline"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/airline"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     },
     "/airports": {
@@ -93,34 +131,39 @@ func init() {
             }
           }
         }
-      }
-    },
-    "/courses": {
-      "get": {
+      },
+      "post": {
+        "description": "Creates an Airport entry. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
         "tags": [
-          "courses"
+          "airports"
+        ],
+        "operationId": "addAirport",
+        "parameters": [
+          {
+            "description": "Airport",
+            "name": "airport",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/airport"
+            }
+          }
         ],
         "responses": {
-          "200": {
-            "description": "list of courses (routes)",
+          "201": {
+            "description": "Created",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/course"
-              }
-            }
-          },
-          "400": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "#/definitions/airport"
             }
           },
           "default": {
-            "description": "generic error response",
+            "description": "unexpected error",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -209,7 +252,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Creates a new schdule. Duplicates are not allowed",
+        "description": "Creates a new schedule. Duplicates are not allowed",
         "consumes": [
           "application/json"
         ],
@@ -380,6 +423,9 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "Altitude": {
+          "type": "number"
+        },
         "City": {
           "type": "string"
         },
@@ -408,40 +454,6 @@ func init() {
           "type": "string"
         },
         "timezone": {
-          "type": "string"
-        }
-      }
-    },
-    "course": {
-      "type": "object",
-      "properties": {
-        "Airline": {
-          "type": "string"
-        },
-        "AirlineID": {
-          "type": "integer"
-        },
-        "CodeShare": {
-          "type": "string"
-        },
-        "DestinationAirport": {
-          "type": "string"
-        },
-        "DestinationAirportID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "Equipment": {
-          "type": "string"
-        },
-        "SourceAirport": {
-          "type": "string"
-        },
-        "SourceAirportID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "Stops": {
           "type": "integer"
         }
       }
@@ -559,6 +571,44 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Creates a new airline. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "airlines"
+        ],
+        "operationId": "addAirline",
+        "parameters": [
+          {
+            "description": "Airline\"",
+            "name": "airline\"",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/airline"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/airline"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     },
     "/airports": {
@@ -592,34 +642,39 @@ func init() {
             }
           }
         }
-      }
-    },
-    "/courses": {
-      "get": {
+      },
+      "post": {
+        "description": "Creates an Airport entry. Duplicates are not allowed",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
         "tags": [
-          "courses"
+          "airports"
+        ],
+        "operationId": "addAirport",
+        "parameters": [
+          {
+            "description": "Airport",
+            "name": "airport",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/airport"
+            }
+          }
         ],
         "responses": {
-          "200": {
-            "description": "list of courses (routes)",
+          "201": {
+            "description": "Created",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/course"
-              }
-            }
-          },
-          "400": {
-            "description": "generic error response",
-            "schema": {
-              "$ref": "#/definitions/error"
+              "$ref": "#/definitions/airport"
             }
           },
           "default": {
-            "description": "generic error response",
+            "description": "unexpected error",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -708,7 +763,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Creates a new schdule. Duplicates are not allowed",
+        "description": "Creates a new schedule. Duplicates are not allowed",
         "consumes": [
           "application/json"
         ],
@@ -884,6 +939,9 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "Altitude": {
+          "type": "number"
+        },
         "City": {
           "type": "string"
         },
@@ -912,40 +970,6 @@ func init() {
           "type": "string"
         },
         "timezone": {
-          "type": "string"
-        }
-      }
-    },
-    "course": {
-      "type": "object",
-      "properties": {
-        "Airline": {
-          "type": "string"
-        },
-        "AirlineID": {
-          "type": "integer"
-        },
-        "CodeShare": {
-          "type": "string"
-        },
-        "DestinationAirport": {
-          "type": "string"
-        },
-        "DestinationAirportID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "Equipment": {
-          "type": "string"
-        },
-        "SourceAirport": {
-          "type": "string"
-        },
-        "SourceAirportID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "Stops": {
           "type": "integer"
         }
       }

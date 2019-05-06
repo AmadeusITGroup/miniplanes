@@ -30,7 +30,6 @@ import (
 
 	airlinesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airlines"
 	airportsclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
-	coursesclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/courses"
 	livenessclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/liveness"
 	readinessclient "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/readiness"
 	httptransport "github.com/go-openapi/runtime/client"
@@ -93,18 +92,19 @@ var _ = Describe("storage", func() {
 			return nil
 		}, "10s", "1s").ShouldNot(HaveOccurred())
 	})
-	It("Should list courses", func() {
-		storageURL := fmt.Sprintf("%s:%d", StorageHost, StoragePort)
-		client := coursesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
-		Eventually(func() error {
-			OK, err := client.GetCourses(coursesclient.NewGetCoursesParams())
-			if err != nil {
-				return err
-			}
-			if len(OK.Payload) == 0 {
-				return fmt.Errorf("no courses found")
-			}
-			return nil
-		}, "10s", "1s").ShouldNot(HaveOccurred())
-	})
+	/*	It("Should list courses", func() {
+			storageURL := fmt.Sprintf("%s:%d", StorageHost, StoragePort)
+			client := coursesclient.New(httptransport.New(storageURL, "", nil), strfmt.Default)
+			Eventually(func() error {
+				OK, err := client.GetCourses(coursesclient.NewGetCoursesParams())
+				if err != nil {
+					return err
+				}
+				if len(OK.Payload) == 0 {
+					return fmt.Errorf("no courses found")
+				}
+				return nil
+			}, "10s", "1s").ShouldNot(HaveOccurred())
+		})
+	*/
 })

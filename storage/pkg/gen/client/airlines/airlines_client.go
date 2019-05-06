@@ -52,6 +52,34 @@ func (a *Client) GetAirlines(params *GetAirlinesParams) (*GetAirlinesOK, error) 
 
 }
 
+/*
+AddAirline Creates a new airline. Duplicates are not allowed
+*/
+func (a *Client) AddAirline(params *AddAirlineParams) (*AddAirlineCreated, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewAddAirlineParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "addAirline",
+		Method:             "POST",
+		PathPattern:        "/airlines",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &AddAirlineReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*AddAirlineCreated), nil
+
+}
+
 // SetTransport changes the transport on the client
 func (a *Client) SetTransport(transport runtime.ClientTransport) {
 	a.transport = transport

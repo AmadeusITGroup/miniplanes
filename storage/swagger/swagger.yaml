@@ -68,6 +68,32 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+    post:
+      tags:
+        - airlines
+      description: "Creates a new airline. Duplicates are not allowed"
+      operationId: "addAirline"
+      consumes:
+        - "application/json"
+      produces: 
+        - "application/json"
+      parameters: 
+        - 
+          name: airline"
+          in: "body"
+          description: Airline"
+          required: true
+          schema: 
+            $ref: "#/definitions/airline"
+      responses: 
+        201:
+          description: "Created"
+          schema: 
+            $ref: "#/definitions/airline"
+        default: 
+          description: "unexpected error"
+          schema: 
+            $ref: "#/definitions/error"
   /airports:
     get:
       tags:
@@ -89,26 +115,31 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
-  /courses:
-    get:
+    post:
       tags:
-        - courses
-      produces:
-        - application/json
-      responses:
-        200:
-          description: list of courses (routes)
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/course"
-        400:
-          description: generic error response
-          schema:
-            $ref: "#/definitions/error"
-        default:
-          description: generic error response
-          schema:
+        - airports
+      description: "Creates an Airport entry. Duplicates are not allowed"
+      operationId: "addAirport"
+      consumes:
+        - "application/json"
+      produces: 
+        - "application/json"
+      parameters: 
+        - 
+          name: "airport"
+          in: "body"
+          description: "Airport"
+          required: true
+          schema: 
+            $ref: "#/definitions/airport"
+      responses: 
+        201:
+          description: "Created"
+          schema: 
+            $ref: "#/definitions/airport"
+        default: 
+          description: "unexpected error"
+          schema: 
             $ref: "#/definitions/error"
   /schedules:
     get:
@@ -134,7 +165,7 @@ paths:
     post:
       tags:
         - schedules
-      description: "Creates a new schdule. Duplicates are not allowed"
+      description: "Creates a new schedule. Duplicates are not allowed"
       operationId: "addSchedule"
       consumes:
         - "application/json"
@@ -198,10 +229,6 @@ paths:
           description: invalid id
         404:
           description: schedule not found
-      consumes:
-        - "application/json"
-      produces: 
-        - "application/json"
     delete:
       tags:
         - schedules
@@ -229,29 +256,6 @@ definitions:
     type: object
     properties:
       Version:
-        type: string
-  course:
-    type: object
-    properties:
-      Airline:
-        type: string
-      AirlineID:
-        type: integer
-      SourceAirport:
-        type: string
-      SourceAirportID:
-        type: integer
-        format: int32
-      DestinationAirport:
-        type: string
-      DestinationAirportID:
-        type: integer
-        format: int32
-      CodeShare:
-        type: string
-      Stops:
-        type: integer
-      Equipment:
         type: string
   airline:
     type: object
@@ -292,8 +296,10 @@ definitions:
         type: number
       Longitude:
         type: number
+      Altitude:
+        type: number
       timezone:
-        type: string
+        type: integer
       DST:
         type: string
       TZ:

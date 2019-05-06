@@ -19,7 +19,6 @@ import (
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airlines"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/airports"
-	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/courses"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/liveness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/readiness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/restapi/operations/schedules"
@@ -39,7 +38,7 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 	api.JSONConsumer = runtime.JSONConsumer()
 	api.JSONProducer = runtime.JSONProducer()
 
-	// GET Airlines
+	// GetAirlines
 	api.AirlinesGetAirlinesHandler = airlines.GetAirlinesHandlerFunc(func(params airlines.GetAirlinesParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modAirlines, err := db.GetAirlines()
@@ -51,7 +50,24 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 		return airlines.NewGetAirlinesOK().WithPayload(modAirlines)
 	})
 
-	// GET Airports
+	// AddAirline
+	api.AirlinesAddAirlineHandler = airlines.AddAirlineHandlerFunc(func(params airlines.AddAirlineParams) middleware.Responder {
+		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
+		modAirline, err := db.InsertAirline(params.Airline)
+		if err != nil {
+			switch err.(type) {
+			case *mongo.ConflictError:
+				return airlines.NewAddAirlineDefault(409)
+			case *mongo.UnprocessableError:
+				return airlines.NewAddAirlineDefault(422)
+			default:
+				return airlines.NewAddAirlineDefault(400) // generic bad request
+			}
+		}
+		return airlines.NewAddAirlineCreated().WithPayload(modAirline)
+	})
+
+	// GetAirports
 	api.AirportsGetAirportsHandler = airports.GetAirportsHandlerFunc(func(params airports.GetAirportsParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modAirports, err := db.GetAirports()
@@ -63,16 +79,22 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 		return airports.NewGetAirportsOK().WithPayload(modAirports)
 	})
 
-	// GET Courses
-	api.CoursesGetCoursesHandler = courses.GetCoursesHandlerFunc(func(params courses.GetCoursesParams) middleware.Responder {
+	api.AirportsAddAirportHandler = airports.AddAirportHandlerFunc(func(params airports.AddAirportParams) middleware.Responder {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
-		modCourses, err := db.GetCourses()
+		modAirport, err := db.InsertAirport(params.Airport)
 		if err != nil {
-			message := fmt.Sprintf("unable to retrieve courses: %v", err)
-			log.Warn(message)
-			return courses.NewGetCoursesBadRequest().WithPayload(&models.Error{Code: http.StatusBadRequest, Message: &message})
+			if err != nil {
+				switch err.(type) {
+				case *mongo.ConflictError:
+					return airports.NewAddAirportDefault(409)
+				case *mongo.UnprocessableError:
+					return airports.NewAddAirportDefault(422)
+				default:
+					return airports.NewAddAirportDefault(400) // generic bad request
+				}
+			}
 		}
-		return courses.NewGetCoursesOK().WithPayload(modCourses)
+		return airports.NewAddAirportCreated().WithPayload(modAirport)
 	})
 
 	// GET Liveness

@@ -13,7 +13,6 @@ import (
 
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airlines"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/airports"
-	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/courses"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/liveness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/readiness"
 	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/client/schedules"
@@ -66,8 +65,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Storage {
 	cli.Airlines = airlines.New(transport, formats)
 
 	cli.Airports = airports.New(transport, formats)
-
-	cli.Courses = courses.New(transport, formats)
 
 	cli.Liveness = liveness.New(transport, formats)
 
@@ -125,8 +122,6 @@ type Storage struct {
 
 	Airports *airports.Client
 
-	Courses *courses.Client
-
 	Liveness *liveness.Client
 
 	Readiness *readiness.Client
@@ -145,8 +140,6 @@ func (c *Storage) SetTransport(transport runtime.ClientTransport) {
 	c.Airlines.SetTransport(transport)
 
 	c.Airports.SetTransport(transport)
-
-	c.Courses.SetTransport(transport)
 
 	c.Liveness.SetTransport(transport)
 

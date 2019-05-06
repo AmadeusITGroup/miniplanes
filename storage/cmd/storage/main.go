@@ -49,6 +49,16 @@ const (
 	mongoDBNameDefault   = "miniplanes"
 )
 
+func init() {
+
+	// TODO: set formatter JSONFormatter or default ASCII formatter
+
+	// Output to stdout instead of the default stderr
+	// TODO: SetOutput by out parameter
+	log.SetOutput(os.Stdout)
+
+}
+
 func main() {
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 	if err != nil {
@@ -59,6 +69,8 @@ func main() {
 	flag.StringVar(&config.MongoHost, mongoHostParamName, mongoHostDefault, "the mongo service name")
 	flag.IntVar(&config.MongoPort, mongoPortParamName, mongoPortDefault, "the port of the mongo service")
 	flag.StringVar(&config.MongoDBName, mongoDBNameParamName, mongoDBNameDefault, "name of the Mongo DB")
+	var verbosity string
+	flag.StringVar(&verbosity, "verbosity", log.WarnLevel.String(), "Verbosity level: debug, info, warn, error, fatal, panic")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, "Usage:\n")
@@ -75,10 +87,17 @@ func main() {
 
 	flag.Parse()
 
+	lvl, err := log.ParseLevel(verbosity)
+	if err != nil {
+		log.Errorf("Verbosity level must be:  debug, info, warn, error, fatal, panic. Set to 'info' by default.")
+		lvl = log.InfoLevel
+	}
+	log.SetLevel(lvl)
 	log.Infof("Running storage version: %s", config.Version)
 	log.Infof("Running storage with %s: %s", mongoHostParamName, config.MongoHost)
 	log.Infof("Running storage with %s: %d", mongoPortParamName, config.MongoPort)
 	log.Infof("Running storage with %s: %s", mongoDBNameParamName, config.MongoDBName)
+	log.Infof("Running storage with verbosity: %s", lvl.String())
 
 	api := operations.NewStorageAPI(swaggerSpec)
 	server = restapi.NewServer(api)

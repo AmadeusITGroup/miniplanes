@@ -19,20 +19,6 @@ make build
 
 ROOTDIR=$(git rev-parse --show-toplevel)
 
-
-mongoimport -d miniplanes -c airports --type csv --file test/e2e/data/airports.dat --fieldFile=data/airports_schema.dat
-mongoimport -d miniplanes -c airlines --type csv --file test/e2e/data/airlines.dat --fieldFile=data/airlines_schema.dat
-mongoimport -d miniplanes -c courses --type csv --file test/e2e/data/courses.dat --fieldFile=data/courses_schema.dat
-
-pushd schedules-generator/cmd/
-go run main.go
-popd
-
-make clean
-make build
-
-
-
 #storage
 ${ROOTDIR}/_output/storage --mongo-host 127.0.0.1 --port 9999 &
 STOPID=$!
@@ -45,6 +31,16 @@ ${ROOTDIR}/_output/ui --itineraries-server-host 127.0.0.1 --itineraries-server-p
 UIPID=$!
 
 sleep 3
+
+
+${ROOTDIR}//hack/post_json_data.sh  ${ROOTDIR}/data/airports_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/airports.dat  http://127.0.0.1:9999/airports
+
+${ROOTDIR}//hack/post_json_data.sh ${ROOTDIR}/data/airlines_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/airlines.dat http://127.0.0.1:9999/airlines
+
+
+pushd ${ROOTDIR}/schedules-generator/cmd/
+go run main.go -routes-file ${ROOTDIR}/test/e2e/data/BA_AF/routes.dat -storage-host  127.0.0.1 -storage-port 9999
+popd
 
 echo "Starting test"
 cd ${ROOTDIR}/test/e2e && go test -c . && ./e2e.test --storage-host 127.0.0.1 --storage-port 9999 --itineraries-server-host 127.0.0.1 --itineraries-server-port 8888
