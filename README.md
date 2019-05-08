@@ -1,3 +1,5 @@
+![logo](docs/images/logo.png)
+
 # What is `miniplanes`?
 
 `miniplanes` is a synthetic workload for Kubernetes/Openshift cluster. It has been designed and developed to represent Amadeus test-case for [Kubernetes Federation-v2](https://github.com/kubernetes-sigs/federation-v2) use cases. It's also simple enough to be as a simple _smoke-test_ in e2e regression and demos.
