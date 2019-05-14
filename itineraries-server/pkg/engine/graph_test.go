@@ -101,7 +101,7 @@ func TestCompute(t *testing.T) {
 				From: "NCE",
 				To:   "JFK",
 			},
-			wantErrorMessage: "",                             // no schedules no error
+			wantErrorMessage: "No segments from NCE",         // no schedules no error
 			want:             []*itinerarymodels.Itinerary{}, // no itineraries
 		},
 		{
@@ -208,24 +208,6 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1300",
-							ArriveNextDay:    false,
-							DepartureDate:    "2412",
-							DepartureTime:    "1000",
-							Destination:      "LHR",
-							FlightNumber:     "AF01",
-							OperatingCarrier: "AF",
-							Origin:           "NCE",
-							SegmentID:        0,
-						},
-					},
-				},
-				&itinerarymodels.Itinerary{
-					Description: "2412:0800 - NCE-LHR",
-					ItineraryID: "MY ID",
-					Segments: []*itinerarymodels.Segment{
-						&itinerarymodels.Segment{
-							ArrivalDate:      "2412",
 							ArrivalTime:      "1305",
 							ArriveNextDay:    false,
 							DepartureDate:    "2412",
@@ -238,11 +220,28 @@ func TestCompute(t *testing.T) {
 						},
 					},
 				},
+				&itinerarymodels.Itinerary{
+					Description: "2412:0800 - NCE-LHR",
+					ItineraryID: "MY ID",
+					Segments: []*itinerarymodels.Segment{
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1300",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1000",
+							Destination:      "LHR",
+							FlightNumber:     "AF01",
+							OperatingCarrier: "AF",
+							Origin:           "NCE",
+							SegmentID:        0,
+						},
+					},
+				},
 			},
 		},
 		{
 			name: "one valid schedule, one too early",
-
 			args: args{
 				airports: []*storagemodels.Airport{
 					{
@@ -465,36 +464,6 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1205",
-							ArriveNextDay:    false,
-							DepartureDate:    "2412",
-							DepartureTime:    "1000",
-							Destination:      "CDG",
-							FlightNumber:     "AF01",
-							OperatingCarrier: "AF",
-							Origin:           "NCE",
-							SegmentID:        0,
-						},
-						&itinerarymodels.Segment{
-							ArrivalDate:      "2412",
-							ArrivalTime:      "1405",
-							ArriveNextDay:    false,
-							DepartureDate:    "2412",
-							DepartureTime:    "1305",
-							Destination:      "LHR",
-							FlightNumber:     "BA01",
-							OperatingCarrier: "BA",
-							Origin:           "CDG",
-							SegmentID:        0,
-						},
-					},
-				},
-				&itinerarymodels.Itinerary{
-					Description: "2412:0800 - NCE-LHR",
-					ItineraryID: "MY ID",
-					Segments: []*itinerarymodels.Segment{
-						&itinerarymodels.Segment{
-							ArrivalDate:      "2412",
 							ArrivalTime:      "1120",
 							ArriveNextDay:    false,
 							DepartureDate:    "2412",
@@ -515,6 +484,36 @@ func TestCompute(t *testing.T) {
 							FlightNumber:     "AF18",
 							OperatingCarrier: "AF",
 							Origin:           "CPH",
+							SegmentID:        0,
+						},
+					},
+				},
+				&itinerarymodels.Itinerary{
+					Description: "2412:0800 - NCE-LHR",
+					ItineraryID: "MY ID",
+					Segments: []*itinerarymodels.Segment{
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1205",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1000",
+							Destination:      "CDG",
+							FlightNumber:     "AF01",
+							OperatingCarrier: "AF",
+							Origin:           "NCE",
+							SegmentID:        0,
+						},
+						&itinerarymodels.Segment{
+							ArrivalDate:      "2412",
+							ArrivalTime:      "1405",
+							ArriveNextDay:    false,
+							DepartureDate:    "2412",
+							DepartureTime:    "1305",
+							Destination:      "LHR",
+							FlightNumber:     "BA01",
+							OperatingCarrier: "BA",
+							Origin:           "CDG",
 							SegmentID:        0,
 						},
 					},
@@ -572,7 +571,7 @@ func TestCompute(t *testing.T) {
 				DepartureTime: "0800",
 				DepartureDate: "2412",
 			},
-			wantErrorMessage: "",
+			wantErrorMessage: "No segments from CPH",
 			want:             []*itinerarymodels.Itinerary{},
 		},
 	}

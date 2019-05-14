@@ -51,6 +51,18 @@ const (
 	itinerariesServerHostDefault   = "itineraries-server"
 )
 
+func init() {
+	// Output to stdout instead of the default stderr
+	// TODO: SetOutput by out parameter
+	log.SetOutput(os.Stdout)
+
+	// TODO: set formatter JSONFormatter or default ASCII formatter
+	formatter := &log.TextFormatter{
+		FullTimestamp: true,
+	}
+	log.SetFormatter(formatter)
+}
+
 func main() {
 
 	flag.IntVar(&config.Port, portParamName, portDefault, "defines the ui port")
@@ -58,8 +70,25 @@ func main() {
 	flag.IntVar(&config.StoragePort, storagePortParamName, storagePortDefault, "defines the storage service port")
 	flag.StringVar(&config.ItinerariesServerHost, itinerariesServerHostParamName, itinerariesServerHostDefault, "defines the itineraries server endpoint")
 	flag.IntVar(&config.ItinerariesServerPort, itinerariesServerPortParamName, itinerariesServerPortDefault, "defines the itineraries service port")
+	var verbosity string
+	flag.StringVar(&verbosity, "verbosity", log.WarnLevel.String(), "Verbosity level: debug, info, warn, error, fatal, panic")
 
 	flag.Parse()
+
+	lvl, err := log.ParseLevel(verbosity)
+	if err != nil {
+		log.Errorf("Verbosity level must be:  debug, info, warn, error, fatal, panic. Set to 'info' by default.")
+		lvl = log.InfoLevel
+	}
+	log.SetLevel(lvl)
+
+	log.Infof("Running ui version: %s", config.Version)
+	log.Infof("Running ui with %s: %d", portParamName, config.Port)
+	log.Infof("Running ui with %s: %s", storageHostParamName, config.StorageHost)
+	log.Infof("Running ui with %s: %d", storagePortParamName, config.StoragePort)
+	log.Infof("Running ui with %s: %s", itinerariesServerHostParamName, config.ItinerariesServerHost)
+	log.Infof("Running ui with %s: %d", itinerariesServerPortParamName, config.ItinerariesServerPort)
+	log.Infof("Running ui with verbosity: %s", lvl.String())
 
 	serverCfg := www.Config{
 		Host:         "0.0.0.0:" + strconv.Itoa(config.Port),

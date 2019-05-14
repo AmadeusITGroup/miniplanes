@@ -96,11 +96,12 @@ func makeItineraryID() string {
 }
 
 func getItineraries(from, to, departureDate, departureTime *string) ([]*models.Itinerary, error) {
-
+	log.Debugf("getItineraries from:%s, to:%s, departureDate:%s, departureTime:%s", *from, *to, *departureDate, *departureTime)
 	refreshSchedulesIfNeeded()
 	refreshAirportsIfNeeded()
 	itineraryGraph, err := engine.NewGraph(airports, schedules)
 	if err != nil {
+		log.Errorf("unable to instantiate itineraries-server engine: %v", err)
 		return []*models.Itinerary{}, fmt.Errorf("unable to instantiate itineraries-server engine: %v", err)
 	}
 	maxNumberOfPaths := 5

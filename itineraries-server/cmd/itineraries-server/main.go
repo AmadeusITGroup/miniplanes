@@ -47,6 +47,18 @@ const (
 	storagePortDefault   = 12345
 )
 
+func init() {
+	// Output to stdout instead of the default stderr
+	// TODO: SetOutput by out parameter
+	log.SetOutput(os.Stdout)
+
+	// TODO: set formatter JSONFormatter or default ASCII formatter
+	formatter := &log.TextFormatter{
+		FullTimestamp: true,
+	}
+	log.SetFormatter(formatter)
+}
+
 func main() {
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 	if err != nil {
@@ -56,6 +68,8 @@ func main() {
 	var server *restapi.Server // make sure init is called
 	flag.IntVar(&config.StoragePort, storagePortParamName, storagePortDefault, "the port of storage service")
 	flag.StringVar(&config.StorageHost, storageHostParamName, storageHostDefault, "the name of the storage service")
+	var verbosity string
+	flag.StringVar(&verbosity, "verbosity", log.WarnLevel.String(), "Verbosity level: debug, info, warn, error, fatal, panic")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, "Usage:\n")
@@ -72,9 +86,16 @@ func main() {
 
 	flag.Parse()
 
+	lvl, err := log.ParseLevel(verbosity)
+	if err != nil {
+		log.Errorf("Verbosity level must be:  debug, info, warn, error, fatal, panic. Set to 'info' by default.")
+		lvl = log.InfoLevel
+	}
+	log.SetLevel(lvl)
 	log.Infof("Running itineraries-server version: %s", config.Version)
 	log.Infof("Running itineraries-server with %s: %s", storageHostParamName, config.StorageHost)
 	log.Infof("Running itineraries-server with %s: %d", storagePortParamName, config.StoragePort)
+	log.Infof("Running storage with verbosity: %s", lvl.String())
 
 	api := operations.NewItinerariesAPI(swaggerSpec)
 	server = restapi.NewServer(api)

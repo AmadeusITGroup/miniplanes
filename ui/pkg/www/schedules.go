@@ -27,8 +27,10 @@ package www
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	itinerariesclient "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/client/itineraries"
 	httptransport "github.com/go-openapi/runtime/client"
@@ -68,6 +70,11 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	itinerariesServerURL := fmt.Sprintf("%s:%d", config.ItinerariesServerHost, config.ItinerariesServerPort)
 	client := itinerariesclient.New(httptransport.New(itinerariesServerURL, "", nil), strfmt.Default)
 	params := itinerariesclient.NewGetItinerariesParams()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	params.SetContext(ctx)
+
 	from := r.PostForm.Get("from")
 	params.From = &from
 	to := r.PostForm.Get("to")
@@ -76,6 +83,7 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	params.DepartureDate = &departureDate
 	returnDate := r.PostForm.Get("returnDate")
 	params.ReturnDate = &returnDate
+	log.Debugf("Getting itineraries %+v:", params)
 	OK, err := client.GetItineraries(params)
 	if err != nil {
 		log.Errorf("couldn't get itineraries: %v", err)
@@ -83,9 +91,10 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	itineraries := OK.Payload
-
 	w.WriteHeader(200)
-	buf := new(bytes.Buffer)
-	schedulesViewTpl.Execute(buf, itineraries)
-	w.Write(buf.Bytes())
+	if len(itineraries) > 0 {
+		buf := new(bytes.Buffer)
+		schedulesViewTpl.Execute(buf, itineraries)
+		w.Write(buf.Bytes())
+	}
 }

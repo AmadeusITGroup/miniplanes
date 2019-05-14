@@ -27,6 +27,7 @@ package engine
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
@@ -75,26 +76,25 @@ func (r *realGraph) computeAllSegments(from, departureDate, departureTime, to st
 		return segments, fmt.Errorf("can't find airportID for %s", to)
 	}
 	if fromAirportID == toAirportID {
+		log.Debugf("same from and to no segments can be found")
 		return segments, nil
 	}
 	if separationDegree == 0 {
 		return segments, fmt.Errorf("no segments found")
 	}
-	for _, s := range r.schedules { // for each schedules...
-		if err := checkScheduleIntegrity(s); err != nil {
-			log.Warnf("bad schedule found: %v", err)
-			continue
-		}
-		if s.Origin != fromAirportID {
-			continue
-		}
+	schedules, ok := r.originToSchedules[fromAirportID]
+	if !ok {
+		return segments, fmt.Errorf("No segments from %s", from)
+	}
+	for _, s := range schedules { // for each schedules...
 		if !oKtoBeTaken(departureTime, s.DepartureTime) { // not good schedules or too early
-			log.Tracef("Impossible to take flight with: requested departure %s - flight departure %s", departureDate, s.DepartureTime)
-			continue
+			log.Debugf("Impossible to take flight from:%s  with: requested departure time %s - flight departure time %s", from, departureTime, s.DepartureTime)
+			break
 		}
 		currentSegment := r.buildSegmentFromSchedule(s, departureDate)
 		currentSegmentFanout, err := r.computeAllSegments(r.IATAFromAirportID[s.Destination], departureDate, s.ArrivalTime, to, separationDegree-1)
 		if err != nil {
+			log.Errorf("Unable to compute all segments from %s to %s: %v", r.IATAFromAirportID[s.Destination], to, err)
 			return [][]*itinerarymodels.Segment{}, err
 		}
 		ss := []*itinerarymodels.Segment{}
@@ -127,6 +127,7 @@ func makeItineraryID() string {
 
 // ComputeItineraries computes itineraries
 func (r *realGraph) Compute(from, departureDate, departureTime, to string, numberOfPaths int) ([]*itinerarymodels.Itinerary, error) {
+	log.Debugf("realGraph.Compute")
 	solutions := []*itinerarymodels.Itinerary{}
 	maxDegreefSeparation := 4
 	segments, err := r.computeAllSegments(from, departureDate, departureTime, to, maxDegreefSeparation)
@@ -141,13 +142,13 @@ func (r *realGraph) Compute(from, departureDate, departureTime, to string, numbe
 		}
 		solutions = append(solutions, itinerary)
 	}
+	log.Debugf("Computed %d solutions", len(solutions))
 	return solutions, nil
 }
 
 // Graph represents operations we can do on itinerary graph
 type Graph interface {
 	Compute(from, departureDate, departureTime, to string, numberOfPaths int) ([]*itinerarymodels.Itinerary, error)
-	//InnerGraph() graph.Graph
 }
 
 type realGraph struct {
@@ -155,6 +156,8 @@ type realGraph struct {
 	schedules         []*storagemodels.Schedule
 	airportIDFromIATA map[string]int32
 	IATAFromAirportID map[int32]string
+
+	originToSchedules map[int32][]*storagemodels.Schedule
 }
 
 func splitHourMinutes(t string) (int32, int32, error) {
@@ -165,27 +168,44 @@ func splitHourMinutes(t string) (int32, int32, error) {
 
 // it means t2 is later on than t1
 func oKtoBeTaken(t1, t2 string) bool {
-	h1, _, err := splitHourMinutes(t1)
-	if err != nil {
+	/*
+		h1, _, err := splitHourMinutes(t1)
+		if err != nil {
+			return false
+		}
+		h2, _, err := splitHourMinutes(t2)
+		if err != nil {
+			return false
+		}
+		if h2 > h1 { // must be in same day
+			return true
+		}
 		return false
-	}
-	h2, _, err := splitHourMinutes(t2)
-	if err != nil {
-		return false
-	}
-	if h2 > h1 { // must be in same day
-		return true
-	}
-	return false
+	*/
+	return t2 > t1
 }
 
 // NewGraph creates the itinerary graph
 func NewGraph(airports []*storagemodels.Airport, schedules []*storagemodels.Schedule) (Graph, error) {
 	itineraryGraph := &realGraph{
-		schedules:         schedules,
+		schedules:         []*storagemodels.Schedule{},
 		airports:          airports,
 		airportIDFromIATA: make(map[string]int32, 0),
 		IATAFromAirportID: make(map[int32]string, 0),
+		originToSchedules: make(map[int32][]*storagemodels.Schedule, 0),
+	}
+	for i := range schedules {
+		if err := checkScheduleIntegrity(schedules[i]); err != nil {
+			log.Warnf("bad schedule found: %v", err)
+			continue
+		}
+		itineraryGraph.schedules = append(itineraryGraph.schedules, schedules[i])
+		if s, ok := itineraryGraph.originToSchedules[schedules[i].Origin]; ok {
+			itineraryGraph.originToSchedules[schedules[i].Origin] = insertSort(s, schedules[i])
+		} else {
+			s := []*storagemodels.Schedule{schedules[i]}
+			itineraryGraph.originToSchedules[schedules[i].Origin] = s
+		}
 	}
 
 	for _, airport := range airports {
@@ -193,4 +213,12 @@ func NewGraph(airports []*storagemodels.Airport, schedules []*storagemodels.Sche
 		itineraryGraph.IATAFromAirportID[airport.AirportID] = airport.IATA
 	}
 	return itineraryGraph, nil
+}
+
+func insertSort(data []*storagemodels.Schedule, el *storagemodels.Schedule) []*storagemodels.Schedule {
+	index := sort.Search(len(data), func(i int) bool { return data[i].DepartureTime <= el.DepartureTime })
+	data = append(data, &storagemodels.Schedule{})
+	copy(data[index+1:], data[index:])
+	data[index] = el
+	return data
 }

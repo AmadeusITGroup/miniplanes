@@ -50,13 +50,15 @@ const (
 )
 
 func init() {
-
-	// TODO: set formatter JSONFormatter or default ASCII formatter
-
 	// Output to stdout instead of the default stderr
 	// TODO: SetOutput by out parameter
 	log.SetOutput(os.Stdout)
 
+	// TODO: set formatter JSONFormatter or default ASCII formatter
+	formatter := &log.TextFormatter{
+		FullTimestamp: true,
+	}
+	log.SetFormatter(formatter)
 }
 
 func main() {
