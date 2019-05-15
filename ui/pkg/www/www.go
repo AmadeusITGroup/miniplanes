@@ -47,7 +47,7 @@ import (
 var navigationBarHTML string
 var homepageTpl *template.Template
 var adminViewTpl *template.Template
-var schedulesViewTpl *template.Template
+var fligthsViewTpl *template.Template
 
 func init() {
 	navigationBarHTML = assets.MustAssetString("templates/navigation_bar.html")
@@ -58,8 +58,8 @@ func init() {
 	adminViewHTML := assets.MustAssetString("templates/admin_view.html")
 	adminViewTpl = template.Must(template.New("admin_view").Parse(adminViewHTML))
 
-	schedulesViewHTML := assets.MustAssetString("templates/schedules_view.html")
-	schedulesViewTpl = template.Must(template.New("schedules_view").Parse(schedulesViewHTML))
+	flightsViewHTML := assets.MustAssetString("templates/flights_view.html")
+	fligthsViewTpl = template.Must(template.New("flights_view").Parse(flightsViewHTML))
 
 }
 
@@ -109,7 +109,7 @@ func Start(cfg Config) *HTMLServer {
 	router.HandleFunc("/", HomeHandler)
 	router.HandleFunc("/admin", AdminHandler)
 	router.HandleFunc("/airports", AirportsHandler)
-	router.HandleFunc("/search_schedules", SearchSchedules)
+	router.HandleFunc("/search_flights", SearchFlights)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Create the HTML Server

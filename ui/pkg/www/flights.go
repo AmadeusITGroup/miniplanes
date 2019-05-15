@@ -52,8 +52,8 @@ var (
 	daysOperated     = "1234567"
 )
 
-// SearchSchedules search schedules
-func SearchSchedules(w http.ResponseWriter, r *http.Request) {
+// SearchFlights search schedules
+func SearchFlights(w http.ResponseWriter, r *http.Request) {
 	push(w, "/static/style.css")
 	push(w, "/static/navigation_bar.css")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -76,13 +76,13 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	params.SetContext(ctx)
 
 	from := r.PostForm.Get("from")
-	params.From = &from
+	params.SetFrom(&from)
 	to := r.PostForm.Get("to")
-	params.To = &to
+	params.SetTo(&to)
 	departureDate := r.PostForm.Get("departureDate")
-	params.DepartureDate = &departureDate
+	params.SetDepartureDate(&departureDate)
 	returnDate := r.PostForm.Get("returnDate")
-	params.ReturnDate = &returnDate
+	params.SetReturnDate(&returnDate)
 	log.Debugf("Getting itineraries %+v:", params)
 	OK, err := client.GetItineraries(params)
 	if err != nil {
@@ -94,7 +94,7 @@ func SearchSchedules(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	if len(itineraries) > 0 {
 		buf := new(bytes.Buffer)
-		schedulesViewTpl.Execute(buf, itineraries)
+		fligthsViewTpl.Execute(buf, itineraries)
 		w.Write(buf.Bytes())
 	}
 }
