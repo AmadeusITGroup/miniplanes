@@ -48,7 +48,7 @@ itineraries-server-generate-server:
 itineraries-server-generate-client:
 	cd itineraries-server/swagger && swagger generate client --target ../pkg/gen --name itineraries --spec ./swagger.yaml
 
-ui-build: $(OUTPUTDIR)
+ui-build: output
 	cd ui && go-bindata -o=assets/bindata.go --nocompress --nometadata --pkg=assets templates/... static/...
 	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/ui ui/cmd/main.go
 

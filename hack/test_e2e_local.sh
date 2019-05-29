@@ -32,6 +32,11 @@ UIPID=$!
 
 sleep 3
 
+#${ROOTDIR}/hack/submit_data.sh data/airlines_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/airlines.dat http://127.0.0.1:8080/save_airline
+
+#${ROOTDIR}/hack/submit_data.sh data/airports_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/airports.dat http://127.0.0.1:8080/save_airport
+
+#${ROOTDIR}/hack/submit_data.sh data/schedules_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/schedules.dat http://127.0.0.1:8080/save_schedule
 
 ${ROOTDIR}//hack/post_json_data.sh  ${ROOTDIR}/data/airports_schema.dat ${ROOTDIR}/test/e2e/data/BA_AF/airports.dat  http://127.0.0.1:9999/airports
 

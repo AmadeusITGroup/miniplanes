@@ -3,6 +3,6 @@ destination
 flightNumber
 operatingCarrier
 daysOperated
-departure
-arrival
+departureTime
+arrivalTime
 arriveNextDay

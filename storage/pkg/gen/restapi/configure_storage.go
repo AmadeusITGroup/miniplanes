@@ -55,14 +55,18 @@ func configureAPI(api *operations.StorageAPI) http.Handler {
 		db := mongo.NewMongoDB(config.MongoHost, config.MongoPort, config.MongoDBName)
 		modAirline, err := db.InsertAirline(params.Airline)
 		if err != nil {
+			payload := models.Error{}
+			message := fmt.Sprint("%v", err)
+			payload.Message = &message
 			switch err.(type) {
 			case *mongo.ConflictError:
-				return airlines.NewAddAirlineDefault(409)
+				payload.Code = 409
 			case *mongo.UnprocessableError:
-				return airlines.NewAddAirlineDefault(422)
+				payload.Code = 422
 			default:
-				return airlines.NewAddAirlineDefault(400) // generic bad request
+				payload.Code = 400
 			}
+			return airlines.NewAddAirlineDefault(int(payload.Code)).WithPayload(&payload)
 		}
 		return airlines.NewAddAirlineCreated().WithPayload(modAirline)
 	})

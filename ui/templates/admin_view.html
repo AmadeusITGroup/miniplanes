@@ -4,7 +4,7 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Golang HTML Server</title>
+        <title>Miniplanes</title>
 
         <link rel="stylesheet" href="/static/style.css">
         <link rel="stylesheet" href="/static/navigation_bar.css">
@@ -19,15 +19,15 @@
     <div class="container">
         {{.NavigationBar}}
 
-        <h1>Admin</h1>
+        <h1> Administration</h1>
     </div>
-    <h2>- Contents should be something like -</h2> 
-    <dl>
-        <dd>Airports</dd>
-        <dd>Airlines</dd>
-        <dd>Schedules</dd>
-    </dl> 
-        
-
+    <ul> Airports
+        <li><a href="/add_airport">Add</a></li>
+    </ul>
+    <ul> Airlines
+        <li><a href="/add_airline">Add</a></li>
+    </ul>
+    <ul> Schedules
+        <li><a href="/add_schedule">Add</a></li>
 </body>
 </html>

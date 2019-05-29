@@ -30,7 +30,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
@@ -48,6 +47,10 @@ var navigationBarHTML string
 var homepageTpl *template.Template
 var adminViewTpl *template.Template
 var fligthsViewTpl *template.Template
+var addAirlineTpl *template.Template
+var addScheduleTpl *template.Template
+var addAirportTpl *template.Template
+var saveItemTPL *template.Template
 
 func init() {
 	navigationBarHTML = assets.MustAssetString("templates/navigation_bar.html")
@@ -61,6 +64,17 @@ func init() {
 	flightsViewHTML := assets.MustAssetString("templates/flights_view.html")
 	fligthsViewTpl = template.Must(template.New("flights_view").Parse(flightsViewHTML))
 
+	addAirlineHTML := assets.MustAssetString("templates/add_airline.html")
+	addAirlineTpl = template.Must(template.New("add_airline").Parse(addAirlineHTML))
+
+	addAirportHTML := assets.MustAssetString("templates/add_airport.html")
+	addAirportTpl = template.Must(template.New("add_airport").Parse(addAirportHTML))
+
+	addScheduleHTML := assets.MustAssetString("templates/add_schedule.html")
+	addScheduleTpl = template.Must(template.New("add_schedule").Parse(addScheduleHTML))
+
+	saveItemHTML := assets.MustAssetString("templates/save_item.html")
+	saveItemTPL = template.Must(template.New("save_item").Parse(saveItemHTML))
 }
 
 var username = []byte("admin")
@@ -110,6 +124,12 @@ func Start(cfg Config) *HTMLServer {
 	router.HandleFunc("/admin", AdminHandler)
 	router.HandleFunc("/airports", AirportsHandler)
 	router.HandleFunc("/search_flights", SearchFlights)
+	router.HandleFunc("/add_airline", AddAirlineHandler)
+	router.HandleFunc("/save_airline", SaveAirlineHandler)
+	router.HandleFunc("/add_airport", AddAirportHandler)
+	router.HandleFunc("/save_airport", SaveAirportHandler)
+	router.HandleFunc("/add_schedule", AddScheduleHandler)
+	router.HandleFunc("/save_schedule", SaveScheduleHandler)
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Create the HTML Server
@@ -148,10 +168,10 @@ func (htmlServer *HTMLServer) Stop() error {
 	// Attempt the graceful shutdown by closing the listener
 	// and completing all inflight requests
 	if err := htmlServer.server.Shutdown(ctx); err != nil {
-		log.Errorf("shutting down: %v", err)
+		log.Errorf("Shutting down: %v", err)
 		// Looks like we timed out on the graceful shutdown. Force close.
 		//		if err := htmlServer.server.Close(); err != nil {
-		//			fmt.Printf("\nHTMLServer : Service stopping : Error=%v\n", err)
+		//			log.Errorf("HTMLServer : Service stopping: ", err)
 		//			return err
 		//		}
 	}
@@ -165,7 +185,7 @@ func (htmlServer *HTMLServer) Stop() error {
 func render(w http.ResponseWriter, r *http.Request, tpl *template.Template, name string, data interface{}) {
 	buf := new(bytes.Buffer)
 	if err := tpl.ExecuteTemplate(buf, name, data); err != nil {
-		fmt.Printf("\nRender Error: %v\n", err)
+		log.Errorf("Unable to execute template %s: %v", name, err)
 		return
 	}
 	w.Write(buf.Bytes())
@@ -175,9 +195,10 @@ func render(w http.ResponseWriter, r *http.Request, tpl *template.Template, name
 func push(w http.ResponseWriter, resource string) {
 	pusher, ok := w.(http.Pusher)
 	if ok {
-		if err := pusher.Push(resource, nil); err == nil {
-			return
+		if err := pusher.Push(resource, nil); err != nil {
+			log.Errorf("Unable to push resource %s: %v", resource, err)
 		}
+		return
 	}
 }
 
