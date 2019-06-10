@@ -29,10 +29,52 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
 	itinerarymodels "github.com/amadeusitgroup/miniplanes/itineraries-server/pkg/gen/models"
+	"github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	storagemodels "github.com/amadeusitgroup/miniplanes/storage/pkg/gen/models"
 	"github.com/davecgh/go-spew/spew"
+)
+
+var copenhagenTimezone *time.Location
+
+var (
+	NCE = &storagemodels.Airport{
+		AirportID: 1,
+		IATA:      "NCE",
+		TZ:        "Europe/Paris",
+		Latitude:  43.6584014893,
+		Longitude: 7.215869903560001,
+	}
+	LHR = &storagemodels.Airport{
+		AirportID: 2,
+		IATA:      "LHR",
+		TZ:        "Europe/London",
+		Latitude:  51.4706,
+		Longitude: -0.461941,
+	}
+	JFK = &storagemodels.Airport{
+		AirportID: 3,
+		IATA:      "JFK",
+		TZ:        "America/New_York",
+		Latitude:  40.63980103,
+		Longitude: -73.77890015,
+	}
+	CDG = &storagemodels.Airport{
+		AirportID: 4,
+		IATA:      "CDG",
+		TZ:        "Europe/Paris",
+		Latitude:  49.0127983093,
+		Longitude: 2.54999995232,
+	}
+	CPH = &storagemodels.Airport{
+		AirportID: 5,
+		IATA:      "CPH",
+		TZ:        "Europe/Copenhagen",
+		Latitude:  55.617900848389,
+		Longitude: 12.656000137329,
+	}
 )
 
 func NewString(s string) *string {
@@ -45,6 +87,17 @@ func NewInt(i int32) *int32 {
 
 func NewBool(b bool) *bool {
 	return &b
+}
+
+func NewSchedule(origin int32, departureTime string, destination int32, operatingCarrier, daysOperated, flightNumber string) *storagemodels.Schedule {
+	return &storagemodels.Schedule{
+		DaysOperated:     &daysOperated,
+		DepartureTime:    &departureTime,
+		Destination:      &destination,
+		FlightNumber:     &flightNumber,
+		OperatingCarrier: &operatingCarrier,
+		Origin:           &origin,
+	}
 }
 
 func TestCompute(t *testing.T) {
@@ -68,7 +121,7 @@ func TestCompute(t *testing.T) {
 			args: args{
 				From: "",
 			},
-			wantErrorMessage: `can't find airportID for `,
+			wantErrorMessage: `unable to determine timezone for `,
 			want:             []*itinerarymodels.Itinerary{},
 		},
 		{
@@ -78,6 +131,7 @@ func TestCompute(t *testing.T) {
 					{
 						AirportID: 1,
 						IATA:      "NCE",
+						TZ:        "Europe/Paris",
 					},
 				},
 				From: "NCE",
@@ -88,18 +142,9 @@ func TestCompute(t *testing.T) {
 		{
 			name: "no schedules no itinerary",
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "JFK",
-					},
-				},
-				From: "NCE",
-				To:   "JFK",
+				airports: []*storagemodels.Airport{NCE, LHR, JFK},
+				From:     "NCE",
+				To:       "JFK",
 			},
 			wantErrorMessage: "No segments from NCE",         // no schedules no error
 			want:             []*itinerarymodels.Itinerary{}, // no itineraries
@@ -107,28 +152,9 @@ func TestCompute(t *testing.T) {
 		{
 			name: "one valid schedule",
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1300",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      2,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", LHR.AirportID, "AF", "1234567", "AF01"),
 				},
 				From:          "NCE",
 				To:            "LHR",
@@ -143,8 +169,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1300",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1114",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "LHR",
@@ -159,41 +184,12 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			name: "two valid schedules",
-
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1300",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      2,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1305",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1005",
-						Destination:      2,
-						FlightNumber:     "BA01",
-						OperatingCarrier: "BA",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", LHR.AirportID, "AF", "1234567", "AF01"),
+
+					NewSchedule(NCE.AirportID, "1005", LHR.AirportID, "BA", "1234567", "BA01"),
 				},
 				From:          "NCE",
 				To:            "LHR",
@@ -208,8 +204,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1305",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1119",
 							DepartureDate:    "2412",
 							DepartureTime:    "1005",
 							Destination:      "LHR",
@@ -226,8 +221,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1300",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1114",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "LHR",
@@ -240,58 +234,29 @@ func TestCompute(t *testing.T) {
 				},
 			},
 		},
+
 		{
-			name: "one valid schedule, one too early",
+			name: "two valid schedules, one too early",
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1300",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      2,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1005",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "0705",
-						Destination:      2,
-						FlightNumber:     "BA01",
-						OperatingCarrier: "BA",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", LHR.AirportID, "AF", "1234567", "AF01"),
+					NewSchedule(NCE.AirportID, "0830", LHR.AirportID, "BA", "1234567", "BA01"),
 				},
 				From:          "NCE",
 				To:            "LHR",
-				DepartureTime: "0800",
+				DepartureTime: "0900",
 				DepartureDate: "2412",
 			},
 			wantErrorMessage: "",
 			want: []*itinerarymodels.Itinerary{
 				&itinerarymodels.Itinerary{
-					Description: "2412:0800 - NCE-LHR",
+					Description: "2412:0900 - NCE-LHR",
 					ItineraryID: "MY ID",
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1300",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1114",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "LHR",
@@ -307,43 +272,10 @@ func TestCompute(t *testing.T) {
 		{
 			name: "two segments flight ",
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-					{
-						AirportID: 3,
-						IATA:      "CDG",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR, CDG},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1205",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      3,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "2105",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1305",
-						Destination:      2,
-						FlightNumber:     "BA01",
-						OperatingCarrier: "BA",
-						Origin:           3,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", 4, "AF", "1234567", "AF01"),
+					NewSchedule(4, "1305", LHR.AirportID, "BA", "1234567", "BA01"),
 				},
 				From:          "NCE",
 				To:            "LHR",
@@ -358,8 +290,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1205",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1144",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "CDG",
@@ -370,8 +301,7 @@ func TestCompute(t *testing.T) {
 						},
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "2105",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1319",
 							DepartureDate:    "2412",
 							DepartureTime:    "1305",
 							Destination:      "LHR",
@@ -387,69 +317,12 @@ func TestCompute(t *testing.T) {
 		{
 			name: "2xtwo segments flights ",
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-					{
-						AirportID: 3,
-						IATA:      "CDG",
-					},
-					{
-						AirportID: 4,
-						IATA:      "CPH",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR, CDG, CPH},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1205",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      3,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1405",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1305",
-						Destination:      2,
-						FlightNumber:     "BA01",
-						OperatingCarrier: "BA",
-						Origin:           3,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1120",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      4,
-						FlightNumber:     "AF02",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1205",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1310",
-						Destination:      2,
-						FlightNumber:     "AF18",
-						OperatingCarrier: "AF",
-						Origin:           4,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", CDG.AirportID, "AF", "1234567", "AF01"),
+					NewSchedule(CDG.AirportID, "1305", LHR.AirportID, "BA", "1234567", "BA01"),
+					NewSchedule(NCE.AirportID, "1000", CPH.AirportID, "AF", "1234567", "AF02"),
+					NewSchedule(CPH.AirportID, "1310", LHR.AirportID, "AF", "1234567", "AF18"),
 				},
 				From:          "NCE",
 				To:            "LHR",
@@ -464,8 +337,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1120",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1243",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "CPH",
@@ -476,8 +348,7 @@ func TestCompute(t *testing.T) {
 						},
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1205",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1419",
 							DepartureDate:    "2412",
 							DepartureTime:    "1310",
 							Destination:      "LHR",
@@ -494,8 +365,7 @@ func TestCompute(t *testing.T) {
 					Segments: []*itinerarymodels.Segment{
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1205",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1144",
 							DepartureDate:    "2412",
 							DepartureTime:    "1000",
 							Destination:      "CDG",
@@ -506,8 +376,7 @@ func TestCompute(t *testing.T) {
 						},
 						&itinerarymodels.Segment{
 							ArrivalDate:      "2412",
-							ArrivalTime:      "1405",
-							ArriveNextDay:    false,
+							ArrivalTime:      "1319",
 							DepartureDate:    "2412",
 							DepartureTime:    "1305",
 							Destination:      "LHR",
@@ -522,49 +391,11 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			name: "no segments",
-			//enabled: true,
 			args: args{
-				airports: []*storagemodels.Airport{
-					{
-						AirportID: 1,
-						IATA:      "NCE",
-					},
-					{
-						AirportID: 2,
-						IATA:      "LHR",
-					},
-					{
-						AirportID: 3,
-						IATA:      "CDG",
-					},
-					{
-						AirportID: 4,
-						IATA:      "CPH",
-					},
-				},
+				airports: []*storagemodels.Airport{NCE, LHR, CDG, CPH},
 				schedules: []*storagemodels.Schedule{
-					{
-						ArrivalTime:      "1205",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      3,
-						FlightNumber:     "AF01",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
-					{
-						ArrivalTime:      "1120",
-						ArriveNextDay:    false,
-						DaysOperated:     "1234567",
-						DepartureTime:    "1000",
-						Destination:      4,
-						FlightNumber:     "AF02",
-						OperatingCarrier: "AF",
-						Origin:           1,
-						//ScheduleID    *int64
-					},
+					NewSchedule(NCE.AirportID, "1000", CDG.AirportID, "AF", "1234567", "AF01"),
+					NewSchedule(NCE.AirportID, "1000", CPH.AirportID, "AF", "1234567", "AF02"),
 				},
 				From:          "NCE",
 				To:            "LHR",
@@ -594,6 +425,38 @@ func TestCompute(t *testing.T) {
 				fmt.Printf("\nGot:\n")
 				spew.Dump(got)
 				t.Errorf("%s", tt.name)
+			}
+		})
+	}
+}
+
+func TestComputeArrivalDateTime(t *testing.T) { // TODO
+	type args struct {
+		year          int
+		departureTime string
+		departureDate string
+		origin        *models.Airport
+		destination   *models.Airport
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		want1   string
+		wantErr bool
+	}{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := ComputeArrivalDateTime(tt.args.year, tt.args.departureTime, tt.args.departureDate, tt.args.origin, tt.args.destination)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ComputeArrivalDateTime() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("ComputeArrivalDateTime() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("ComputeArrivalDateTime() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

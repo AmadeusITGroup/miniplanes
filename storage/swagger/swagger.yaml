@@ -306,16 +306,14 @@ definitions:
         type: string
   schedule:
     type: object
-#    required:
-#      - "ScheduleID"
-#      - "Origin"
-#      - "Destination"
-#      - "FlightNumber"
-#      - "OperatingCarrier"
-#      - "DaysOperated"
-#      - "DepartureTime"
-#      - "ArrivalTime"
-#      - "ArriveNextDay"
+    required:
+      - "ScheduleID"
+      - "Origin"
+      - "Destination"
+      - "FlightNumber"
+      - "OperatingCarrier"
+      - "DaysOperated"
+      - "DepartureTime"
     properties:
       ScheduleID:
         type: integer
@@ -334,10 +332,8 @@ definitions:
         type: string
       DepartureTime:
         type: string
-      ArrivalTime:
+      Duration:
         type: string
-      ArriveNextDay:
-        type: boolean
   error:
     type: object
     required:

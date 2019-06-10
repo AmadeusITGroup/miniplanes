@@ -95,27 +95,22 @@ func SaveScheduleHandler(w http.ResponseWriter, r *http.Request) {
 		params := schedulesclient.NewAddScheduleParams()
 		params.Schedule = new(models.Schedule)
 		log.Debugf("params %+v", params)
-		params.Schedule.ArrivalTime = r.FormValue("ArrivalTime")
-		params.Schedule.ArriveNextDay, err = stringToBool(r.FormValue("ArriveNextDay"))
-		if err != nil {
-			statusCode = 400
-			errors = append(errors, fmt.Sprintf("ArriveNextDay: %v", err))
-		}
-		params.Schedule.DaysOperated = r.FormValue("DaysOperated")
-		params.Schedule.DepartureTime = r.FormValue("DepartureTime")
-		params.Schedule.Destination, err = stringToInt32(r.FormValue("Destination"))
+		//*params.Schedule.ArrivalDate = r.FormValue("ArrivalDate")
+		*params.Schedule.DaysOperated = r.FormValue("DaysOperated")
+		//*params.Schedule.DepartureDate = r.FormValue("DepartureDate")
+		*params.Schedule.Destination, err = stringToInt32(r.FormValue("Destination"))
 		if err != nil {
 			statusCode = 400
 			errors = append(errors, fmt.Sprintf("Destination: %v", err))
 		}
-		params.Schedule.FlightNumber = r.FormValue("FlightNumber")
-		params.Schedule.OperatingCarrier = r.FormValue("OperatingCarrier")
-		params.Schedule.Origin, err = stringToInt32(r.FormValue("Origin"))
+		*params.Schedule.FlightNumber = r.FormValue("FlightNumber")
+		*params.Schedule.OperatingCarrier = r.FormValue("OperatingCarrier")
+		*params.Schedule.Origin, err = stringToInt32(r.FormValue("Origin"))
 		if err != nil {
 			statusCode = 400
 			errors = append(errors, fmt.Sprintf("Origin: %v", err))
 		}
-		params.Schedule.ScheduleID, err = stringToInt64(r.FormValue("ScheduleID"))
+		*params.Schedule.ScheduleID, err = stringToInt64(r.FormValue("ScheduleID"))
 		if err != nil {
 			statusCode = 400
 			errors = append(errors, fmt.Sprintf("ScheduleID: %v", err))

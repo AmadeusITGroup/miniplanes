@@ -8,43 +8,145 @@ package models
 import (
 	strfmt "github.com/go-openapi/strfmt"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // Schedule schedule
 // swagger:model schedule
 type Schedule struct {
 
-	// arrival time
-	ArrivalTime string `json:"ArrivalTime,omitempty"`
-
-	// arrive next day
-	ArriveNextDay bool `json:"ArriveNextDay,omitempty"`
-
 	// days operated
-	DaysOperated string `json:"DaysOperated,omitempty"`
+	// Required: true
+	DaysOperated *string `json:"DaysOperated"`
 
 	// departure time
-	DepartureTime string `json:"DepartureTime,omitempty"`
+	// Required: true
+	DepartureTime *string `json:"DepartureTime"`
 
 	// destination
-	Destination int32 `json:"Destination,omitempty"`
+	// Required: true
+	Destination *int32 `json:"Destination"`
+
+	// duration
+	Duration string `json:"Duration,omitempty"`
 
 	// flight number
-	FlightNumber string `json:"FlightNumber,omitempty"`
+	// Required: true
+	FlightNumber *string `json:"FlightNumber"`
 
 	// operating carrier
-	OperatingCarrier string `json:"OperatingCarrier,omitempty"`
+	// Required: true
+	OperatingCarrier *string `json:"OperatingCarrier"`
 
 	// origin
-	Origin int32 `json:"Origin,omitempty"`
+	// Required: true
+	Origin *int32 `json:"Origin"`
 
 	// schedule ID
-	ScheduleID int64 `json:"ScheduleID,omitempty"`
+	// Required: true
+	ScheduleID *int64 `json:"ScheduleID"`
 }
 
 // Validate validates this schedule
 func (m *Schedule) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDaysOperated(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDepartureTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDestination(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFlightNumber(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOperatingCarrier(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOrigin(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateScheduleID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Schedule) validateDaysOperated(formats strfmt.Registry) error {
+
+	if err := validate.Required("DaysOperated", "body", m.DaysOperated); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateDepartureTime(formats strfmt.Registry) error {
+
+	if err := validate.Required("DepartureTime", "body", m.DepartureTime); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateDestination(formats strfmt.Registry) error {
+
+	if err := validate.Required("Destination", "body", m.Destination); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateFlightNumber(formats strfmt.Registry) error {
+
+	if err := validate.Required("FlightNumber", "body", m.FlightNumber); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateOperatingCarrier(formats strfmt.Registry) error {
+
+	if err := validate.Required("OperatingCarrier", "body", m.OperatingCarrier); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateOrigin(formats strfmt.Registry) error {
+
+	if err := validate.Required("Origin", "body", m.Origin); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Schedule) validateScheduleID(formats strfmt.Registry) error {
+
+	if err := validate.Required("ScheduleID", "body", m.ScheduleID); err != nil {
+		return err
+	}
+
 	return nil
 }
 

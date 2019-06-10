@@ -81,8 +81,12 @@ func SearchFlights(w http.ResponseWriter, r *http.Request) {
 	params.SetTo(&to)
 	departureDate := r.PostForm.Get("departureDate")
 	params.SetDepartureDate(&departureDate)
+	departureTime := r.PostForm.Get("departureTime")
+	params.SetDepartureTime(&departureTime)
 	returnDate := r.PostForm.Get("returnDate")
 	params.SetReturnDate(&returnDate)
+	returnTime := r.PostForm.Get("returnTime")
+	params.SetReturnTime(&returnTime)
 	log.Debugf("Getting itineraries %+v:", params)
 	OK, err := client.GetItineraries(params)
 	if err != nil {

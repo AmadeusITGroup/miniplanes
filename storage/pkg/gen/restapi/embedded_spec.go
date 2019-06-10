@@ -475,13 +475,16 @@ func init() {
     },
     "schedule": {
       "type": "object",
+      "required": [
+        "ScheduleID",
+        "Origin",
+        "Destination",
+        "FlightNumber",
+        "OperatingCarrier",
+        "DaysOperated",
+        "DepartureTime"
+      ],
       "properties": {
-        "ArrivalTime": {
-          "type": "string"
-        },
-        "ArriveNextDay": {
-          "type": "boolean"
-        },
         "DaysOperated": {
           "type": "string"
         },
@@ -491,6 +494,9 @@ func init() {
         "Destination": {
           "type": "integer",
           "format": "int32"
+        },
+        "Duration": {
+          "type": "string"
         },
         "FlightNumber": {
           "type": "string"
@@ -991,13 +997,16 @@ func init() {
     },
     "schedule": {
       "type": "object",
+      "required": [
+        "ScheduleID",
+        "Origin",
+        "Destination",
+        "FlightNumber",
+        "OperatingCarrier",
+        "DaysOperated",
+        "DepartureTime"
+      ],
       "properties": {
-        "ArrivalTime": {
-          "type": "string"
-        },
-        "ArriveNextDay": {
-          "type": "boolean"
-        },
         "DaysOperated": {
           "type": "string"
         },
@@ -1007,6 +1016,9 @@ func init() {
         "Destination": {
           "type": "integer",
           "format": "int32"
+        },
+        "Duration": {
+          "type": "string"
         },
         "FlightNumber": {
           "type": "string"

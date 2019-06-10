@@ -127,5 +127,3 @@ definitions:
         type: string
       ArrivalDate:
         type: string
-      ArriveNextDay:
-        type: boolean

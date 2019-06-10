@@ -84,9 +84,7 @@ type Schedule struct {
 	FlightNumber     string        `json:"flightNumber" bson:"flightNumber"`
 	OperatingCarrier string        `json:"operatingCarrier" bson:"operatingCarrier"`
 	DaysOperated     string        `json:"daysOperated" bson:"daysOperated"`
-	DepartureTime    string        `json:"departure" bson:"departure"`
-	ArrivalTime      string        `json:"arrival" bson:"arrival"`
-	ArriveNextDay    bool          `json:"arriveNextDay" bson:"arriveNextDay"`
+	DepartureTime    string        `json:"departureTime" bson:"departureTime"`
 }
 
 func (s Schedule) ToModel() (*models.Schedule, error) {

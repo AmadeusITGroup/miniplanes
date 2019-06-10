@@ -21,9 +21,6 @@ type Segment struct {
 	// arrival time
 	ArrivalTime string `json:"ArrivalTime,omitempty"`
 
-	// arrive next day
-	ArriveNextDay bool `json:"ArriveNextDay,omitempty"`
-
 	// departure date
 	DepartureDate string `json:"DepartureDate,omitempty"`
 

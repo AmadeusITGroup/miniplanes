@@ -244,10 +244,7 @@ var _bindataTemplatesAddschedulehtml = []byte(`<!DOCTYPE html>
       <h2> Add schedule</h2>
       <form action="/save_schedule" , method="POST">
         <div>
-        <div>     ArrivalTime<input type="text" name="ArrivalTime" value=""> </div> 
-        <div>     ArriveNextDay<input type="text" name="ArriveNextDay" value=""></div> 
         <div>     DaysOperated<input type="text" name="DaysOperated" value=""></div> 
-        <div>     DepartureTime<input type="text" name="DepartureTime" value=""></div> 
         <div>     Destination<input type="number" name="Destination" value=""></div> 
         <div>     FlightNumber<input type="text" name="FlightNumber" value=""></div> 
         <div>     OperatingCarrier<input type="text" name="OperatingCarrier" value=""></div> 

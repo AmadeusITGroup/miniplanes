@@ -193,9 +193,6 @@ func init() {
         "ArrivalTime": {
           "type": "string"
         },
-        "ArriveNextDay": {
-          "type": "boolean"
-        },
         "DepartureDate": {
           "type": "string"
         },
@@ -412,9 +409,6 @@ func init() {
         },
         "ArrivalTime": {
           "type": "string"
-        },
-        "ArriveNextDay": {
-          "type": "boolean"
         },
         "DepartureDate": {
           "type": "string"
