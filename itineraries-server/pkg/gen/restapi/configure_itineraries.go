@@ -30,6 +30,7 @@ package restapi
 import (
 	"crypto/tls"
 	"fmt"
+	"time"
 
 	"net/http"
 
@@ -104,8 +105,16 @@ func getItineraries(from, to, departureDate, departureTime *string) ([]*models.I
 		log.Errorf("unable to instantiate itineraries-server engine: %v", err)
 		return []*models.Itinerary{}, fmt.Errorf("unable to instantiate itineraries-server engine: %v", err)
 	}
+
+	departureDateTime := fmt.Sprintf("%sT%s", *departureDate, *departureTime)
+	d, err := time.Parse("2006-01-02T15:04", departureDateTime)
+	if err != nil {
+		return []*models.Itinerary{}, fmt.Errorf("Unable to parse departure date time: %v", err)
+	}
+	dDate := fmt.Sprintf("%02d%02d", int(d.Day()), int(d.Month()))
+	dTime := fmt.Sprintf("%02d%02d", int(d.Hour()), int(d.Minute()))
 	maxNumberOfPaths := 5
-	return itineraryGraph.Compute(*from, *departureDate, *departureTime, *to, maxNumberOfPaths)
+	return itineraryGraph.Compute(*from, dDate, dTime, *to, maxNumberOfPaths)
 }
 
 func isAlive() bool {

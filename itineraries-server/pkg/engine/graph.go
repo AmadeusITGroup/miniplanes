@@ -41,14 +41,12 @@ import (
 
 var (
 	AverageSpeedKmH = float64(700)
-	//HalfHourOverhead = float64(.5)
-	FlightOverhead = float64(.75)
+	FlightOverhead  = float64(.75)
 )
 
 func ComputeArrivalDateTime(year int, departureDate, departureTime string, origin, destination *models.Airport) (string, string, error) {
 
-	arrivalDate := ""
-	arrivalTime := ""
+	var arrivalDate, arrivalTime string
 
 	var months, days, hours, minutes int
 	fmt.Sscanf(departureTime, "%02d%02d", &hours, &minutes)
@@ -97,10 +95,11 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 	if err != nil {
 		return nil, fmt.Errorf("Unable to compute arrival date and arrival time: %v", err)
 	}
+
 	seg := &itinerarymodels.Segment{
-		ArrivalDate:      arrivalDate, //arrivalDate,
+		ArrivalDate:      arrivalDate,
 		ArrivalTime:      arrivalTime,
-		DepartureDate:    departureDate, //*s.DepartureDate,
+		DepartureDate:    departureDate,
 		DepartureTime:    *s.DepartureTime,
 		Destination:      r.airportFromID[*s.Destination].IATA,
 		FlightNumber:     *s.FlightNumber,
@@ -108,6 +107,7 @@ func (r *realGraph) buildSegmentFromSchedule(s *storagemodels.Schedule, departur
 		Origin:           r.airportFromID[*s.Origin].IATA,
 		SegmentID:        0,
 	}
+	log.Debugf("%s DepartureDate=%s/DepartureTime=%s, %s ArrivalDate=%s/ArrivalTime=%s", seg.Origin, seg.DepartureDate, seg.DepartureTime, seg.Destination, seg.ArrivalDate, seg.ArrivalTime)
 	return seg, nil
 }
 
@@ -136,15 +136,18 @@ func (r *realGraph) computeAllSegments(from, departure, departureDate, to string
 	}
 
 	if fromAirport.AirportID == toAirport.AirportID {
-		log.Debugf("same from and to (%d,%d) ", fromAirport.AirportID, toAirport.AirportID)
+		log.Debugf("same from and to (%d,%d)", fromAirport.AirportID, toAirport.AirportID)
 		return segments, nil
 	}
 	if separationDegree == 0 {
 		log.Debugf("Separation degree %d, no segments found", separationDegree)
-		return segments, nil //fmt.Errorf("no segments found")
+		return segments, nil
 	}
 
 	schedules, ok := r.originToSchedules[fromAirport.AirportID]
+	for _, s := range schedules {
+		log.Debugf("%d: schedule %d, %d, %s", fromAirport.AirportID, *s.Origin, *s.Destination, *s.DepartureTime)
+	}
 	if !ok {
 		log.Warnf("Cannot find outbound schedules from %s", fromAirport.IATA)
 		return segments, nil //fmt.Errorf("No segments from %s", fromAirport.IATA)
@@ -158,7 +161,7 @@ func (r *realGraph) computeAllSegments(from, departure, departureDate, to string
 		currentSegment, err := r.buildSegmentFromSchedule(s, departureDate)
 		destinationAirport := r.airportFromID[*s.Destination]
 
-		currentSegmentFanout, err := r.computeAllSegments(destinationAirport.IATA, departure, departureDate, to, separationDegree-1)
+		currentSegmentFanout, err := r.computeAllSegments(destinationAirport.IATA, currentSegment.ArrivalTime, currentSegment.ArrivalDate, to, separationDegree-1)
 		if err != nil {
 			log.Errorf("Unable to compute all segments from %s to %s: %v", destinationAirport.IATA, to, err)
 			return [][]*itinerarymodels.Segment{}, err
@@ -172,9 +175,13 @@ func (r *realGraph) computeAllSegments(from, departure, departureDate, to string
 				segments = append(segments, ss)
 			}
 		}
+
 		for i := range currentSegmentFanout {
 			if currentSegmentFanout[i][len(currentSegmentFanout[i])-1].Destination != to {
 				continue // only fanout with right destination is kept
+			}
+			for _, csf := range currentSegmentFanout[i] {
+				log.Debugf("Current Segment %s=>%s Fanout %s->%s", currentSegment.Origin, currentSegment.Destination, csf.Origin, csf.Destination)
 			}
 			ss2 := append(ss, currentSegmentFanout[i]...)
 			segments = append(segments, ss2)
@@ -193,7 +200,6 @@ func makeItineraryID() string {
 
 // ComputeItineraries computes itineraries
 func (r *realGraph) Compute(from, departureDate, departureTime, to string, numberOfPaths int) ([]*itinerarymodels.Itinerary, error) {
-	log.Debugf("realGraph.Compute")
 	log.Debugf("Compute itineraries: %s->%s, departureDate: %s, departureTime: %s", from, to, departureDate, departureTime)
 	solutions := []*itinerarymodels.Itinerary{}
 	maxDegreefSeparation := 4

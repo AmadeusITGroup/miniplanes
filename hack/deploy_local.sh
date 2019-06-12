@@ -18,13 +18,13 @@ make build
 ROOTDIR=$(git rev-parse --show-toplevel)
 
 #storage
-${ROOTDIR}/_output/storage --mongo-host 127.0.0.1 --port 9999 &
+${ROOTDIR}/_output/storage --mongo-host 127.0.0.1 --port 9999 --verbosity=debug &
 
 #itineraries-server
-${ROOTDIR}/_output/itineraries-server --storage-host  127.0.0.1 --storage-port 9999 --port 8888 &
+${ROOTDIR}/_output/itineraries-server --storage-host  127.0.0.1 --storage-port 9999 --port 8888 --verbosity=debug  &
 
 pushd ${ROOTDIR}/ui
-${ROOTDIR}/_output/ui --itineraries-server-host 127.0.0.1 --itineraries-server-port 8888 --port 8080 --storage-host 127.0.0.1 --storage-port 9999 &
+${ROOTDIR}/_output/ui --itineraries-server-host 127.0.0.1 --itineraries-server-port 8888 --port 8080 --storage-host 127.0.0.1 --storage-port 9999 --verbosity=debug &
 popd
 
 sleep 3
