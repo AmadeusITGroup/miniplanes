@@ -29,8 +29,8 @@ spec:
     spec:
       containers:
       - name: storage
-        image: miniplanes:latest
-        imagePullPolicy: Never
+        image: localhost:5000/miniplanes
+        imagePullPolicy: Always
         command: ["/storage"]
         args: ["--port=8080", "--host=0.0.0.0", "--mongo-host=mongo", "--mongo-port=27017"]
         ports:

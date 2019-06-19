@@ -11,7 +11,7 @@ output:
 
 build: storage-build itineraries-server-build ui-build schedules-generator-build
 
-image: storage-build itineraries-server-build ui-build schedules-generator-build
+images: storage-build itineraries-server-build ui-build schedules-generator-build
 	docker build . -t $(PREFIX)miniplanes:$(TAG)
 
 storage-validate-swagger:

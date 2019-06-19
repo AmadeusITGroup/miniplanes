@@ -32,8 +32,8 @@ spec:
     spec:
       containers:
       - name: itineraries-server
-        image: miniplanes:latest
-        imagePullPolicy: Never
+        image: localhost:5000/miniplanes
+        imagePullPolicy: Always
         command: ["/itineraries-server"]
         args: ["--port=8080", "--host=0.0.0.0"]
         ports:

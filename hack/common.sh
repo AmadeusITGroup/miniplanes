@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 command -v kubectl >/dev/null 2>&1 || { echo >&2 "can't find kubectl.  Aborting."; exit 1; }
-command -v minikube >/dev/null 2>&1 || { echo >&2 "can't find minikube. Aborting."; exit 1; }
+command -v kind >/dev/null 2>&1 || { echo >&2 "can't find kind. Aborting."; exit 1; }
 command -v openssl >/dev/null 2>&1 || { echo >&2 "can't find openssl. Aborting."; exit 1; }
 command -v curl >/dev/null 2>&1 || { echo >&2 "can't find curl. Aborting."; exit 1; }
 
