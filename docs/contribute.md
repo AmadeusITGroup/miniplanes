@@ -5,11 +5,11 @@
 * `swagger`: supplied by `go-swagger`
 * `go-bindata`: supplied by `go-bindata`
 
-in order to build `miniplanes` executable you need both. You can install on your development environment via usual:
+in order to build `miniplanes` executable you need both. You can install on your development environment via:
 
 ```shell
-$ go get ...
-$ go get ...
+$ go get -u github.com/go-swagger/go-swagger/cmd/swagger
+$ go get -u github.com/jteeuwen/go-bindata/...
 ```
 
 ## How to populate DB

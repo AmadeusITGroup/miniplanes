@@ -34,7 +34,6 @@ type DB interface {
 	DialString() string
 	GetSchedules() ([]*models.Schedule, error)
 	GetAirlines() ([]*models.Airline, error)
-	GetCourses() ([]*models.Course, error)
 	GetAirports() ([]*models.Airport, error)
 	InsertSchedule(s *models.Schedule) error
 }
