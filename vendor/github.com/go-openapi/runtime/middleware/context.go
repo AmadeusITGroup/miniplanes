@@ -16,9 +16,12 @@ package middleware
 
 import (
 	stdContext "context"
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/go-openapi/runtime/security"
 
 	"github.com/go-openapi/analysis"
 	"github.com/go-openapi/errors"
@@ -430,6 +433,8 @@ func (c *Context) Authorize(request *http.Request, route *MatchedRoute) (interfa
 		}
 	}
 
+	rCtx = request.Context()
+
 	rCtx = stdContext.WithValue(rCtx, ctxSecurityPrincipal, usr)
 	rCtx = stdContext.WithValue(rCtx, ctxSecurityScopes, route.Authenticator.AllScopes())
 	return usr, request.WithContext(rCtx), nil
@@ -500,6 +505,11 @@ func (c *Context) Respond(rw http.ResponseWriter, r *http.Request, produces []st
 		if format == "" {
 			rw.Header().Set(runtime.HeaderContentType, runtime.JSONMime)
 		}
+
+		if realm := security.FailedBasicAuth(r); realm != "" {
+			rw.Header().Set("WWW-Authenticate", fmt.Sprintf("Basic realm=%q", realm))
+		}
+
 		if route == nil || route.Operation == nil {
 			c.api.ServeErrorFor("")(rw, r, err)
 			return
