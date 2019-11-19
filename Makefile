@@ -18,7 +18,7 @@ storage-validate-swagger:
 	cd storage/swagger && swagger validate ./swagger.yaml
 
 storage-build: output
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniplanes/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
+	CGO_ENABLED=0  GOOS=linux go build --mod=vendor -i -installsuffix cgo -ldflags "-w -X github.com/amadeusitgroup/miniplanes/storage/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/storage storage/cmd/storage/main.go
 
 storage-image-build: storage-build
 	cp -f $(OUTPUTDIR)/storage storage/image
@@ -35,7 +35,7 @@ itineraries-server-validate-swagger:
 	cd itineraries-server/swagger && swagger validate ./swagger.yaml
 
 itineraries-server-build: output
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo  -ldflags "-w -X github.com/amadeusitgroup/miniplanes/itineraries-server/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/itineraries-server itineraries-server/cmd/itineraries-server/main.go
+	CGO_ENABLED=0  GOOS=linux go build --mod=vendor -i -installsuffix CEO  -ldflags "-w -X github.com/amadeusitgroup/miniplanes/itineraries-server/cmd/config.Version=$(shell git rev-parse HEAD)" -o $(OUTPUTDIR)/itineraries-server itineraries-server/cmd/itineraries-server/main.go
 
 itineraries-server-image-build: itineraries-server-build
 	cp -f $(OUTPUTDIR)/itineraries-server itineraries-server/image
@@ -50,7 +50,7 @@ itineraries-server-generate-client:
 
 ui-build: output
 	cd ui && go-bindata -o=assets/bindata.go --nocompress --nometadata --pkg=assets templates/... static/...
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/ui ui/cmd/main.go
+	CGO_ENABLED=0  GOOS=linux go build --mod=vendor -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/ui ui/cmd/main.go
 
 ui-image-build: ui-build
 	cp -f $(OUTPUTDIR)/ui ui/image
@@ -58,7 +58,7 @@ ui-image-build: ui-build
 	rm -rf ui/image/ui
 
 schedules-generator-build: output
-	CGO_ENABLED=0  GOOS=linux go build -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/schedules-generator schedules-generator/cmd/main.go
+	CGO_ENABLED=0  GOOS=linux go build --mod=vendor -i -installsuffix cgo -ldflags '-w' -o $(OUTPUTDIR)/schedules-generator schedules-generator/cmd/main.go
 
 schedules-generator-image-build: schedules-generator-build
 	cp -f $(OUTPUTDIR)/schedules-generator schedules-generator/image
@@ -66,7 +66,7 @@ schedules-generator-image-build: schedules-generator-build
 	rm -rf schedules-generator/image/schedules-generator
 
 test_local: build
-	cd itineraries-server/pkg/engine && go test .
+	cd itineraries-server/pkg/engine && go test --mod=vendor .
 	./hack/test_e2e_local.sh
 
 .PHONY: test

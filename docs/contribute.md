@@ -1,6 +1,13 @@
 
-## Dependecies
+## Development environment
+`miniplanes` is written in `go-lang` more and at least `go-lang` version `1.12.6` is needed. It could work with `1.11` too, but no effort is put into development to grant `1.11` compatibility.
 
+### Dependecies
+`miniplanes` makes use of `go mod`, more particulary `vendor`ed `go-mod`. So basically one has to set `GO111MODULE=on` before compiling it.
+Compilation is performed through
+```shell
+$ go build --mod=vendor
+```
 `miniplanes` development environment depends on two external tools:
 * `swagger`: supplied by `go-swagger`
 * `go-bindata`: supplied by `go-bindata`
