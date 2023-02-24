@@ -18,6 +18,6 @@ require (
 	github.com/onsi/gomega v1.7.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/net v0.0.0-20191118183410-d06c31c94cae
+	golang.org/x/net v0.7.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
